@@ -1445,6 +1445,105 @@ export type Database = {
           },
         ]
       }
+      whatsapp_automation_logs: {
+        Row: {
+          api_response: Json | null
+          class_id: string | null
+          course_id: string | null
+          created_at: string
+          enrollment_id: string | null
+          error: string | null
+          id: string
+          message_body: string | null
+          message_type: string
+          phone: string | null
+          provider: string | null
+          reminder_stage: string | null
+          sent_at: string | null
+          session_id: string | null
+          status: string
+          student_id: string | null
+        }
+        Insert: {
+          api_response?: Json | null
+          class_id?: string | null
+          course_id?: string | null
+          created_at?: string
+          enrollment_id?: string | null
+          error?: string | null
+          id?: string
+          message_body?: string | null
+          message_type: string
+          phone?: string | null
+          provider?: string | null
+          reminder_stage?: string | null
+          sent_at?: string | null
+          session_id?: string | null
+          status?: string
+          student_id?: string | null
+        }
+        Update: {
+          api_response?: Json | null
+          class_id?: string | null
+          course_id?: string | null
+          created_at?: string
+          enrollment_id?: string | null
+          error?: string | null
+          id?: string
+          message_body?: string | null
+          message_type?: string
+          phone?: string | null
+          provider?: string | null
+          reminder_stage?: string | null
+          sent_at?: string | null
+          session_id?: string | null
+          status?: string
+          student_id?: string | null
+        }
+        Relationships: []
+      }
+      whatsapp_automation_settings: {
+        Row: {
+          class_reminders_enabled: boolean
+          class_stages: Json
+          created_at: string
+          default_reminder_time: string | null
+          expiry_reminders_enabled: boolean
+          expiry_stages: Json
+          id: string
+          last_class_run_at: string | null
+          last_expiry_run_at: string | null
+          login_alerts_enabled: boolean
+          updated_at: string
+        }
+        Insert: {
+          class_reminders_enabled?: boolean
+          class_stages?: Json
+          created_at?: string
+          default_reminder_time?: string | null
+          expiry_reminders_enabled?: boolean
+          expiry_stages?: Json
+          id?: string
+          last_class_run_at?: string | null
+          last_expiry_run_at?: string | null
+          login_alerts_enabled?: boolean
+          updated_at?: string
+        }
+        Update: {
+          class_reminders_enabled?: boolean
+          class_stages?: Json
+          created_at?: string
+          default_reminder_time?: string | null
+          expiry_reminders_enabled?: boolean
+          expiry_stages?: Json
+          id?: string
+          last_class_run_at?: string | null
+          last_expiry_run_at?: string | null
+          login_alerts_enabled?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       whatsapp_messages: {
         Row: {
           body: string
