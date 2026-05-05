@@ -388,6 +388,14 @@ const App = () => (
                     </AdminWrapper>
                   }
                 />
+                <Route
+                  path="/admin/whatsapp-automation"
+                  element={
+                    <AdminWrapper>
+                      <AdminWhatsAppAutomation />
+                    </AdminWrapper>
+                  }
+                />
 
                 {/* Teacher Dashboard */}
                 <Route path="/teacher" element={<TeacherWrapper><TeacherDashboard /></TeacherWrapper>} />
