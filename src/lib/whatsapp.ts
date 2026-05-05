@@ -113,6 +113,28 @@ export async function sendWhatsAppMessage(args: SendArgs): Promise<{
   return { id: data.id, link, status: "pending" };
 }
 
+/** Send via HostGrap (server-side edge function). Updates the existing log row. */
+export async function sendViaProvider(args: {
+  logId?: string | null;
+  phone: string;
+  message: string;
+}): Promise<{ success: boolean; result: unknown; error?: string }> {
+  const { data, error } = await supabase.functions.invoke("whatsapp-send", {
+    body: { action: "send", logId: args.logId ?? null, phone: args.phone, message: args.message },
+  });
+  if (error) return { success: false, result: null, error: error.message };
+  return data as { success: boolean; result: unknown };
+}
+
+/** Send a test message via HostGrap (no log row required). */
+export async function sendTestMessage(phone: string, message: string) {
+  const { data, error } = await supabase.functions.invoke("whatsapp-send", {
+    body: { action: "test", phone, message },
+  });
+  if (error) throw new Error(error.message);
+  return data;
+}
+
 export async function markStatus(id: string, status: WhatsAppStatus, error?: string) {
   return supabase
     .from("whatsapp_messages")

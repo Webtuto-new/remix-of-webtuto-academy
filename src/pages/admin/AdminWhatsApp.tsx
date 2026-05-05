@@ -17,6 +17,7 @@ import { Plus, Pencil, Trash2, Send, ExternalLink, Copy, MessageSquare } from "l
 import MessagePreviewDialog from "@/components/whatsapp/MessagePreviewDialog";
 import {
   TEMPLATE_VARIABLES, TYPE_LABELS, renderTemplate, buildWaLink, normalizePhone,
+  sendWhatsAppMessage, sendViaProvider, sendTestMessage,
   type WhatsAppType,
 } from "@/lib/whatsapp";
 
@@ -45,11 +46,13 @@ const AdminWhatsApp = () => {
           <TabsTrigger value="templates">Templates</TabsTrigger>
           <TabsTrigger value="bulk">Bulk Send</TabsTrigger>
           <TabsTrigger value="history">History</TabsTrigger>
+          <TabsTrigger value="api">API Settings</TabsTrigger>
           <TabsTrigger value="settings">Settings</TabsTrigger>
         </TabsList>
         <TabsContent value="templates"><TemplatesTab /></TabsContent>
         <TabsContent value="bulk"><BulkTab /></TabsContent>
         <TabsContent value="history"><HistoryTab /></TabsContent>
+        <TabsContent value="api"><ApiSettingsTab /></TabsContent>
         <TabsContent value="settings"><SettingsTab /></TabsContent>
       </Tabs>
     </div>
@@ -317,7 +320,10 @@ const BulkTab = () => {
 
       {queue.length > 0 && tmpl && (
         <Card>
-          <CardHeader><CardTitle>Queue ({queue.length})</CardTitle></CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle>Queue ({queue.length})</CardTitle>
+            <BulkSendButton queue={queue} tmpl={tmpl} />
+          </CardHeader>
           <CardContent className="space-y-2 max-h-96 overflow-y-auto">
             {queue.map((q) => (
               <div key={q.student.id} className="flex items-center gap-2 p-2 border border-border rounded-lg">
@@ -479,6 +485,109 @@ const SettingsTab = () => {
         <p className="text-xs text-muted-foreground border border-border rounded-lg p-3">
           <b>Provider:</b> manual (wa.me). The system is provider-ready — when you connect WhatsApp Business Cloud API later, only <code>sendWhatsAppMessage()</code> in <code>src/lib/whatsapp.ts</code> needs to be updated.
         </p>
+      </CardContent>
+    </Card>
+  );
+};
+
+
+/* ---------------- Bulk Send Button (queue with delay) ---------------- */
+const BulkSendButton = ({ queue, tmpl }: { queue: any[]; tmpl: Template }) => {
+  const [running, setRunning] = useState(false);
+  const [progress, setProgress] = useState({ done: 0, sent: 0, failed: 0 });
+
+  const run = async () => {
+    if (!confirm(`Send ${queue.length} WhatsApp messages via HostGrap API? They will be sent one by one with a 2s delay.`)) return;
+    setRunning(true);
+    setProgress({ done: 0, sent: 0, failed: 0 });
+    let sent = 0, failed = 0;
+    for (let i = 0; i < queue.length; i++) {
+      const q = queue[i];
+      try {
+        const log = await sendWhatsAppMessage({
+          userId: q.student.id, phone: q.student.phone ?? "", type: tmpl.type,
+          body: q.body, templateId: tmpl.id,
+        });
+        const r = await sendViaProvider({ logId: log.id, phone: q.student.phone ?? "", message: q.body });
+        if (r.success) sent++; else failed++;
+      } catch { failed++; }
+      setProgress({ done: i + 1, sent, failed });
+      if (i < queue.length - 1) await new Promise((r) => setTimeout(r, 2000));
+    }
+    setRunning(false);
+    toast({ title: "Bulk send complete", description: `Sent: ${sent} • Failed: ${failed}` });
+  };
+
+  return (
+    <div className="flex items-center gap-3">
+      {running && (
+        <span className="text-xs text-muted-foreground">{progress.done}/{queue.length} • ✓{progress.sent} ✗{progress.failed}</span>
+      )}
+      <Button size="sm" onClick={run} disabled={running}>
+        <Send className="w-4 h-4 mr-2" />{running ? "Sending…" : "Send All via API"}
+      </Button>
+    </div>
+  );
+};
+
+/* ---------------- API Settings ---------------- */
+const ApiSettingsTab = () => {
+  const [phone, setPhone] = useState("");
+  const [msg, setMsg] = useState("Hello from LMS — HostGrap test message ✅");
+  const [busy, setBusy] = useState(false);
+  const [last, setLast] = useState<any>(null);
+
+  const test = async () => {
+    if (!phone || !msg) { toast({ title: "Phone and message required", variant: "destructive" }); return; }
+    setBusy(true); setLast(null);
+    try {
+      const res = await sendTestMessage(phone, msg);
+      setLast(res);
+      toast({ title: "Test sent", description: "Check your WhatsApp." });
+    } catch (e: any) {
+      setLast({ error: e.message });
+      toast({ title: "Test failed", description: e.message, variant: "destructive" });
+    } finally { setBusy(false); }
+  };
+
+  return (
+    <Card>
+      <CardHeader><CardTitle>WhatsApp API Settings</CardTitle></CardHeader>
+      <CardContent className="space-y-4 max-w-2xl">
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <Label>Provider</Label>
+            <div className="flex items-center gap-2 mt-1">
+              <Badge className="bg-primary/10 text-primary">HostGrap WhatsApp API V2</Badge>
+            </div>
+          </div>
+          <div>
+            <Label>API Status</Label>
+            <div className="mt-1">
+              <Badge className="bg-green-500/10 text-green-600">Configured (server-side)</Badge>
+            </div>
+          </div>
+        </div>
+        <p className="text-xs text-muted-foreground border border-border rounded-lg p-3">
+          Credentials (<code>HOSTGRAP_EMAIL</code>, <code>HOSTGRAP_API_KEY</code>, <code>HOSTGRAP_BASE_URL</code>) are stored as backend secrets.
+          Frontend never sees the API key — all sends go through the <code>whatsapp-send</code> edge function.
+        </p>
+        <div>
+          <Label>Test phone (Sri Lanka 0… or 94… format)</Label>
+          <Input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="0776096302" />
+        </div>
+        <div>
+          <Label>Test message</Label>
+          <Textarea rows={4} value={msg} onChange={(e) => setMsg(e.target.value)} />
+        </div>
+        <Button onClick={test} disabled={busy}>
+          <Send className="w-4 h-4 mr-2" />{busy ? "Sending…" : "Send Test Message"}
+        </Button>
+        {last && (
+          <pre className="text-xs bg-muted/50 border border-border rounded-lg p-3 overflow-x-auto whitespace-pre-wrap">
+            {JSON.stringify(last, null, 2)}
+          </pre>
+        )}
       </CardContent>
     </Card>
   );
