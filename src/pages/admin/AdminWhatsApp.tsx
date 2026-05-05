@@ -46,11 +46,13 @@ const AdminWhatsApp = () => {
           <TabsTrigger value="templates">Templates</TabsTrigger>
           <TabsTrigger value="bulk">Bulk Send</TabsTrigger>
           <TabsTrigger value="history">History</TabsTrigger>
+          <TabsTrigger value="api">API Settings</TabsTrigger>
           <TabsTrigger value="settings">Settings</TabsTrigger>
         </TabsList>
         <TabsContent value="templates"><TemplatesTab /></TabsContent>
         <TabsContent value="bulk"><BulkTab /></TabsContent>
         <TabsContent value="history"><HistoryTab /></TabsContent>
+        <TabsContent value="api"><ApiSettingsTab /></TabsContent>
         <TabsContent value="settings"><SettingsTab /></TabsContent>
       </Tabs>
     </div>
