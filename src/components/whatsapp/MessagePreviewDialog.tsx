@@ -102,7 +102,8 @@ const MessagePreviewDialog = ({
           <Button variant="outline" onClick={copy}><Copy className="w-4 h-4 mr-2" />Copy</Button>
           <Button variant="outline" onClick={queue}><Send className="w-4 h-4 mr-2" />Queue (Pending)</Button>
           <Button variant="outline" onClick={markSent}><Check className="w-4 h-4 mr-2" />Mark Sent</Button>
-          <Button onClick={openWa}><ExternalLink className="w-4 h-4 mr-2" />Open WhatsApp</Button>
+          <Button variant="outline" onClick={openWa}><ExternalLink className="w-4 h-4 mr-2" />Open WhatsApp</Button>
+          <Button onClick={sendApi}><Zap className="w-4 h-4 mr-2" />Send via WhatsApp API</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
