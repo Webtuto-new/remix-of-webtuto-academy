@@ -17,6 +17,7 @@ const adminMenu = [
   { label: "Tutor Applications", path: "/admin/applications", icon: FileText },
   { label: "Class Requests", path: "/admin/class-requests", icon: MessageSquare },
   { label: "WhatsApp Messages", path: "/admin/whatsapp", icon: MessageSquare },
+  { label: "WhatsApp Automation", path: "/admin/whatsapp-automation", icon: Bell },
   { label: "Recordings", path: "/admin/recordings", icon: Play },
   { label: "Curriculum", path: "/admin/curriculum", icon: BookOpen },
   { label: "Bundles", path: "/admin/bundles", icon: Package },
