@@ -64,6 +64,24 @@ const MessagePreviewDialog = ({
     onOpenChange(false);
   };
 
+  const sendApi = async () => {
+    let id = logId;
+    if (!id) {
+      const res = await sendWhatsAppMessage({ userId, phone: phoneVal, type, body, templateId, context });
+      id = res.id;
+      setLogId(id);
+    }
+    const r = await sendViaProvider({ logId: id, phone: phoneVal, message: body });
+    if (r.success) {
+      toast({ title: "Sent via WhatsApp API" });
+      onSent?.();
+      onOpenChange(false);
+    } else {
+      toast({ title: "Send failed", description: r.error || "Provider error", variant: "destructive" });
+      onSent?.();
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl">
