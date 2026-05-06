@@ -71,13 +71,18 @@ const MessagePreviewDialog = ({
       id = res.id;
       setLogId(id);
     }
+    toast({ title: "Sending…", description: "Calling WhatsApp API" });
     const r = await sendViaProvider({ logId: id, phone: phoneVal, message: body });
     if (r.success) {
-      toast({ title: "Sent via WhatsApp API" });
+      toast({ title: "Sent via WhatsApp API", description: `HTTP ${r.statusCode ?? ""} • ${r.formattedPhone ?? ""}` });
       onSent?.();
       onOpenChange(false);
     } else {
-      toast({ title: "Send failed", description: r.error || "Provider error", variant: "destructive" });
+      toast({
+        title: "Send failed",
+        description: r.response || r.error || "Provider error",
+        variant: "destructive",
+      });
       onSent?.();
     }
   };
