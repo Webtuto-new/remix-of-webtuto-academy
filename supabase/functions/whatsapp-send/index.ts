@@ -1,4 +1,6 @@
 // HostGrap WhatsApp API V2 sender — server-side only.
+// Always responds with HTTP 200 + JSON { success, statusCode, response, formattedPhone, error? }
+// so the frontend can display the actual provider response (never "non-2xx").
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
@@ -7,35 +9,76 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
-function normalizePhone(phone: string): string {
-  if (!phone) return "";
-  const digits = phone.replace(/\D/g, "");
+const json = (body: unknown, status = 200) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+
+/** Normalize any SL/intl phone to +94XXXXXXXXX */
+function formatPhone(input: string): string {
+  if (!input) return "";
+  const digits = String(input).replace(/\D/g, "");
   if (!digits) return "";
-  if (digits.startsWith("0") && digits.length === 10) return "94" + digits.slice(1);
-  return digits;
+  let local = digits;
+  if (local.startsWith("0") && local.length === 10) local = "94" + local.slice(1);
+  if (!local.startsWith("94") && local.length === 9) local = "94" + local;
+  return "+" + local;
 }
 
-async function callHostgrap(phone: string, message: string) {
+async function callHostgrap(formattedPhone: string, message: string) {
   const email = Deno.env.get("HOSTGRAP_EMAIL");
   const apiKey = Deno.env.get("HOSTGRAP_API_KEY");
   const baseUrl = Deno.env.get("HOSTGRAP_BASE_URL") ?? "https://wa-api.hostgrap.com/api";
-  if (!email || !apiKey) throw new Error("HostGrap credentials not configured");
+  if (!email || !apiKey) {
+    return {
+      success: false,
+      statusCode: 0,
+      response: "HostGrap API email or key is missing",
+      formattedPhone,
+    };
+  }
 
-  const form = new URLSearchParams();
-  form.set("email", email);
-  form.set("api_key", apiKey);
-  form.set("phone", phone);
-  form.set("message", message);
+  const params = new URLSearchParams();
+  params.append("email", email);
+  params.append("api_key", apiKey);
+  params.append("phone", formattedPhone);
+  params.append("message", message);
 
-  const res = await fetch(`${baseUrl.replace(/\/$/, "")}/send-message.php`, {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: form.toString(),
-  });
-  const text = await res.text();
-  let parsed: unknown = text;
-  try { parsed = JSON.parse(text); } catch { /* keep text */ }
-  return { ok: res.ok, status: res.status, body: parsed };
+  try {
+    const res = await fetch(`${baseUrl.replace(/\/$/, "")}/send-message.php`, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: params.toString(),
+    });
+    const responseText = await res.text();
+    // Heuristic success — HostGrap returns plain text or JSON
+    let parsedSuccess = res.ok;
+    const lower = responseText.toLowerCase();
+    if (lower.includes("error") || lower.includes("invalid") || lower.includes("fail")) {
+      parsedSuccess = false;
+    }
+    try {
+      const j = JSON.parse(responseText);
+      if (j && typeof j === "object") {
+        if (j.status === "success" || j.success === true) parsedSuccess = true;
+        if (j.status === "error" || j.success === false) parsedSuccess = false;
+      }
+    } catch { /* plain text */ }
+    return {
+      success: res.ok && parsedSuccess,
+      statusCode: res.status,
+      response: responseText,
+      formattedPhone,
+    };
+  } catch (e) {
+    return {
+      success: false,
+      statusCode: 0,
+      response: `Network error: ${(e as Error).message}`,
+      formattedPhone,
+    };
+  }
 }
 
 Deno.serve(async (req) => {
@@ -44,9 +87,7 @@ Deno.serve(async (req) => {
   try {
     const authHeader = req.headers.get("Authorization");
     if (!authHeader?.startsWith("Bearer ")) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return json({ success: false, error: "Unauthorized", response: "Missing bearer token" });
     }
 
     const supabase = createClient(
@@ -57,105 +98,59 @@ Deno.serve(async (req) => {
     const token = authHeader.replace("Bearer ", "");
     const { data: claimsData, error: claimsErr } = await supabase.auth.getClaims(token);
     if (claimsErr || !claimsData?.claims) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return json({ success: false, error: "Unauthorized", response: "Invalid token" });
     }
     const userId = claimsData.claims.sub;
 
-    // Admin-only
     const { data: roleData } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", userId)
-      .eq("role", "admin")
-      .maybeSingle();
+      .from("user_roles").select("role")
+      .eq("user_id", userId).eq("role", "admin").maybeSingle();
     if (!roleData) {
-      return new Response(JSON.stringify({ error: "Forbidden — admin only" }), {
-        status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return json({ success: false, error: "Forbidden", response: "Admin only" });
     }
 
     const body = await req.json().catch(() => ({}));
     const action = String(body.action ?? "send");
-
-    // Test mode (does not require log update)
-    if (action === "test") {
-      const phone = normalizePhone(String(body.phone ?? ""));
-      const message = String(body.message ?? "").trim();
-      if (!phone || phone.length < 10) {
-        return new Response(JSON.stringify({ error: "Invalid phone" }), {
-          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      if (!message) {
-        return new Response(JSON.stringify({ error: "Message required" }), {
-          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      const r = await callHostgrap(phone, message);
-      return new Response(JSON.stringify(r), {
-        status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    // Standard send: requires logId (existing pending row) OR raw send (creates row via service role)
-    const service = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
-    );
-
-    const phoneRaw = String(body.phone ?? "");
+    const rawPhone = String(body.phone ?? "");
     const message = String(body.message ?? "").trim();
-    const logId: string | null = body.logId ?? null;
-    const phone = normalizePhone(phoneRaw);
+    const formattedPhone = formatPhone(rawPhone);
 
-    if (!phone || phone.length < 10) {
-      return new Response(JSON.stringify({ error: "Invalid phone number" }), {
-        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    if (!formattedPhone || formattedPhone.replace(/\D/g, "").length < 10) {
+      return json({ success: false, error: "Invalid phone", response: "Invalid phone number", formattedPhone });
     }
     if (!message) {
-      return new Response(JSON.stringify({ error: "Message body required" }), {
-        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return json({ success: false, error: "Message required", response: "Message body is empty", formattedPhone });
     }
 
-    let result;
-    let success = false;
-    let errMsg: string | null = null;
-    try {
-      result = await callHostgrap(phone, message);
-      // Heuristic: HostGrap returns JSON with status/success indicators
-      const b: any = result.body;
-      success = result.ok && (
-        b === "success" ||
-        b?.status === "success" ||
-        b?.status === true ||
-        b?.success === true ||
-        (typeof b === "string" && b.toLowerCase().includes("success"))
-      );
-      if (!success) errMsg = typeof b === "string" ? b : (b?.message || b?.error || "Provider returned non-success");
-    } catch (e) {
-      result = { ok: false, status: 0, body: String((e as Error).message) };
-      errMsg = (e as Error).message;
-    }
+    const result = await callHostgrap(formattedPhone, message);
 
+    // Persist to log if logId provided
+    const logId: string | null = body.logId ?? null;
     if (logId) {
+      const service = createClient(
+        Deno.env.get("SUPABASE_URL")!,
+        Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+      );
       await service.from("whatsapp_messages").update({
-        status: success ? "sent" : "failed",
-        sent_at: success ? new Date().toISOString() : null,
-        error: errMsg,
-        context: { provider: "hostgrap", api_response: result.body, http_status: result.status },
+        status: result.success ? "sent" : "failed",
+        sent_at: result.success ? new Date().toISOString() : null,
+        error: result.success ? null : String(result.response).slice(0, 1000),
+        context: {
+          provider: "hostgrap",
+          api_response: result.response,
+          http_status: result.statusCode,
+          formatted_phone: result.formattedPhone,
+          test: action === "test",
+        },
       }).eq("id", logId);
     }
 
-    return new Response(JSON.stringify({ success, result }), {
-      status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return json(result);
   } catch (e) {
-    return new Response(JSON.stringify({ error: (e as Error).message }), {
-      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    return json({
+      success: false,
+      error: (e as Error).message,
+      response: `Edge function error: ${(e as Error).message}`,
     });
   }
 });
