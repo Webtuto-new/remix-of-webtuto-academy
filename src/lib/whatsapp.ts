@@ -118,12 +118,17 @@ export async function sendViaProvider(args: {
   logId?: string | null;
   phone: string;
   message: string;
-}): Promise<{ success: boolean; result: unknown; error?: string }> {
+}): Promise<{ success: boolean; statusCode?: number; response?: string; formattedPhone?: string; error?: string }> {
   const { data, error } = await supabase.functions.invoke("whatsapp-send", {
     body: { action: "send", logId: args.logId ?? null, phone: args.phone, message: args.message },
   });
-  if (error) return { success: false, result: null, error: error.message };
-  return data as { success: boolean; result: unknown };
+  if (error) {
+    const ctx: any = (error as any).context;
+    let detail = error.message;
+    try { if (ctx && typeof ctx.text === "function") detail = await ctx.text(); } catch { /* ignore */ }
+    return { success: false, error: detail, response: detail };
+  }
+  return data as { success: boolean; statusCode: number; response: string; formattedPhone: string };
 }
 
 /** Send a test message via HostGrap (no log row required). */
@@ -131,7 +136,12 @@ export async function sendTestMessage(phone: string, message: string) {
   const { data, error } = await supabase.functions.invoke("whatsapp-send", {
     body: { action: "test", phone, message },
   });
-  if (error) throw new Error(error.message);
+  if (error) {
+    const ctx: any = (error as any).context;
+    let detail = error.message;
+    try { if (ctx && typeof ctx.text === "function") detail = await ctx.text(); } catch { /* ignore */ }
+    throw new Error(detail);
+  }
   return data;
 }
 

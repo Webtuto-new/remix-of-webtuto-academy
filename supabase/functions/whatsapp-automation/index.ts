@@ -12,10 +12,12 @@ const corsHeaders = {
 
 function normalizePhone(phone: string | null | undefined): string {
   if (!phone) return "";
-  const digits = phone.replace(/\D/g, "");
+  const digits = String(phone).replace(/\D/g, "");
   if (!digits) return "";
-  if (digits.startsWith("0") && digits.length === 10) return "94" + digits.slice(1);
-  return digits;
+  let local = digits;
+  if (local.startsWith("0") && local.length === 10) local = "94" + local.slice(1);
+  if (!local.startsWith("94") && local.length === 9) local = "94" + local;
+  return "+" + local;
 }
 
 function render(body: string, vars: Record<string, unknown>): string {
@@ -29,24 +31,35 @@ async function callHostgrap(phone: string, message: string) {
   const email = Deno.env.get("HOSTGRAP_EMAIL");
   const apiKey = Deno.env.get("HOSTGRAP_API_KEY");
   const baseUrl = Deno.env.get("HOSTGRAP_BASE_URL") ?? "https://wa-api.hostgrap.com/api";
-  if (!email || !apiKey) throw new Error("HostGrap credentials not configured");
-  const form = new URLSearchParams();
-  form.set("email", email); form.set("api_key", apiKey);
-  form.set("phone", phone); form.set("message", message);
-  const res = await fetch(`${baseUrl.replace(/\/$/, "")}/send-message.php`, {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: form.toString(),
-  });
-  const text = await res.text();
-  let parsed: unknown = text;
-  try { parsed = JSON.parse(text); } catch { /* keep text */ }
-  const b: any = parsed;
-  const success = res.ok && (
-    b === "success" || b?.status === "success" || b?.status === true ||
-    b?.success === true || (typeof b === "string" && b.toLowerCase().includes("success"))
-  );
-  return { success, http: res.status, body: parsed };
+  if (!email || !apiKey) {
+    return { success: false, http: 0, body: "HostGrap API email or key is missing" };
+  }
+  const params = new URLSearchParams();
+  params.append("email", email);
+  params.append("api_key", apiKey);
+  params.append("phone", phone);
+  params.append("message", message);
+  try {
+    const res = await fetch(`${baseUrl.replace(/\/$/, "")}/send-message.php`, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: params.toString(),
+    });
+    const text = await res.text();
+    let success = res.ok;
+    const lower = text.toLowerCase();
+    if (lower.includes("error") || lower.includes("invalid") || lower.includes("fail")) success = false;
+    try {
+      const j = JSON.parse(text);
+      if (j && typeof j === "object") {
+        if (j.status === "success" || j.success === true) success = true;
+        if (j.status === "error" || j.success === false) success = false;
+      }
+    } catch { /* plain text */ }
+    return { success: res.ok && success, http: res.status, body: text };
+  } catch (e) {
+    return { success: false, http: 0, body: `Network error: ${(e as Error).message}` };
+  }
 }
 
 interface SendArgs {
