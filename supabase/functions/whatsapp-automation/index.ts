@@ -360,15 +360,14 @@ Deno.serve(async (req) => {
   const isInternal = authHeader === `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`;
   let isAdmin = false;
   if (!isCron && !isInternal && authHeader.startsWith("Bearer ")) {
-    const token = authHeader.replace("Bearer ", "");
     const userClient = createClient(
       Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_ANON_KEY")!,
       { global: { headers: { Authorization: authHeader } } },
     );
-    const { data: claims } = await userClient.auth.getClaims(token);
-    if (claims?.claims?.sub) {
+    const { data: userData } = await userClient.auth.getUser();
+    if (userData?.user?.id) {
       const { data: r } = await svc.from("user_roles")
-        .select("role").eq("user_id", claims.claims.sub).eq("role", "admin").maybeSingle();
+        .select("role").eq("user_id", userData.user.id).eq("role", "admin").maybeSingle();
       isAdmin = !!r;
     }
   }
