@@ -93,7 +93,7 @@ const DashboardOverview = () => {
     <div className="space-y-6">
       {/* Greeting hero */}
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
-        className="relative overflow-hidden rounded-2xl glass-strong p-6 md:p-8 ring-glow">
+        className="relative overflow-hidden rounded-2xl glass-strong p-5 md:p-8 ring-glow">
         <div className="absolute -top-20 -right-20 w-72 h-72 rounded-full bg-primary/20 blur-3xl pointer-events-none" />
         <div className="absolute -bottom-20 -left-20 w-72 h-72 rounded-full bg-secondary/20 blur-3xl pointer-events-none" />
         <div className="relative flex flex-col md:flex-row md:items-end md:justify-between gap-4">
@@ -101,15 +101,15 @@ const DashboardOverview = () => {
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/15 text-primary text-xs font-semibold tracking-wide">
               <Sparkles className="w-3.5 h-3.5" /> Your learning dashboard
             </span>
-            <h1 className="font-display text-2xl md:text-4xl font-bold text-foreground mt-3 tracking-tight">
+            <h1 className="font-display text-xl sm:text-2xl md:text-4xl font-bold text-foreground mt-3 tracking-tight leading-tight">
               Welcome back, <span className="text-gradient">{profile?.full_name?.split(" ")[0] || "Student"}</span>
             </h1>
-            <p className="text-muted-foreground text-sm mt-1.5">Pick up where you left off or explore something new today.</p>
+            <p className="text-muted-foreground text-xs sm:text-sm mt-1.5">Pick up where you left off or explore something new today.</p>
           </div>
-          <div className="flex gap-2">
-            <Link to="/classes"><Button variant="premium" size="sm">Browse classes</Button></Link>
+          <div className="flex flex-wrap gap-2">
+            <Link to="/classes" className="flex-1 md:flex-none"><Button variant="premium" size="sm" className="w-full md:w-auto">Browse classes</Button></Link>
             {isAdmin && (
-              <Button onClick={handleSendTestEmail} disabled={sendingEmail} variant="glass" size="sm" className="gap-2">
+              <Button onClick={handleSendTestEmail} disabled={sendingEmail} variant="glass" size="sm" className="gap-2 flex-1 md:flex-none">
                 <Mail className="w-4 h-4" />
                 {sendingEmail ? "Sending..." : "Test email"}
               </Button>
@@ -119,18 +119,18 @@ const DashboardOverview = () => {
       </motion.div>
 
       {/* Stats */}
-      <motion.div variants={stagger} initial="hidden" whileInView="show" viewport={viewportOnce} className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <motion.div variants={stagger} initial="hidden" whileInView="show" viewport={viewportOnce} className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {stats.map((stat) => (
           <motion.div key={stat.label} variants={fadeUp}
-            className="group relative overflow-hidden rounded-2xl glass-strong p-5 transition-all hover:-translate-y-1 hover:ring-glow">
+            className="group relative overflow-hidden rounded-2xl glass-strong p-4 sm:p-5 transition-all hover:-translate-y-1 hover:ring-glow">
             <div className={`absolute inset-0 bg-gradient-to-br ${stat.tint} opacity-60 pointer-events-none`} />
-            <div className="relative flex items-center gap-3">
-              <div className={`w-11 h-11 rounded-xl bg-card/80 flex items-center justify-center ring-1 ring-border/60 ${stat.iconColor}`}>
-                <stat.icon className="w-5 h-5" />
+            <div className="relative flex items-center gap-2.5 sm:gap-3">
+              <div className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-card/80 flex items-center justify-center ring-1 ring-border/60 shrink-0 ${stat.iconColor}`}>
+                <stat.icon className="w-4 h-4 sm:w-5 sm:h-5" />
               </div>
-              <div>
-                <p className="text-2xl font-bold text-foreground tracking-tight">{stat.value}</p>
-                <p className="text-xs text-muted-foreground">{stat.label}</p>
+              <div className="min-w-0">
+                <p className="text-xl sm:text-2xl font-bold text-foreground tracking-tight leading-none">{stat.value}</p>
+                <p className="text-[11px] sm:text-xs text-muted-foreground mt-1 truncate">{stat.label}</p>
               </div>
             </div>
           </motion.div>
@@ -206,21 +206,21 @@ const DashboardOverview = () => {
 
       {/* Achievements strip */}
       <motion.div initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={viewportOnce} transition={{ duration: 0.45 }}
-        className="grid grid-cols-3 gap-3">
+        className="grid grid-cols-3 gap-2.5 sm:gap-3">
         {[
           { icon: Award, label: "Certificates", value: achievements.certificates, color: "text-amber-400", tint: "from-amber-500/20 to-amber-500/0" },
           { icon: Trophy, label: "Quizzes Taken", value: achievements.quizzes, color: "text-emerald-400", tint: "from-emerald-500/20 to-emerald-500/0" },
           { icon: Sparkles, label: "Best Score", value: `${achievements.bestScore}%`, color: "text-primary", tint: "from-primary/20 to-primary/0" },
         ].map((a) => (
-          <div key={a.label} className="relative overflow-hidden rounded-2xl glass-strong p-4 ring-1 ring-border/60">
+          <div key={a.label} className="relative overflow-hidden rounded-2xl glass-strong p-3 sm:p-4 ring-1 ring-border/60">
             <div className={`absolute inset-0 bg-gradient-to-br ${a.tint} pointer-events-none`} />
-            <div className="relative flex items-center gap-3">
-              <div className={`w-10 h-10 rounded-xl bg-card/80 flex items-center justify-center ring-1 ring-border/60 ${a.color}`}>
-                <a.icon className="w-5 h-5" />
+            <div className="relative flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
+              <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-card/80 flex items-center justify-center ring-1 ring-border/60 shrink-0 ${a.color}`}>
+                <a.icon className="w-4 h-4 sm:w-5 sm:h-5" />
               </div>
-              <div>
-                <p className="text-lg font-bold text-foreground tracking-tight leading-none">{a.value}</p>
-                <p className="text-[10px] uppercase tracking-wider text-muted-foreground mt-1">{a.label}</p>
+              <div className="min-w-0">
+                <p className="text-base sm:text-lg font-bold text-foreground tracking-tight leading-none">{a.value}</p>
+                <p className="text-[9px] sm:text-[10px] uppercase tracking-wider text-muted-foreground mt-1 leading-tight">{a.label}</p>
               </div>
             </div>
           </div>
@@ -228,11 +228,11 @@ const DashboardOverview = () => {
       </motion.div>
 
       {/* Quick panels */}
-      <div className="grid md:grid-cols-2 gap-5">
+      <div className="grid md:grid-cols-2 gap-4 sm:gap-5">
         <motion.section initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={viewportOnce} transition={{ duration: 0.45 }}
-          className="glass-strong rounded-2xl p-5 space-y-3">
+          className="glass-strong rounded-2xl p-4 sm:p-5 space-y-3">
           <div className="flex items-center justify-between">
-            <h2 className="font-display text-lg font-semibold text-foreground">My Classes</h2>
+            <h2 className="font-display text-base sm:text-lg font-semibold text-foreground">My Classes</h2>
             <Link to="/dashboard/classes" className="text-xs text-primary font-semibold hover:gap-2 transition-all inline-flex items-center gap-1">View all <ExternalLink className="w-3 h-3" /></Link>
           </div>
           {enrollments.filter(e => e.class_id).length === 0 ? (
@@ -260,9 +260,9 @@ const DashboardOverview = () => {
         </motion.section>
 
         <motion.section initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={viewportOnce} transition={{ duration: 0.45, delay: 0.05 }}
-          className="glass-strong rounded-2xl p-5 space-y-3">
+          className="glass-strong rounded-2xl p-4 sm:p-5 space-y-3">
           <div className="flex items-center justify-between">
-            <h2 className="font-display text-lg font-semibold text-foreground">Recent Payments</h2>
+            <h2 className="font-display text-base sm:text-lg font-semibold text-foreground">Recent Payments</h2>
             <Link to="/dashboard/payments" className="text-xs text-primary font-semibold hover:gap-2 transition-all inline-flex items-center gap-1">View all <ExternalLink className="w-3 h-3" /></Link>
           </div>
           {payments.length === 0 ? (
@@ -292,8 +292,8 @@ const DashboardOverview = () => {
 
       {/* Profile card */}
       <motion.section initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={viewportOnce} transition={{ duration: 0.45 }}
-        className="glass-strong rounded-2xl p-5 space-y-3">
-        <h2 className="font-display text-lg font-semibold text-foreground">Profile Information</h2>
+        className="glass-strong rounded-2xl p-4 sm:p-5 space-y-3">
+        <h2 className="font-display text-base sm:text-lg font-semibold text-foreground">Profile Information</h2>
         <div className="grid sm:grid-cols-2 gap-3 text-sm">
           {[
             ["Admission No", profile?.admission_number],
