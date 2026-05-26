@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Pencil, Trash2, FileText, Upload, ArrowLeft } from "lucide-react";
+import { Plus, Pencil, Trash2, FileText, Upload, ArrowLeft, Video } from "lucide-react";
+import AdminPageHeader from "@/components/premium/AdminPageHeader";
 import FileOrLinkInput from "@/components/FileOrLinkInput";
 
 const AdminSessions = () => {
@@ -245,12 +246,12 @@ const AdminSessions = () => {
                   uploadHint="Drag & drop notes file"
                 />
                 <div className="space-y-2"><Label>Recording URL (optional)</Label><Input value={form.recording_url} onChange={(e) => setForm(f => ({ ...f, recording_url: e.target.value }))} /></div>
-                <Button onClick={handleSave} className="w-full">{editing ? "Update" : "Create"} Session</Button>
+                <Button onClick={handleSave} variant="premium" className="w-full">{editing ? "Update" : "Create"} Session</Button>
               </div>
             </DialogContent>
           </Dialog>
-        )}
-      </div>
+        ) : null}
+      />
 
       <div className="space-y-2">
         <Label>Select Class</Label>
