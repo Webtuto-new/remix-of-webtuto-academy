@@ -2084,14 +2084,33 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      finalize_quiz_attempt: { Args: { _attempt_id: string }; Returns: Json }
       generate_admission_number: { Args: never; Returns: string }
       generate_quiz_join_code: { Args: never; Returns: string }
+      has_active_enrollment_for_class: {
+        Args: { _class_id: string; _user_id: string }
+        Returns: boolean
+      }
+      has_active_enrollment_for_recording: {
+        Args: { _recording_id: string; _user_id: string }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
         Returns: boolean
+      }
+      submit_quiz_answer: {
+        Args: {
+          _answer_text: string
+          _attempt_id: string
+          _question_id: string
+          _selected_option_id: string
+          _time_taken_seconds?: number
+        }
+        Returns: Json
       }
     }
     Enums: {
