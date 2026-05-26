@@ -203,6 +203,58 @@ const RowCard = ({ c }: { c: ClassRow }) => {
 };
 
 const Index = () => {
+  return <IndexInner />;
+};
+
+const TutorRow = ({ title, tutors }: { title: string; tutors: any[] }) => {
+  const scroller = useRef<HTMLDivElement>(null);
+  const scroll = (dir: 1 | -1) => {
+    const el = scroller.current;
+    if (!el) return;
+    el.scrollBy({ left: dir * el.clientWidth * 0.85, behavior: "smooth" });
+  };
+  return (
+    <section className="relative group/row py-6">
+      <div className="container mx-auto px-4 sm:px-8 mb-3">
+        <h2 className="font-display text-xl sm:text-2xl font-bold text-foreground">{title}</h2>
+      </div>
+      <div className="relative">
+        <button onClick={() => scroll(-1)} className="absolute left-0 top-0 bottom-0 z-20 w-12 sm:w-16 flex items-center justify-center bg-gradient-to-r from-background/90 to-transparent opacity-0 group-hover/row:opacity-100 transition-opacity" aria-label="Scroll left">
+          <ChevronLeft className="w-8 h-8 text-foreground" />
+        </button>
+        <div ref={scroller} className="flex gap-4 overflow-x-auto scroll-smooth px-4 sm:px-8 pb-4 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+          {tutors.map((t) => (
+            <Link key={t.id} to={`/classes?teacher=${t.id}`} className="snap-start shrink-0 w-[180px] sm:w-[200px] group/tutor">
+              <motion.div whileHover={{ y: -6 }} transition={{ type: "spring", stiffness: 300, damping: 22 }} className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-card to-muted/40 ring-1 ring-foreground/10 hover:ring-2 hover:ring-accent shadow-lg p-5 text-center h-full">
+                <div className="relative w-20 h-20 mx-auto mb-3 rounded-full overflow-hidden ring-2 ring-accent/40 ring-offset-2 ring-offset-background bg-gradient-to-br from-primary/30 to-secondary/30">
+                  {t.avatar_url ? (
+                    <img src={t.avatar_url} alt={t.name} className="w-full h-full object-cover" loading="lazy" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center font-display font-bold text-2xl text-foreground/80">
+                      {t.name?.charAt(0) || "T"}
+                    </div>
+                  )}
+                </div>
+                <h3 className="font-display font-bold text-sm text-foreground line-clamp-1">{t.name}</h3>
+                {t.qualifications && (
+                  <p className="text-[11px] text-foreground/60 line-clamp-2 mt-1">{t.qualifications}</p>
+                )}
+                <div className="mt-3 inline-flex items-center gap-1 text-[11px] text-accent font-semibold opacity-0 group-hover/tutor:opacity-100 transition">
+                  View Classes <ChevronRight className="w-3 h-3" />
+                </div>
+              </motion.div>
+            </Link>
+          ))}
+        </div>
+        <button onClick={() => scroll(1)} className="absolute right-0 top-0 bottom-0 z-20 w-12 sm:w-16 flex items-center justify-center bg-gradient-to-l from-background/90 to-transparent opacity-0 group-hover/row:opacity-100 transition-opacity" aria-label="Scroll right">
+          <ChevronRight className="w-8 h-8 text-foreground" />
+        </button>
+      </div>
+    </section>
+  );
+};
+
+const IndexInner = () => {
   const [classes, setClasses] = useState<ClassRow[]>([]);
   const [curriculums, setCurriculums] = useState<any[]>([]);
   const [teachers, setTeachers] = useState<any[]>([]);
