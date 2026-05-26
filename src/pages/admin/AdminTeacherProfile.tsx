@@ -78,7 +78,7 @@ const AdminTeacherProfile = () => {
       </div>
 
       {/* Teacher Info */}
-      <Card>
+      <Card className="glass-strong border-white/10">
         <CardContent className="p-6">
           <div className="flex items-start gap-4">
             {teacher.avatar_url ? (
@@ -104,7 +104,7 @@ const AdminTeacherProfile = () => {
           { label: "Sessions", value: stats.totalSessions, icon: BookOpen, color: "text-accent-foreground" },
           { label: "Earnings (LKR)", value: stats.totalEarnings.toLocaleString(), icon: DollarSign, color: "text-primary" },
         ].map(s => (
-          <Card key={s.label}>
+          <Card className="glass-strong border-white/10 hover:ring-glow transition-all" key={s.label}>
             <CardContent className="p-4 text-center">
               <s.icon className={`w-5 h-5 mx-auto mb-1 ${s.color}`} />
               <p className="text-2xl font-bold text-gradient">{s.value}</p>
@@ -115,7 +115,7 @@ const AdminTeacherProfile = () => {
       </div>
 
       {/* Classes */}
-      <Card>
+      <Card className="glass-strong border-white/10">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-lg">Classes</CardTitle>
         </CardHeader>

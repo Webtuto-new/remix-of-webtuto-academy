@@ -135,7 +135,7 @@ const AdminSessions = () => {
 
         {/* Quick notes URL */}
         {selectedSession.notes_url && (
-          <Card>
+          <Card className="glass-strong border-white/10">
             <CardContent className="p-4">
               <h3 className="font-semibold text-sm text-foreground mb-2">Session Notes</h3>
               <a href={selectedSession.notes_url} target="_blank" rel="noreferrer" className="text-sm text-primary hover:underline flex items-center gap-2">
@@ -183,7 +183,7 @@ const AdminSessions = () => {
           </Dialog>
         </div>
 
-        <Card>
+        <Card className="glass-strong border-white/10">
           <CardContent className="p-0">
             {resources.length === 0 ? (
               <p className="p-8 text-center text-sm text-muted-foreground">No resources yet. Add notes, PDFs, or other materials.</p>
@@ -257,7 +257,7 @@ const AdminSessions = () => {
       </div>
 
       {selectedClass && (
-        <Card>
+        <Card className="glass-strong border-white/10">
           <CardContent className="p-0">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">

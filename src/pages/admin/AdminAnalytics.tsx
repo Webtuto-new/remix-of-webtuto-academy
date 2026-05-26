@@ -54,22 +54,22 @@ const AdminAnalytics = () => {
       <h1 className="font-display text-2xl font-bold text-gradient">Analytics</h1>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card><CardContent className="p-4 text-center">
+        <Card className="glass-strong border-white/10"><CardContent className="p-4 text-center">
           <CreditCard className="w-8 h-8 mx-auto mb-2 text-secondary" />
           <p className="text-2xl font-bold text-gradient">LKR {data.totalRevenue.toLocaleString()}</p>
           <p className="text-xs text-muted-foreground">Total Revenue</p>
         </CardContent></Card>
-        <Card><CardContent className="p-4 text-center">
+        <Card className="glass-strong border-white/10"><CardContent className="p-4 text-center">
           <TrendingUp className="w-8 h-8 mx-auto mb-2 text-accent" />
           <p className="text-2xl font-bold text-gradient">LKR {data.monthlyRevenue.toLocaleString()}</p>
           <p className="text-xs text-muted-foreground">This Month</p>
         </CardContent></Card>
-        <Card><CardContent className="p-4 text-center">
+        <Card className="glass-strong border-white/10"><CardContent className="p-4 text-center">
           <Users className="w-8 h-8 mx-auto mb-2 text-primary" />
           <p className="text-2xl font-bold text-gradient">{data.totalStudents}</p>
           <p className="text-xs text-muted-foreground">Total Students</p>
         </CardContent></Card>
-        <Card><CardContent className="p-4 text-center">
+        <Card className="glass-strong border-white/10"><CardContent className="p-4 text-center">
           <BookOpen className="w-8 h-8 mx-auto mb-2 text-secondary" />
           <p className="text-2xl font-bold text-gradient">{data.totalEnrollments}</p>
           <p className="text-xs text-muted-foreground">Total Enrollments</p>
@@ -78,7 +78,7 @@ const AdminAnalytics = () => {
 
       {/* Student Activity Stats */}
       <div className="grid grid-cols-2 gap-4">
-        <Card><CardContent className="p-4 flex items-center gap-4">
+        <Card className="glass-strong border-white/10"><CardContent className="p-4 flex items-center gap-4">
           <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
             <Video className="w-6 h-6 text-primary" />
           </div>
@@ -87,7 +87,7 @@ const AdminAnalytics = () => {
             <p className="text-xs text-muted-foreground">Recording Views</p>
           </div>
         </CardContent></Card>
-        <Card><CardContent className="p-4 flex items-center gap-4">
+        <Card className="glass-strong border-white/10"><CardContent className="p-4 flex items-center gap-4">
           <div className="w-12 h-12 rounded-lg bg-accent/10 flex items-center justify-center">
             <FileText className="w-6 h-6 text-accent" />
           </div>
@@ -98,7 +98,7 @@ const AdminAnalytics = () => {
         </CardContent></Card>
       </div>
 
-      <Card>
+      <Card className="glass-strong border-white/10">
         <CardHeader><CardTitle className="text-lg">Top Classes by Enrollments</CardTitle></CardHeader>
         <CardContent>
           {data.topClasses.length === 0 ? (
@@ -125,7 +125,7 @@ const AdminAnalytics = () => {
       </Card>
 
       {/* Recent Student Activity Log */}
-      <Card>
+      <Card className="glass-strong border-white/10">
         <CardHeader><CardTitle className="text-lg flex items-center gap-2"><Eye className="w-5 h-5" /> Recent Student Activity</CardTitle></CardHeader>
         <CardContent className="p-0">
           {activity.length === 0 ? (

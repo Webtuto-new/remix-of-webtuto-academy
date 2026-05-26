@@ -188,7 +188,7 @@ const AdminBankDetails = () => {
       </div>
 
       {bankDetails.length === 0 ? (
-        <Card>
+        <Card className="glass-strong border-white/10">
           <CardContent className="p-12 text-center">
             <Building2 className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
             <p className="text-muted-foreground mb-4">

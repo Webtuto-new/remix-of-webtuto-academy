@@ -62,7 +62,7 @@ const AdminAnnouncements = () => {
       </div>
       <div className="space-y-3">
         {items.map(a => (
-          <Card key={a.id}>
+          <Card className="glass-strong border-white/10 hover:ring-glow transition-all" key={a.id}>
             <CardContent className="p-4 flex items-start justify-between gap-4">
               <div className="flex-1">
                 <p className="font-medium text-foreground">{a.title}</p>
@@ -77,7 +77,7 @@ const AdminAnnouncements = () => {
             </CardContent>
           </Card>
         ))}
-        {items.length === 0 && <Card><CardContent className="py-12 text-center text-muted-foreground">No announcements.</CardContent></Card>}
+        {items.length === 0 && <Card className="glass-strong border-white/10"><CardContent className="py-12 text-center text-muted-foreground">No announcements.</CardContent></Card>}
       </div>
     </div>
   );

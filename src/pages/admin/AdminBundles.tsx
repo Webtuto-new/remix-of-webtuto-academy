@@ -124,7 +124,7 @@ const AdminBundles = () => {
         </Dialog>
       </div>
 
-      <Card>
+      <Card className="glass-strong border-white/10">
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">

@@ -95,7 +95,7 @@ const TemplatesTab = () => {
   const insertVar = (v: string) => setForm((f) => ({ ...f, body: f.body + ` {{${v}}}` }));
 
   return (
-    <Card>
+    <Card className="glass-strong border-white/10">
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>Message Templates</CardTitle>
         <Button onClick={openNew}><Plus className="w-4 h-4 mr-2" />New Template</Button>
@@ -252,7 +252,7 @@ const BulkTab = () => {
 
   return (
     <div className="space-y-4">
-      <Card>
+      <Card className="glass-strong border-white/10">
         <CardHeader><CardTitle>Filters</CardTitle></CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-4 gap-3">
           <div><Label>Search</Label><Input placeholder="Name, email, phone" value={search} onChange={(e) => setSearch(e.target.value)} /></div>
@@ -291,7 +291,7 @@ const BulkTab = () => {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="glass-strong border-white/10">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Recipients ({filtered.length}) — selected {selected.size}</CardTitle>
           <Button variant="outline" size="sm" onClick={toggleAll}>{selected.size === filtered.length ? "Clear" : "Select all"}</Button>
@@ -319,7 +319,7 @@ const BulkTab = () => {
       </Card>
 
       {queue.length > 0 && tmpl && (
-        <Card>
+        <Card className="glass-strong border-white/10">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Queue ({queue.length})</CardTitle>
             <BulkSendButton queue={queue} tmpl={tmpl} />
@@ -390,7 +390,7 @@ const HistoryTab = () => {
   };
 
   return (
-    <Card>
+    <Card className="glass-strong border-white/10">
       <CardHeader>
         <CardTitle>Message History</CardTitle>
         <div className="flex gap-2 mt-2">
@@ -460,7 +460,7 @@ const SettingsTab = () => {
   const setType = (k: string, v: boolean) => setS({ ...s, enabled_types: { ...s.enabled_types, [k]: v } });
 
   return (
-    <Card>
+    <Card className="glass-strong border-white/10">
       <CardHeader><CardTitle>WhatsApp Settings</CardTitle></CardHeader>
       <CardContent className="space-y-4 max-w-2xl">
         <div className="grid grid-cols-2 gap-3">
@@ -551,7 +551,7 @@ const ApiSettingsTab = () => {
   };
 
   return (
-    <Card>
+    <Card className="glass-strong border-white/10">
       <CardHeader><CardTitle>WhatsApp API Settings</CardTitle></CardHeader>
       <CardContent className="space-y-4 max-w-2xl">
         <div className="grid grid-cols-2 gap-3">

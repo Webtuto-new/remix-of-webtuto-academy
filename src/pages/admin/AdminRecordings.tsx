@@ -292,7 +292,7 @@ const AdminRecordings = () => {
           </Dialog>
         </div>
 
-        <Card>
+        <Card className="glass-strong border-white/10">
           <CardContent className="p-0">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
@@ -372,7 +372,7 @@ const AdminRecordings = () => {
           </Dialog>
         </div>
 
-        <Card>
+        <Card className="glass-strong border-white/10">
           <CardContent className="p-0">
             {notes.length === 0 ? (
               <p className="p-8 text-center text-sm text-muted-foreground">No notes yet. Add PDFs, documents, or other materials for students.</p>
