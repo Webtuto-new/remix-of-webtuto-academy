@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   LayoutDashboard, BookOpen, Users, GraduationCap, Play, CreditCard,
-  FileText, BarChart3, Tag, Bell, Settings, LogOut, Menu, Sun, Moon, Megaphone, Award, DollarSign, Package, Building2, Shield, MessageSquare, Brain
+  FileText, BarChart3, Tag, Bell, Settings, LogOut, Menu, Sun, Moon, Megaphone, Award, DollarSign, Package, Building2, Shield, MessageSquare, Brain, Quote
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import logo from "@/assets/logo.png";
@@ -31,6 +31,7 @@ const adminMenu: { label: string; path: string; icon: any; tip?: string }[] = [
   { label: "Certificates", path: "/admin/certificates", icon: Award, tip: "Issue PDF certificates" },
   { label: "Coupons", path: "/admin/coupons", icon: Tag, tip: "Discount codes" },
   { label: "Announcements", path: "/admin/announcements", icon: Megaphone, tip: "Site-wide banners" },
+  { label: "Testimonials", path: "/admin/testimonials", icon: Quote, tip: "Homepage student quotes" },
   { label: "Analytics", path: "/admin/analytics", icon: BarChart3, tip: "Revenue & engagement" },
   { label: "Admin Management", path: "/admin/admins", icon: Shield, tip: "Grant admin roles" },
 ];

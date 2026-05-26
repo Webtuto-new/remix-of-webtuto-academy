@@ -1704,6 +1704,45 @@ export type Database = {
         }
         Relationships: []
       }
+      testimonials: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          id: string
+          is_active: boolean
+          quote: string
+          rating: number
+          sort_order: number
+          student_name: string
+          student_role: string | null
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          quote: string
+          rating?: number
+          sort_order?: number
+          student_name: string
+          student_role?: string | null
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          quote?: string
+          rating?: number
+          sort_order?: number
+          student_name?: string
+          student_role?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       tutor_applications: {
         Row: {
           address: string | null
