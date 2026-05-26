@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, BookOpen, Users, DollarSign, Pencil, Trash2, Eye, Plus } from "lucide-react";
+import { ArrowLeft, BookOpen, Users, DollarSign, Trash2, Eye, GraduationCap, Sparkles } from "lucide-react";
+import { SkeletonStat } from "@/components/premium/SkeletonCard";
+import { fadeUp, stagger, viewportOnce } from "@/lib/motion";
 
 const AdminTeacherProfile = () => {
   const { id } = useParams<{ id: string }>();
@@ -66,74 +69,109 @@ const AdminTeacherProfile = () => {
     else { toast({ title: cls.is_active ? "Class hidden" : "Class visible" }); fetchAll(); }
   };
 
-  if (loading) return <div className="flex items-center justify-center py-20"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div>;
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="h-32 rounded-2xl glass-strong border border-white/10 animate-pulse" />
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {Array.from({ length: 4 }).map((_, i) => <SkeletonStat key={i} />)}
+        </div>
+        <div className="h-64 rounded-2xl glass-strong border border-white/10 animate-pulse" />
+      </div>
+    );
+  }
   if (!teacher) return <div className="text-center py-20 text-muted-foreground">Teacher not found.</div>;
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <Button variant="ghost" size="sm" onClick={() => navigate("/admin/teachers")}><ArrowLeft className="w-4 h-4 mr-1" /> Back</Button>
-        <h1 className="font-display text-2xl font-bold text-gradient">{teacher.name}</h1>
-        {teacher.user_id && <Badge variant="outline" className="text-xs">Has Login</Badge>}
-      </div>
+      <Button variant="ghost" size="sm" onClick={() => navigate("/admin/teachers")} className="hover:bg-card/60">
+        <ArrowLeft className="w-4 h-4 mr-1" /> Back to teachers
+      </Button>
 
-      {/* Teacher Info */}
-      <Card className="glass-strong border-white/10">
-        <CardContent className="p-6">
-          <div className="flex items-start gap-4">
-            {teacher.avatar_url ? (
-              <img src={teacher.avatar_url} alt={teacher.name} className="w-16 h-16 rounded-full object-cover" />
-            ) : (
-              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xl">{teacher.name.charAt(0)}</div>
-            )}
-            <div className="flex-1 space-y-1">
-              <p className="font-semibold text-foreground text-lg">{teacher.name}</p>
-              {teacher.qualifications && <p className="text-sm text-muted-foreground">{teacher.qualifications}</p>}
-              {teacher.bio && <p className="text-sm text-muted-foreground mt-2">{teacher.bio}</p>}
-              <Badge variant={teacher.is_active ? "default" : "secondary"} className="mt-2">{teacher.is_active ? "Active" : "Inactive"}</Badge>
+      {/* Hero teacher card */}
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="relative overflow-hidden rounded-2xl glass-strong border border-white/10 p-6 md:p-8 ring-glow"
+      >
+        <div className="absolute -top-24 -right-24 w-72 h-72 rounded-full bg-primary/15 blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-24 -left-24 w-72 h-72 rounded-full bg-secondary/10 blur-3xl pointer-events-none" />
+        <div className="relative flex flex-col sm:flex-row items-start gap-5">
+          {teacher.avatar_url ? (
+            <img src={teacher.avatar_url} alt={teacher.name}
+              className="w-20 h-20 rounded-2xl object-cover ring-2 ring-primary/30 shadow-xl" />
+          ) : (
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/30 to-secondary/30 flex items-center justify-center text-foreground font-bold text-2xl ring-2 ring-primary/30">
+              {teacher.name.charAt(0)}
+            </div>
+          )}
+          <div className="flex-1 min-w-0">
+            <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-primary/90">
+              <Sparkles className="w-3 h-3" /> Teacher profile
+            </span>
+            <h1 className="font-display text-2xl md:text-3xl font-bold text-foreground mt-1.5 tracking-tight">{teacher.name}</h1>
+            {teacher.qualifications && <p className="text-sm text-muted-foreground mt-1">{teacher.qualifications}</p>}
+            {teacher.bio && <p className="text-sm text-muted-foreground/90 mt-2 max-w-2xl">{teacher.bio}</p>}
+            <div className="flex flex-wrap items-center gap-2 mt-3">
+              <Badge variant={teacher.is_active ? "default" : "secondary"} className="text-xs">
+                {teacher.is_active ? "Active" : "Inactive"}
+              </Badge>
+              {teacher.user_id && (
+                <Badge variant="outline" className="text-xs border-emerald-500/40 text-emerald-400 bg-emerald-500/10">
+                  Has Login
+                </Badge>
+              )}
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </motion.div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <motion.div variants={stagger} initial="hidden" whileInView="show" viewport={viewportOnce}
+        className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: "Classes", value: stats.totalClasses, icon: BookOpen, color: "text-primary" },
-          { label: "Students", value: stats.totalStudents, icon: Users, color: "text-secondary" },
-          { label: "Sessions", value: stats.totalSessions, icon: BookOpen, color: "text-accent-foreground" },
-          { label: "Earnings (LKR)", value: stats.totalEarnings.toLocaleString(), icon: DollarSign, color: "text-primary" },
-        ].map(s => (
-          <Card className="glass-strong border-white/10 hover:ring-glow transition-all" key={s.label}>
-            <CardContent className="p-4 text-center">
-              <s.icon className={`w-5 h-5 mx-auto mb-1 ${s.color}`} />
-              <p className="text-2xl font-bold text-gradient">{s.value}</p>
-              <p className="text-xs text-muted-foreground">{s.label}</p>
-            </CardContent>
-          </Card>
+          { label: "Classes", value: stats.totalClasses, icon: BookOpen, tint: "from-primary/25 to-primary/5", color: "text-primary" },
+          { label: "Students", value: stats.totalStudents, icon: Users, tint: "from-secondary/25 to-secondary/5", color: "text-secondary" },
+          { label: "Sessions", value: stats.totalSessions, icon: GraduationCap, tint: "from-accent/25 to-accent/5", color: "text-accent" },
+          { label: "Earnings (LKR)", value: stats.totalEarnings.toLocaleString(), icon: DollarSign, tint: "from-emerald-500/25 to-emerald-500/5", color: "text-emerald-400" },
+        ].map((s) => (
+          <motion.div key={s.label} variants={fadeUp}
+            className="group relative overflow-hidden rounded-2xl glass-strong border border-white/10 p-5 transition-all hover:-translate-y-1 hover:ring-glow">
+            <div className={`absolute inset-0 bg-gradient-to-br ${s.tint} opacity-60 pointer-events-none`} />
+            <div className="relative">
+              <div className={`w-11 h-11 rounded-xl bg-card/80 flex items-center justify-center ring-1 ring-border/60 ${s.color} mb-3`}>
+                <s.icon className="w-5 h-5" />
+              </div>
+              <p className="text-2xl font-bold text-gradient tracking-tight">{s.value}</p>
+              <p className="text-xs text-muted-foreground mt-0.5">{s.label}</p>
+            </div>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
 
       {/* Classes */}
-      <Card className="glass-strong border-white/10">
+      <Card className="glass-strong border border-white/10 overflow-hidden">
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-lg">Classes</CardTitle>
+          <CardTitle className="text-lg font-display flex items-center gap-2">
+            <BookOpen className="w-5 h-5 text-primary" /> Classes ({classes.length})
+          </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead><tr className="border-b border-border">
-                <th className="text-left p-4 font-medium text-muted-foreground">Title</th>
-                <th className="text-left p-4 font-medium text-muted-foreground hidden md:table-cell">Curriculum</th>
-                <th className="text-left p-4 font-medium text-muted-foreground hidden md:table-cell">Grade</th>
-                <th className="text-left p-4 font-medium text-muted-foreground hidden md:table-cell">Subject</th>
-                <th className="text-left p-4 font-medium text-muted-foreground">Price</th>
-                <th className="text-left p-4 font-medium text-muted-foreground">Status</th>
-                <th className="text-left p-4 font-medium text-muted-foreground">Actions</th>
+              <thead><tr className="border-b border-white/10 bg-white/[0.02]">
+                <th className="text-left p-4 font-medium text-muted-foreground text-xs uppercase tracking-wider">Title</th>
+                <th className="text-left p-4 font-medium text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">Curriculum</th>
+                <th className="text-left p-4 font-medium text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">Grade</th>
+                <th className="text-left p-4 font-medium text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">Subject</th>
+                <th className="text-left p-4 font-medium text-muted-foreground text-xs uppercase tracking-wider">Price</th>
+                <th className="text-left p-4 font-medium text-muted-foreground text-xs uppercase tracking-wider">Status</th>
+                <th className="text-left p-4 font-medium text-muted-foreground text-xs uppercase tracking-wider">Actions</th>
               </tr></thead>
               <tbody>
                 {classes.map((c) => (
-                  <tr key={c.id} className="border-b border-border last:border-0">
+                  <tr key={c.id} className="border-b border-white/5 last:border-0 hover:bg-white/[0.04] transition-colors">
                     <td className="p-4 font-medium text-foreground">{c.title}</td>
                     <td className="p-4 text-muted-foreground hidden md:table-cell">{c.curriculums?.name || "—"}</td>
                     <td className="p-4 text-muted-foreground hidden md:table-cell">{c.grades?.name || "—"}</td>
@@ -146,8 +184,8 @@ const AdminTeacherProfile = () => {
                     </td>
                     <td className="p-4">
                       <div className="flex gap-1">
-                        <Button variant="ghost" size="sm" asChild><Link to={`/class/${c.id}`}><Eye className="w-4 h-4" /></Link></Button>
-                        <Button variant="ghost" size="sm" className="text-destructive" onClick={() => handleDeleteClass(c.id)}><Trash2 className="w-4 h-4" /></Button>
+                        <Button variant="ghost" size="sm" asChild className="hover:bg-primary/10 hover:text-primary"><Link to={`/class/${c.id}`}><Eye className="w-4 h-4" /></Link></Button>
+                        <Button variant="ghost" size="sm" className="text-destructive hover:bg-destructive/10" onClick={() => handleDeleteClass(c.id)}><Trash2 className="w-4 h-4" /></Button>
                       </div>
                     </td>
                   </tr>

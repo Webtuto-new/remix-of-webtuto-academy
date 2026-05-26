@@ -1,13 +1,21 @@
-import { Card, CardContent } from "@/components/ui/card";
+import { Sparkles, Wrench } from "lucide-react";
+import AdminPageHeader from "@/components/premium/AdminPageHeader";
+import EmptyState from "@/components/premium/EmptyState";
 
 const AdminPlaceholder = ({ title }: { title: string }) => (
   <div className="space-y-6">
-    <h1 className="font-display text-2xl font-bold text-gradient">{title}</h1>
-    <Card className="glass-strong border-white/10">
-      <CardContent className="py-12 text-center text-muted-foreground">
-        <p>Admin feature coming soon.</p>
-      </CardContent>
-    </Card>
+    <AdminPageHeader
+      icon={Sparkles}
+      eyebrow="In progress"
+      title={title}
+      description="This control surface is being crafted — check back shortly."
+      accent="primary"
+    />
+    <EmptyState
+      icon={Wrench}
+      title="Admin feature coming soon"
+      description="We're polishing this module. It will appear here once ready."
+    />
   </div>
 );
 
