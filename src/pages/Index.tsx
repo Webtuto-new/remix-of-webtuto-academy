@@ -7,6 +7,8 @@ import { Play, Info, ChevronLeft, ChevronRight, Radio, GraduationCap, Clock } fr
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import heroBg from "@/assets/hero-bg.jpg";
+import LiveStats from "@/components/home/LiveStats";
+import TestimonialsCarousel from "@/components/home/TestimonialsCarousel";
 
 type ClassRow = any;
 
@@ -448,6 +450,7 @@ const IndexInner = () => {
         <div className="relative">
         {liveNow.length > 0 && <Row title="🔴 Live Now" items={liveNow} />}
         <Row title="New Releases" items={newReleases} />
+        <LiveStats />
         {grades.length > 0 && <GradeRail title="Browse by Grade" grades={grades} />}
         {teachers.length > 0 && <TutorRow title="Meet the Tutors" tutors={teachers} />}
         <Row title="Trending This Week" items={trending} />
@@ -460,6 +463,7 @@ const IndexInner = () => {
           if (!items.length) return null;
           return <Row key={cur.id} title={cur.name} items={items} />;
         })}
+        <TestimonialsCarousel />
         </div>
       </div>
     </Layout>
