@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import AuthShell from "@/components/premium/AuthShell";
 
 const ResetPasswordPage = () => {
   const [password, setPassword] = useState("");
@@ -33,26 +33,25 @@ const ResetPasswordPage = () => {
   };
 
   return (
-    <Layout>
-      <div className="pt-28 pb-20 flex items-center justify-center">
-        <div className="w-full max-w-md bg-card rounded-xl p-8 card-elevated">
-          <h1 className="font-display text-2xl font-bold text-foreground text-center mb-6">Set New Password</h1>
-          <form className="space-y-4" onSubmit={handleSubmit}>
-            <div className="space-y-2">
-              <Label htmlFor="password">New Password</Label>
-              <Input id="password" type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="confirm">Confirm Password</Label>
-              <Input id="confirm" type="password" placeholder="••••••••" value={confirm} onChange={(e) => setConfirm(e.target.value)} required />
-            </div>
-            <Button type="submit" className="w-full" size="lg" disabled={loading}>
-              {loading ? "Updating..." : "Update Password"}
-            </Button>
-          </form>
+    <AuthShell
+      title="Set a new password"
+      subtitle="Choose a strong password you haven't used before."
+      footer={<>Remembered it? <Link to="/login" className="text-primary font-semibold hover:underline">Sign in</Link></>}
+    >
+      <form className="space-y-4" onSubmit={handleSubmit}>
+        <div className="space-y-2">
+          <Label htmlFor="password">New password</Label>
+          <Input id="password" type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required />
         </div>
-      </div>
-    </Layout>
+        <div className="space-y-2">
+          <Label htmlFor="confirm">Confirm password</Label>
+          <Input id="confirm" type="password" placeholder="••••••••" value={confirm} onChange={(e) => setConfirm(e.target.value)} required />
+        </div>
+        <Button type="submit" variant="premium" className="w-full" size="lg" disabled={loading}>
+          {loading ? "Updating..." : "Update password"}
+        </Button>
+      </form>
+    </AuthShell>
   );
 };
 
