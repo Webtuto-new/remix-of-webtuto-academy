@@ -129,7 +129,7 @@ const AdminAdmins = () => {
         </DialogContent>
       </Dialog>
 
-      <Card>
+      <Card className="glass-strong border-white/10">
         <CardContent className="p-0">
           <div className="divide-y divide-border">
             {admins.map(a => (

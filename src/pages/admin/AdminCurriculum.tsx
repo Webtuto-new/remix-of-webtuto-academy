@@ -279,7 +279,7 @@ const AdminCurriculum = () => {
 
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Curriculums */}
-        <Card>
+        <Card className="glass-strong border-white/10">
           <CardHeader className="flex flex-row items-center justify-between pb-3">
             <CardTitle className="text-base">Curriculums</CardTitle>
             <Button size="sm" onClick={() => openDialog("curriculum")} className="gap-1">
@@ -321,7 +321,7 @@ const AdminCurriculum = () => {
         </Card>
 
         {/* Grades */}
-        <Card>
+        <Card className="glass-strong border-white/10">
           <CardHeader className="flex flex-row items-center justify-between pb-3">
             <CardTitle className="text-base">Grades</CardTitle>
             {selectedCurriculum && (
@@ -372,7 +372,7 @@ const AdminCurriculum = () => {
         </Card>
 
         {/* Subjects */}
-        <Card>
+        <Card className="glass-strong border-white/10">
           <CardHeader className="flex flex-row items-center justify-between pb-3">
             <CardTitle className="text-base">Subjects</CardTitle>
             {selectedGrade && (

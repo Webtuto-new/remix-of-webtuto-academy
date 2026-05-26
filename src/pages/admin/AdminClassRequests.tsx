@@ -110,7 +110,7 @@ const AdminClassRequests = () => {
       </div>
 
       {/* Filters */}
-      <Card>
+      <Card className="glass-strong border-white/10">
         <CardContent className="p-4 grid sm:grid-cols-4 gap-3">
           <div className="relative sm:col-span-2">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -130,7 +130,7 @@ const AdminClassRequests = () => {
       {loading ? (
         <p className="text-sm text-muted-foreground">Loading...</p>
       ) : filtered.length === 0 ? (
-        <Card><CardContent className="p-10 text-center space-y-2">
+        <Card className="glass-strong border-white/10"><CardContent className="p-10 text-center space-y-2">
           <Inbox className="w-10 h-10 text-muted-foreground/50 mx-auto" />
           <p className="text-sm text-muted-foreground">No matching requests.</p>
         </CardContent></Card>
