@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ArrowLeft, ChevronDown, ChevronLeft, ChevronRight, Clock, Download, ExternalLink, Eye, FileText, ListVideo, Lock, Play, User } from "lucide-react";
+import { ArrowLeft, Bookmark, BookmarkPlus, ChevronDown, ChevronLeft, ChevronRight, Clock, Download, ExternalLink, Eye, FileText, ListVideo, Lock, NotebookPen, Play, Trash2, User } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { supabase } from "@/integrations/supabase/client";
 import LessonModuleViewer from "@/components/lessons/LessonModuleViewer";
@@ -89,6 +89,49 @@ const RecordingPlayerPage = () => {
   const [recordingNotes, setRecordingNotes] = useState<any[]>([]);
   const [moduleVideos, setModuleVideos] = useState<{ id: string; url: string; title: string }[]>([]);
   const [activeModuleVideo, setActiveModuleVideo] = useState<{ id: string; url: string; title: string } | null>(null);
+  const [bookmarks, setBookmarks] = useState<{ id: string; lessonId: string | null; lessonTitle: string; label: string; at: number }[]>([]);
+  const [notes, setNotes] = useState<{ id: string; lessonId: string | null; lessonTitle: string; text: string; at: number }[]>([]);
+  const [noteDraft, setNoteDraft] = useState("");
+
+  // Load bookmarks/notes from localStorage on mount or when recording changes
+  useEffect(() => {
+    if (!id) return;
+    try {
+      setBookmarks(JSON.parse(localStorage.getItem(`webtuto_bookmarks_${id}`) || "[]"));
+      setNotes(JSON.parse(localStorage.getItem(`webtuto_notes_${id}`) || "[]"));
+    } catch { /* noop */ }
+  }, [id]);
+
+  const persistBookmarks = (next: typeof bookmarks) => {
+    setBookmarks(next);
+    if (id) localStorage.setItem(`webtuto_bookmarks_${id}`, JSON.stringify(next));
+  };
+  const persistNotes = (next: typeof notes) => {
+    setNotes(next);
+    if (id) localStorage.setItem(`webtuto_notes_${id}`, JSON.stringify(next));
+  };
+  const addBookmark = () => {
+    const label = (activeLesson?.title || activeModuleVideo?.title || recording?.title || "Bookmark").trim();
+    const next = [
+      { id: crypto.randomUUID(), lessonId: activeLesson?.id ?? null, lessonTitle: label, label, at: Date.now() },
+      ...bookmarks,
+    ];
+    persistBookmarks(next);
+  };
+  const removeBookmark = (bid: string) => persistBookmarks(bookmarks.filter((b) => b.id !== bid));
+  const addNote = () => {
+    const text = noteDraft.trim();
+    if (!text) return;
+    const lessonTitle = activeLesson?.title || activeModuleVideo?.title || recording?.title || "";
+    persistNotes([{ id: crypto.randomUUID(), lessonId: activeLesson?.id ?? null, lessonTitle, text, at: Date.now() }, ...notes]);
+    setNoteDraft("");
+  };
+  const removeNote = (nid: string) => persistNotes(notes.filter((n) => n.id !== nid));
+  const jumpToBookmark = (b: { lessonId: string | null }) => {
+    if (!b.lessonId) return;
+    const lesson = lessons.find((l) => l.id === b.lessonId);
+    if (lesson) { setPlayerError(null); setActiveModuleVideo(null); setActiveLesson(lesson); }
+  };
 
   useEffect(() => {
     setPlayerError(null);
@@ -355,6 +398,73 @@ const RecordingPlayerPage = () => {
                 )}
 
                 <ShareButtons url={shareLink} title={recording.title} />
+
+                {/* Bookmarks & Notes (stored locally per device) */}
+                <div className="grid sm:grid-cols-2 gap-3">
+                  <div className="glass-strong rounded-2xl p-3 sm:p-4 space-y-2.5">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
+                        <Bookmark className="w-4 h-4 text-primary" /> Bookmarks
+                        <span className="text-[10px] text-muted-foreground font-normal">({bookmarks.length})</span>
+                      </h3>
+                      <Button onClick={addBookmark} size="sm" variant="outline" className="gap-1 h-7 text-[11px]">
+                        <BookmarkPlus className="w-3.5 h-3.5" /> Save
+                      </Button>
+                    </div>
+                    {bookmarks.length === 0 ? (
+                      <p className="text-xs text-muted-foreground/80">Save the current lesson to revisit it later.</p>
+                    ) : (
+                      <div className="space-y-1 max-h-56 overflow-y-auto pr-1">
+                        {bookmarks.map((b) => (
+                          <div key={b.id} className="group flex items-center gap-1.5 p-1.5 rounded-md hover:bg-muted/60 transition-colors">
+                            <button onClick={() => jumpToBookmark(b)} className="flex-1 min-w-0 text-left">
+                              <p className="text-xs text-foreground truncate">{b.label}</p>
+                              <p className="text-[10px] text-muted-foreground">{new Date(b.at).toLocaleDateString()}</p>
+                            </button>
+                            <button onClick={() => removeBookmark(b.id)} className="opacity-0 group-hover:opacity-100 p-1 text-muted-foreground hover:text-destructive transition-all" aria-label="Remove">
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="glass-strong rounded-2xl p-3 sm:p-4 space-y-2.5">
+                    <h3 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
+                      <NotebookPen className="w-4 h-4 text-secondary" /> My Notes
+                      <span className="text-[10px] text-muted-foreground font-normal">({notes.length})</span>
+                    </h3>
+                    <div className="flex gap-1.5">
+                      <textarea
+                        value={noteDraft}
+                        onChange={(e) => setNoteDraft(e.target.value)}
+                        onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) { e.preventDefault(); addNote(); } }}
+                        placeholder="Jot a note… (⌘/Ctrl+Enter to save)"
+                        rows={2}
+                        className="flex-1 text-xs bg-muted/40 border border-border/60 rounded-md px-2 py-1.5 text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:ring-1 focus:ring-primary resize-none"
+                      />
+                      <Button onClick={addNote} disabled={!noteDraft.trim()} size="sm" variant="default" className="h-auto px-2 text-[11px]">
+                        Add
+                      </Button>
+                    </div>
+                    {notes.length > 0 && (
+                      <div className="space-y-1.5 max-h-44 overflow-y-auto pr-1">
+                        {notes.map((n) => (
+                          <div key={n.id} className="group p-2 rounded-md bg-muted/40 border border-border/40">
+                            <p className="text-xs text-foreground whitespace-pre-wrap leading-relaxed">{n.text}</p>
+                            <div className="flex items-center justify-between mt-1">
+                              <span className="text-[10px] text-muted-foreground truncate">{n.lessonTitle}</span>
+                              <button onClick={() => removeNote(n.id)} className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-all">
+                                <Trash2 className="w-3 h-3" />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
 
                 {/* Lessons list - collapsible on mobile */}
                 {lessons.length > 0 && (() => {
