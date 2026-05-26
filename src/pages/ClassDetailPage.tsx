@@ -388,7 +388,12 @@ const ClassDetailPage = () => {
           </div>
 
           <div className="space-y-4">
-            <div className="bg-card rounded-xl p-6 card-elevated sticky top-24">
+            <div className="relative bg-gradient-to-br from-card via-card to-primary/5 rounded-2xl p-6 card-elevated sticky top-24 border border-border/60 overflow-hidden">
+              {cls.originalPrice && !isHourly && (
+                <div className="absolute top-0 right-0 bg-accent text-accent-foreground text-xs font-bold px-3 py-1 rounded-bl-xl">
+                  {Math.round(((cls.originalPrice - price) / cls.originalPrice) * 100)}% OFF
+                </div>
+              )}
               {isHourly ? (
                 <div className="mb-4">
                   <p className="text-sm font-medium text-foreground mb-3">Configure your weekly sessions:</p>
