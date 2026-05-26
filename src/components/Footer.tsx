@@ -4,7 +4,9 @@ import logo from "@/assets/logo.png";
 
 const Footer = () => {
   return (
-    <footer className="bg-card border-t border-border mt-20">
+    <footer className="relative bg-card/40 backdrop-blur-sm border-t border-border/60 mt-20 overflow-hidden">
+      <div className="absolute inset-0 bg-mesh opacity-30 pointer-events-none" />
+      <div className="relative">
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <div>
@@ -82,6 +84,7 @@ const Footer = () => {
           <span>© {new Date().getFullYear()} Webtuto.LK — All rights reserved.</span>
           <span className="text-xs">Sri Lanka's #1 Online Learning Platform</span>
         </div>
+      </div>
       </div>
     </footer>
   );
