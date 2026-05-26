@@ -7,6 +7,8 @@ import { BookOpen, GraduationCap, Play, Users, ArrowRight, Star, Zap } from "luc
 import { motion } from "framer-motion";
 import ClassCard from "@/components/ClassCard";
 import { supabase } from "@/integrations/supabase/client";
+import SectionHeader from "@/components/premium/SectionHeader";
+import { stagger, fadeUp } from "@/lib/motion";
 
 const stats = [
   { icon: Users, label: "Active Students", value: "500+" },
@@ -97,50 +99,48 @@ const Index = () => {
 
       {/* Curriculum Preview */}
       {curriculums.length > 0 && (
-        <section className="py-20">
+        <section className="py-20 relative">
           <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-3">
-                Choose Your Curriculum
-              </h2>
-              <p className="text-muted-foreground max-w-xl mx-auto">
-                We support multiple syllabuses to match your academic path
-              </p>
-            </div>
-            <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+            <SectionHeader
+              eyebrow="Syllabuses"
+              title="Choose your curriculum"
+              description="National, Cambridge & Edexcel — built for every grade and goal."
+              align="center"
+            />
+            <motion.div initial="hidden" whileInView="show" viewport={{ once: true, margin: "-40px" }} variants={stagger} className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
               {curriculums.map((cur) => (
+                <motion.div key={cur.id} variants={fadeUp} whileHover={{ y: -4 }}>
                 <Link
-                  key={cur.id}
                   to={`/curriculum?tab=${cur.slug}`}
-                  className="bg-card rounded-xl p-6 card-elevated text-center group"
+                  className="block bg-card/70 backdrop-blur-sm rounded-2xl p-7 card-elevated text-center group gradient-border"
                 >
-                  <div className="w-14 h-14 rounded-xl bg-primary/8 flex items-center justify-center mx-auto mb-4 group-hover:bg-primary/12 transition-colors">
+                  <div className="w-14 h-14 rounded-2xl bg-primary/15 flex items-center justify-center mx-auto mb-4 group-hover:bg-primary/25 transition-colors ring-1 ring-primary/20">
                     <GraduationCap className="w-7 h-7 text-primary" />
                   </div>
-                  <h3 className="font-display font-semibold text-lg text-foreground mb-2">{cur.name}</h3>
+                  <h3 className="font-display font-semibold text-lg text-foreground mb-1">{cur.name}</h3>
+                  <div className="text-sm text-primary font-semibold inline-flex items-center gap-1 group-hover:gap-2 transition-all">
+                    Explore <ArrowRight className="w-3.5 h-3.5" />
+                  </div>
                 </Link>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
           </div>
         </section>
       )}
 
       {/* Featured Classes */}
       {classes.length > 0 && (
-        <section className="py-20 bg-muted/40">
+        <section className="py-20 bg-muted/20 relative">
+          <div className="absolute inset-0 bg-mesh opacity-30 pointer-events-none" />
           <div className="container mx-auto px-4">
-            <div className="flex items-end justify-between mb-10">
-              <div>
-                <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-2">
-                  Featured Classes
-                </h2>
-                <p className="text-muted-foreground">Handpicked courses to kickstart your learning</p>
-              </div>
-              <Link to="/classes" className="hidden md:flex items-center gap-1 text-sm font-medium text-primary hover:underline">
-                View all <ArrowRight className="w-4 h-4" />
-              </Link>
-            </div>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <SectionHeader
+              eyebrow="Featured"
+              title="Featured classes"
+              description="Handpicked courses to kickstart your learning."
+              action={{ label: "View all", to: "/classes" }}
+            />
+            <motion.div initial="hidden" whileInView="show" viewport={{ once: true, margin: "-40px" }} variants={stagger} className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 relative">
               {classes.map((c) => (
                 <ClassCard
                   key={c.id}
@@ -159,7 +159,7 @@ const Index = () => {
                   thumbnail={c.thumbnail_url}
                 />
               ))}
-            </div>
+            </motion.div>
             <div className="mt-8 text-center md:hidden">
               <Link to="/classes">
                 <Button variant="outline">View All Classes</Button>
