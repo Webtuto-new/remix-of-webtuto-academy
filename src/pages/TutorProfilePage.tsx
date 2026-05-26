@@ -4,7 +4,7 @@ import Layout from "@/components/Layout";
 import SEOHead from "@/components/SEOHead";
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
-import { GraduationCap, BookOpen, Calendar, ArrowLeft, Play } from "lucide-react";
+import { GraduationCap, BookOpen, Calendar, ArrowLeft, Play, Star, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ClassCard from "@/components/ClassCard";
 import EmptyState from "@/components/premium/EmptyState";
@@ -16,6 +16,8 @@ const TutorProfilePage = () => {
   const [classes, setClasses] = useState<any[]>([]);
   const [recordings, setRecordings] = useState<any[]>([]);
   const [sessions, setSessions] = useState<any[]>([]);
+  const [reviews, setReviews] = useState<any[]>([]);
+  const [reviewProfiles, setReviewProfiles] = useState<Record<string, any>>({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -51,6 +53,25 @@ const TutorProfilePage = () => {
           .order("session_date", { ascending: false })
           .limit(20);
         setSessions(ses || []);
+
+        // Reviews for this tutor's classes
+        const { data: revs } = await supabase
+          .from("reviews")
+          .select("*, classes(title)")
+          .in("class_id", classIds)
+          .order("created_at", { ascending: false })
+          .limit(20);
+        setReviews(revs || []);
+        const userIds = Array.from(new Set((revs || []).map((r) => r.user_id)));
+        if (userIds.length) {
+          const { data: profs } = await supabase
+            .from("profiles")
+            .select("id, full_name, avatar_url")
+            .in("id", userIds);
+          const map: Record<string, any> = {};
+          (profs || []).forEach((p) => { map[p.id] = p; });
+          setReviewProfiles(map);
+        }
       }
       setLoading(false);
     })();
@@ -59,6 +80,9 @@ const TutorProfilePage = () => {
   const today = new Date().toISOString().slice(0, 10);
   const upcoming = sessions.filter((s) => s.session_date >= today).reverse();
   const past = sessions.filter((s) => s.session_date < today);
+  const avgRating = reviews.length
+    ? reviews.reduce((s, r) => s + (r.rating || 0), 0) / reviews.length
+    : 0;
 
   return (
     <Layout>
@@ -128,6 +152,14 @@ const TutorProfilePage = () => {
                     <div className="text-2xl font-display font-bold text-foreground">{upcoming.length}</div>
                     <div className="text-[11px] uppercase tracking-wider text-muted-foreground">Upcoming</div>
                   </div>
+                  {reviews.length > 0 && (
+                    <div className="px-4 py-2 rounded-xl glass-strong">
+                      <div className="text-2xl font-display font-bold text-foreground inline-flex items-center gap-1">
+                        {avgRating.toFixed(1)} <Star className="w-4 h-4 fill-accent text-accent" />
+                      </div>
+                      <div className="text-[11px] uppercase tracking-wider text-muted-foreground">{reviews.length} review{reviews.length !== 1 ? "s" : ""}</div>
+                    </div>
+                  )}
                 </div>
               </div>
             </motion.div>
@@ -250,6 +282,54 @@ const TutorProfilePage = () => {
           </div>
         </div>
       </section>
+
+      {/* Reviews */}
+      {reviews.length > 0 && (
+        <section className="container mx-auto px-4 py-10 space-y-4">
+          <div className="flex items-center gap-2">
+            <MessageCircle className="w-5 h-5 text-accent" />
+            <h2 className="font-display text-2xl font-bold text-foreground">Student Reviews</h2>
+            <span className="text-sm text-muted-foreground">({reviews.length})</span>
+          </div>
+          <div className="grid md:grid-cols-2 gap-4">
+            {reviews.slice(0, 8).map((r) => {
+              const author = reviewProfiles[r.user_id];
+              return (
+                <motion.div
+                  key={r.id}
+                  initial={{ opacity: 0, y: 12 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  className="glass-strong rounded-2xl p-5 space-y-3"
+                >
+                  <div className="flex items-center gap-3">
+                    {author?.avatar_url ? (
+                      <img src={author.avatar_url} alt="" className="w-10 h-10 rounded-full object-cover ring-1 ring-border/60" />
+                    ) : (
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary/30 to-secondary/30 flex items-center justify-center text-sm font-bold text-foreground">
+                        {(author?.full_name || "?").slice(0, 1).toUpperCase()}
+                      </div>
+                    )}
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-semibold text-foreground truncate">{author?.full_name || "Student"}</p>
+                      <p className="text-[11px] text-muted-foreground truncate">{r.classes?.title}</p>
+                    </div>
+                    <div className="flex items-center gap-0.5">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <Star key={i} className={`w-3.5 h-3.5 ${i < (r.rating || 0) ? "fill-accent text-accent" : "text-muted-foreground/40"}`} />
+                      ))}
+                    </div>
+                  </div>
+                  {r.comment && (
+                    <p className="text-sm text-foreground/80 leading-relaxed line-clamp-5">{r.comment}</p>
+                  )}
+                  <p className="text-[10px] text-muted-foreground">{new Date(r.created_at).toLocaleDateString()}</p>
+                </motion.div>
+              );
+            })}
+          </div>
+        </section>
+      )}
     </Layout>
   );
 };
