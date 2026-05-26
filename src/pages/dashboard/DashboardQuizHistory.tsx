@@ -102,7 +102,7 @@ export default function DashboardQuizHistory() {
           {filtered.map((a) => (
             <Link
               key={a.id}
-              to={`/quiz/${a.quiz_id}`}
+              to={a.completed_at ? `/quiz/results/${a.id}` : `/quiz/${a.quiz_id}`}
               className="block rounded-xl bg-card ring-1 ring-border p-4 hover:ring-primary/30 transition-all"
             >
               <div className="flex items-center gap-3">

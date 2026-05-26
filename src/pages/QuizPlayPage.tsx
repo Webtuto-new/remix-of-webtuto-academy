@@ -350,6 +350,9 @@ const QuizPlayPage = () => {
 
               <div className="flex gap-3 justify-center">
                 <Link to="/quizzes"><Button variant="outline" className="rounded-full">More Quizzes</Button></Link>
+                {attemptId && (
+                  <Link to={`/quiz/results/${attemptId}`}><Button variant="outline" className="rounded-full">Review Answers</Button></Link>
+                )}
                 <Button onClick={() => window.location.reload()} className="rounded-full bg-gradient-to-r from-primary to-accent text-primary-foreground">Try Again</Button>
               </div>
             </motion.div>
