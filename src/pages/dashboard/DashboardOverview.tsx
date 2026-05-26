@@ -288,6 +288,40 @@ const DashboardOverview = () => {
           ))}
         </div>
       </motion.section>
+
+      {/* Recommended for you */}
+      {recommended.length > 0 && (
+        <motion.section initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={viewportOnce} transition={{ duration: 0.5 }}
+          className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h2 className="font-display text-lg font-semibold text-foreground flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-primary" /> Recommended for you
+            </h2>
+            <Link to="/classes" className="text-xs text-primary font-semibold inline-flex items-center gap-1 hover:gap-2 transition-all">
+              Browse all <ArrowRight className="w-3 h-3" />
+            </Link>
+          </div>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            {recommended.map((c) => (
+              <Link key={c.id} to={`/class/${c.id}`}
+                className="group relative overflow-hidden rounded-xl glass-strong ring-1 ring-border/60 hover:ring-primary/50 transition-all hover:-translate-y-0.5">
+                <div className="aspect-video bg-muted relative overflow-hidden">
+                  {c.thumbnail_url ? (
+                    <img src={c.thumbnail_url} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-secondary/30 to-primary/20" />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-background/90 to-transparent" />
+                </div>
+                <div className="p-2.5">
+                  <p className="text-xs font-semibold text-foreground truncate group-hover:text-primary transition-colors">{c.title}</p>
+                  <p className="text-[11px] text-primary font-bold mt-0.5">LKR {Number(c.price).toLocaleString()}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </motion.section>
+      )}
     </div>
   );
 };
