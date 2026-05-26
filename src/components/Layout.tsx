@@ -4,6 +4,7 @@ import { useLocation } from "react-router-dom";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import PhonePrompt from "./PhonePrompt";
+import InstallAppModal from "./InstallAppModal";
 
 interface LayoutProps {
   children: ReactNode;
@@ -25,6 +26,7 @@ const Layout = ({ children }: LayoutProps) => {
       </motion.main>
       <Footer />
       <PhonePrompt />
+      <InstallAppModal />
     </div>
   );
 };

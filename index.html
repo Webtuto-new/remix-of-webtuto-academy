@@ -21,6 +21,28 @@
     <meta name="author" content="Webtuto" />
     <link rel="canonical" href="https://webtuto.lk/" />
 
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#0a0a0a" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Webtuto" />
+    <script>
+      // Capture install prompt before React mounts so we never miss the event.
+      window.__wtDeferredInstallPrompt = null;
+      window.addEventListener('beforeinstallprompt', function (e) {
+        e.preventDefault();
+        window.__wtDeferredInstallPrompt = e;
+        window.dispatchEvent(new Event('wt-install-available'));
+      });
+      window.addEventListener('appinstalled', function () {
+        window.__wtDeferredInstallPrompt = null;
+        try { localStorage.setItem('wt_install_prompt_seen', '1'); } catch (e) {}
+      });
+    </script>
+
     
     
     <meta property="og:type" content="website" />
