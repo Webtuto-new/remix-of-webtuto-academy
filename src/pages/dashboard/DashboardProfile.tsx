@@ -1,11 +1,13 @@
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { User, KeyRound } from "lucide-react";
+import { fadeUp, stagger } from "@/lib/motion";
 
 const DashboardProfile = () => {
   const { user, profile, refreshProfile, updatePassword } = useAuth();
@@ -52,20 +54,26 @@ const DashboardProfile = () => {
   };
 
   return (
-    <div className="space-y-6 max-w-2xl">
-      <h1 className="font-display text-2xl font-bold text-foreground">My Profile</h1>
+    <motion.div initial="hidden" animate="show" variants={stagger} className="space-y-6 max-w-2xl">
+      <motion.h1 variants={fadeUp} className="font-display text-2xl md:text-3xl font-bold text-gradient">My Profile</motion.h1>
 
-      <Card>
-        <CardHeader><CardTitle>Personal Information</CardTitle></CardHeader>
-        <CardContent>
+      <motion.section variants={fadeUp} className="relative glass-strong rounded-2xl p-6 overflow-hidden">
+        <div className="absolute inset-0 bg-mesh opacity-30 pointer-events-none" />
+        <div className="relative">
+          <div className="flex items-center gap-2 mb-5">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary/25 to-secondary/15 text-primary flex items-center justify-center ring-1 ring-primary/20">
+              <User className="w-4 h-4" />
+            </div>
+            <h2 className="font-display text-lg font-semibold text-foreground">Personal Information</h2>
+          </div>
           <form onSubmit={handleProfileUpdate} className="space-y-4">
             <div className="space-y-2">
               <Label>Admission Number</Label>
-              <Input value={profile?.admission_number || ""} disabled className="bg-muted" />
+              <Input value={profile?.admission_number || ""} disabled className="bg-muted/60" />
             </div>
             <div className="space-y-2">
               <Label>Email</Label>
-              <Input value={profile?.email || ""} disabled className="bg-muted" />
+              <Input value={profile?.email || ""} disabled className="bg-muted/60" />
             </div>
             <div className="space-y-2">
               <Label>Full Name</Label>
@@ -79,14 +87,20 @@ const DashboardProfile = () => {
               <Label>Address</Label>
               <Input value={form.address} onChange={(e) => setForm(f => ({ ...f, address: e.target.value }))} />
             </div>
-            <Button type="submit" disabled={saving}>{saving ? "Saving..." : "Save Changes"}</Button>
+            <Button type="submit" variant="premium" disabled={saving}>{saving ? "Saving..." : "Save Changes"}</Button>
           </form>
-        </CardContent>
-      </Card>
+        </div>
+      </motion.section>
 
-      <Card>
-        <CardHeader><CardTitle>Change Password</CardTitle></CardHeader>
-        <CardContent>
+      <motion.section variants={fadeUp} className="relative glass-strong rounded-2xl p-6 overflow-hidden">
+        <div className="absolute inset-0 bg-mesh opacity-30 pointer-events-none" />
+        <div className="relative">
+          <div className="flex items-center gap-2 mb-5">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-accent/25 to-primary/15 text-accent flex items-center justify-center ring-1 ring-accent/20">
+              <KeyRound className="w-4 h-4" />
+            </div>
+            <h2 className="font-display text-lg font-semibold text-foreground">Change Password</h2>
+          </div>
           <form onSubmit={handlePasswordChange} className="space-y-4">
             <div className="space-y-2">
               <Label>New Password</Label>
@@ -96,11 +110,11 @@ const DashboardProfile = () => {
               <Label>Confirm New Password</Label>
               <Input type="password" value={passwords.confirm} onChange={(e) => setPasswords(p => ({ ...p, confirm: e.target.value }))} required />
             </div>
-            <Button type="submit">Change Password</Button>
+            <Button type="submit" variant="premium">Change Password</Button>
           </form>
-        </CardContent>
-      </Card>
-    </div>
+        </div>
+      </motion.section>
+    </motion.div>
   );
 };
 

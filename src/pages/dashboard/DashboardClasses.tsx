@@ -1,11 +1,13 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { BookOpen, ExternalLink, Video, Calendar, FileText } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
+import { EmptyState } from "@/components/premium/EmptyState";
+import { fadeUp, stagger } from "@/lib/motion";
 
 const DashboardClasses = () => {
   const { user } = useAuth();
@@ -49,28 +51,31 @@ const DashboardClasses = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="font-display text-2xl font-bold text-foreground">My Classes</h1>
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <h1 className="font-display text-2xl md:text-3xl font-bold text-gradient">My Classes</h1>
         <Link to="/classes"><Button variant="outline" size="sm">Browse More</Button></Link>
       </div>
       {enrollments.length === 0 ? (
-        <Card>
-          <CardContent className="py-12 text-center text-muted-foreground">
-            <BookOpen className="w-12 h-12 mx-auto mb-3 opacity-50" />
-            <p>No classes enrolled yet.</p>
-            <Link to="/classes"><Button size="sm" className="mt-3">Browse Classes</Button></Link>
-          </CardContent>
-        </Card>
+        <EmptyState
+          icon={BookOpen}
+          title="No classes enrolled yet"
+          description="Discover live and recorded classes from top tutors."
+          action={<Link to="/classes"><Button variant="premium" size="sm">Browse Classes</Button></Link>}
+        />
       ) : (
-        <div className="grid lg:grid-cols-2 gap-4">
+        <motion.div initial="hidden" animate="show" variants={stagger} className="grid lg:grid-cols-2 gap-4">
           {enrollments.map((e) => {
             const nextSession = nextSessions[e.class_id];
             const expiresAt = e.expires_at ? new Date(e.expires_at) : null;
             const isExpired = expiresAt && expiresAt < new Date();
 
             return (
-              <Card key={e.id} className="overflow-hidden hover:shadow-md transition-shadow">
-                <CardContent className="p-5 space-y-4">
+              <motion.div
+                key={e.id}
+                variants={fadeUp}
+                className="glass-strong rounded-2xl overflow-hidden transition-all hover:ring-glow hover:-translate-y-1"
+              >
+                <div className="p-5 space-y-4">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
                       <h3 className="font-display font-semibold text-foreground mb-1 text-lg">{e.classes?.title || "Class"}</h3>
@@ -95,7 +100,7 @@ const DashboardClasses = () => {
 
                   {/* Next session & actions */}
                   {nextSession && (
-                    <div className="pt-3 border-t border-border/50 space-y-2">
+                    <div className="pt-3 border-t border-border/40 space-y-2">
                       <p className="text-xs text-muted-foreground font-medium">Next Session:</p>
                       <p className="text-sm text-foreground font-medium">{nextSession.title}</p>
                       <p className="text-xs text-muted-foreground">
@@ -104,7 +109,7 @@ const DashboardClasses = () => {
                       <div className="flex flex-wrap gap-2 pt-2">
                         {nextSession.zoom_link && (
                           <a href={nextSession.zoom_link} target="_blank" rel="noopener noreferrer">
-                            <Button size="sm" variant="default" className="gap-1.5">
+                            <Button size="sm" variant="premium" className="gap-1.5">
                               <Video className="w-3.5 h-3.5" /> Join Zoom
                             </Button>
                           </a>
@@ -126,11 +131,11 @@ const DashboardClasses = () => {
                       </div>
                     </div>
                   )}
-                </CardContent>
-              </Card>
+                </div>
+              </motion.div>
             );
           })}
-        </div>
+        </motion.div>
       )}
     </div>
   );
