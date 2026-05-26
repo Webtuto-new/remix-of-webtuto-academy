@@ -1,5 +1,4 @@
 import { useState } from "react";
-import Layout from "@/components/Layout";
 import SEOHead from "@/components/SEOHead";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +7,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import AuthShell from "@/components/premium/AuthShell";
 
 const SignupPage = () => {
   const [form, setForm] = useState({ full_name: "", email: "", phone: "", address: "", password: "", confirm: "" });
@@ -65,17 +65,22 @@ const SignupPage = () => {
   };
 
   return (
-    <Layout>
+    <>
       <SEOHead title="Sign Up" description="Create your free Webtuto account and start learning." path="/signup" />
-      <div className="pt-28 pb-20 flex items-center justify-center">
-        <div className="w-full max-w-md bg-card rounded-xl p-8 card-elevated">
-          <h1 className="font-display text-2xl font-bold text-foreground text-center mb-6">Create Account</h1>
-
-          {/* Google Sign Up */}
+      <AuthShell
+        title="Create your account"
+        subtitle="Join Sri Lanka's premium learning platform"
+        footer={
+          <>
+            Already have an account?{" "}
+            <Link to="/login" className="text-primary hover:underline font-semibold">Log in</Link>
+          </>
+        }
+      >
           <Button
             variant="outline"
             size="lg"
-            className="w-full mb-6 gap-3 font-medium"
+            className="w-full mb-5 gap-3 font-medium rounded-xl bg-background/40 backdrop-blur"
             onClick={handleGoogleSignUp}
             disabled={googleLoading}
           >
@@ -88,53 +93,50 @@ const SignupPage = () => {
             {googleLoading ? "Connecting..." : "Continue with Google"}
           </Button>
 
-          <div className="relative mb-6">
+          <div className="relative mb-5">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-border" />
+              <div className="w-full border-t border-border/60" />
             </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-3 text-muted-foreground">or continue with email</span>
+            <div className="relative flex justify-center text-[11px] uppercase tracking-[0.18em]">
+              <span className="bg-card/80 backdrop-blur px-3 text-muted-foreground">or with email</span>
             </div>
           </div>
 
-          <form className="space-y-4" onSubmit={handleSubmit}>
+          <form className="space-y-3.5" onSubmit={handleSubmit}>
             <div className="space-y-2">
               <Label htmlFor="name">Full Name</Label>
-              <Input id="name" placeholder="Your full name" value={form.full_name} onChange={update("full_name")} required />
+              <Input id="name" placeholder="Your full name" value={form.full_name} onChange={update("full_name")} required className="h-11 rounded-xl bg-background/40" />
             </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" placeholder="you@example.com" value={form.email} onChange={update("email")} required />
+              <Input id="email" type="email" placeholder="you@example.com" value={form.email} onChange={update("email")} required className="h-11 rounded-xl bg-background/40" />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="phone">Phone Number</Label>
-              <Input id="phone" placeholder="+94 XX XXX XXXX" value={form.phone} onChange={update("phone")} required />
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label htmlFor="phone">Phone</Label>
+                <Input id="phone" placeholder="+94 XX XXX XXXX" value={form.phone} onChange={update("phone")} required className="h-11 rounded-xl bg-background/40" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="address">Address</Label>
+                <Input id="address" placeholder="City / district" value={form.address} onChange={update("address")} required className="h-11 rounded-xl bg-background/40" />
+              </div>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="address">Address</Label>
-              <Input id="address" placeholder="Your address" value={form.address} onChange={update("address")} required />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
-                <Input id="password" type="password" placeholder="••••••••" value={form.password} onChange={update("password")} required />
+                <Input id="password" type="password" placeholder="••••••••" value={form.password} onChange={update("password")} required className="h-11 rounded-xl bg-background/40" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="confirm">Confirm</Label>
-                <Input id="confirm" type="password" placeholder="••••••••" value={form.confirm} onChange={update("confirm")} required />
+                <Input id="confirm" type="password" placeholder="••••••••" value={form.confirm} onChange={update("confirm")} required className="h-11 rounded-xl bg-background/40" />
               </div>
             </div>
-            <Button type="submit" className="w-full" size="lg" disabled={loading}>
+            <Button type="submit" className="w-full h-11 rounded-xl font-semibold shadow-lg shadow-primary/20 mt-1" size="lg" disabled={loading}>
               {loading ? "Creating account..." : "Sign Up"}
             </Button>
           </form>
-          <p className="text-center text-sm text-muted-foreground mt-6">
-            Already have an account?{" "}
-            <Link to="/login" className="text-primary hover:underline font-medium">Log in</Link>
-          </p>
-        </div>
-      </div>
-    </Layout>
+      </AuthShell>
+    </>
   );
 };
 

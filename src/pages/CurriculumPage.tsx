@@ -5,6 +5,9 @@ import { Link, useSearchParams } from "react-router-dom";
 import { GraduationCap, ArrowRight, BookOpen, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { motion, AnimatePresence } from "framer-motion";
+import { stagger, fadeUp } from "@/lib/motion";
+import EmptyState from "@/components/premium/EmptyState";
 
 const CurriculumPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -67,81 +70,94 @@ const CurriculumPage = () => {
   return (
     <Layout>
       <SEOHead title="Curriculum" description="Browse classes by National, Cambridge, and Edexcel syllabuses." path="/curriculum" />
-      <div className="pt-24 pb-20">
+      <div className="pt-24 pb-20 relative">
+        <div className="absolute inset-x-0 top-0 h-[520px] bg-mesh opacity-70 pointer-events-none" />
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-3">Curriculum</h1>
-            <p className="text-muted-foreground max-w-xl mx-auto">Browse classes by your syllabus and grade level</p>
-          </div>
+          <motion.div initial="hidden" animate="show" variants={fadeUp} className="text-center mb-12 relative">
+            <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-primary/80 mb-3">
+              <span className="h-px w-6 bg-primary/40" /> Syllabuses
+            </span>
+            <h1 className="font-display text-4xl md:text-5xl font-bold tracking-tight text-foreground mb-3">Choose your curriculum</h1>
+            <p className="text-muted-foreground text-base md:text-lg max-w-xl mx-auto">National, Cambridge & Edexcel — pick your path and explore every grade.</p>
+          </motion.div>
 
           {curriculums.length > 0 ? (
             <>
-              <div className={`flex gap-2 mb-12 ${curriculums.length <= 2 ? 'justify-center' : 'justify-center flex-wrap'}`}>
+              <div className="relative flex gap-1.5 mb-10 justify-center flex-wrap">
                 {curriculums.map((cur) => (
                   <button key={cur.id} onClick={() => { setActiveTab(cur.id); setSelectedGrade(null); searchParams.delete("grade"); setSearchParams(searchParams); }}
-                    className={`px-5 py-2.5 rounded-lg font-medium text-sm transition-colors ${
-                      activeTab === cur.id ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:text-foreground"
+                    className={`px-5 py-2.5 rounded-full font-semibold text-sm transition-all ${
+                      activeTab === cur.id
+                        ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
+                        : "bg-card/60 backdrop-blur border border-border/60 text-muted-foreground hover:text-foreground hover:border-primary/40"
                     }`}>
                     {cur.name}
                   </button>
                 ))}
               </div>
 
+              <AnimatePresence mode="wait">
               {selectedGrade ? (
-                <div>
+                <motion.div key="subjects" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.3 }} className="relative">
                   <Button variant="ghost" className="mb-6 gap-2" onClick={handleBack}>
                     <ArrowLeft className="w-4 h-4" /> Back to Grades
                   </Button>
                   <h2 className="font-display text-2xl font-bold text-foreground mb-6">{selectedGrade.name} — Subjects</h2>
                   {currentSubjects.length > 0 ? (
-                    <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    <motion.div initial="hidden" animate="show" variants={stagger} className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                       {currentSubjects.map((subject) => (
-                        <Link key={subject.id} to={`/classes?subject=${subject.slug}&grade=${selectedGrade.slug}`} className="bg-card rounded-xl p-6 card-elevated group">
-                          <div className="flex items-center gap-3 mb-3">
-                            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                        <motion.div key={subject.id} variants={fadeUp} whileHover={{ y: -4 }}>
+                        <Link to={`/classes?subject=${subject.slug}&grade=${selectedGrade.slug}`} className="block bg-card/70 backdrop-blur-sm rounded-2xl p-6 card-elevated group gradient-border">
+                          <div className="flex items-center gap-3 mb-4">
+                            <div className="w-11 h-11 rounded-xl bg-primary/15 flex items-center justify-center group-hover:bg-primary/25 transition-colors ring-1 ring-primary/20">
                               <BookOpen className="w-5 h-5 text-primary" />
                             </div>
-                            <h3 className="font-display font-semibold text-foreground">{subject.name}</h3>
+                            <h3 className="font-display font-semibold text-foreground text-lg">{subject.name}</h3>
                           </div>
-                          <div className="flex items-center text-sm text-primary font-medium gap-1">
+                          <div className="flex items-center text-sm text-primary font-semibold gap-1 group-hover:gap-2 transition-all">
                             View classes <ArrowRight className="w-3.5 h-3.5" />
                           </div>
                         </Link>
+                        </motion.div>
                       ))}
-                    </div>
+                    </motion.div>
                   ) : (
-                    <div className="text-center py-12 text-muted-foreground">No subjects added for this grade yet.</div>
+                    <EmptyState icon={BookOpen} title="No subjects yet" description="Subjects for this grade haven't been added." />
                   )}
-                </div>
+                </motion.div>
               ) : (
-                <>
+                <motion.div key="grades" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.3 }} className="relative">
                   {currentGrades.length > 0 ? (
-                    <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    <motion.div initial="hidden" animate="show" variants={stagger} className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                       {currentGrades.map((grade) => (
-                        <button key={grade.id} onClick={() => handleGradeClick(grade)} className="bg-card rounded-xl p-6 card-elevated group text-left w-full">
-                          <div className="flex items-center gap-3 mb-3">
-                            <div className="w-10 h-10 rounded-lg bg-secondary/10 flex items-center justify-center group-hover:bg-secondary/20 transition-colors">
+                        <motion.button
+                          key={grade.id}
+                          variants={fadeUp}
+                          whileHover={{ y: -4 }}
+                          onClick={() => handleGradeClick(grade)}
+                          className="bg-card/70 backdrop-blur-sm rounded-2xl p-6 card-elevated group text-left w-full gradient-border"
+                        >
+                          <div className="flex items-center gap-3 mb-4">
+                            <div className="w-11 h-11 rounded-xl bg-secondary/15 flex items-center justify-center group-hover:bg-secondary/25 transition-colors ring-1 ring-secondary/20">
                               <GraduationCap className="w-5 h-5 text-secondary" />
                             </div>
-                            <h3 className="font-display font-semibold text-foreground">{grade.name}</h3>
+                            <h3 className="font-display font-semibold text-foreground text-lg">{grade.name}</h3>
                           </div>
-                          <div className="flex items-center text-sm text-primary font-medium gap-1">
+                          <div className="flex items-center text-sm text-primary font-semibold gap-1 group-hover:gap-2 transition-all">
                             View subjects <ArrowRight className="w-3.5 h-3.5" />
                           </div>
-                        </button>
+                        </motion.button>
                       ))}
-                    </div>
+                    </motion.div>
                   ) : (
-                    <div className="text-center py-12 text-muted-foreground">No grades added for this curriculum yet.</div>
+                    <EmptyState icon={GraduationCap} title="No grades yet" description="Grades for this curriculum haven't been added." />
                   )}
-                </>
+                </motion.div>
               )}
+              </AnimatePresence>
             </>
           ) : (
-            <div className="text-center py-16 text-muted-foreground">
-              <GraduationCap className="w-12 h-12 mx-auto mb-3 opacity-50" />
-              <p className="text-lg font-medium">No curriculums available yet</p>
-            </div>
+            <EmptyState icon={GraduationCap} title="No curriculums yet" description="Check back soon." />
           )}
         </div>
       </div>
