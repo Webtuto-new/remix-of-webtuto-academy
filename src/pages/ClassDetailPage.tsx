@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Clock, Video, Users, ExternalLink, ArrowLeft, Play, FileText, Download } from "lucide-react";
+import { Calendar, Clock, Video, Users, ExternalLink, ArrowLeft, Play, FileText, Download, Star, Shield, Award, Zap, CheckCircle2, Globe } from "lucide-react";
 import PurchaseButton from "@/components/PurchaseButton";
 import WishlistButton from "@/components/WishlistButton";
 import ReviewForm from "@/components/ReviewForm";
@@ -32,6 +32,7 @@ const ClassDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [hoursPerWeek, setHoursPerWeek] = useState(1);
   const [classesPerWeek, setClassesPerWeek] = useState(1);
+  const [stats, setStats] = useState<{ rating: number; reviewCount: number; studentCount: number }>({ rating: 0, reviewCount: 0, studentCount: 0 });
 
   useEffect(() => {
     if (!id) return;
@@ -55,6 +56,16 @@ const ClassDetailPage = () => {
       supabase.from("enrollments").select("id, expires_at, enrolled_at").eq("user_id", user.id).eq("class_id", id).eq("status", "active").maybeSingle()
         .then(({ data }) => setEnrollment(data));
     }
+    // Rating + student count for trust signals
+    (async () => {
+      const [{ data: revs }, { count: enrolled }] = await Promise.all([
+        supabase.from("reviews").select("rating").eq("class_id", id),
+        supabase.from("enrollments").select("id", { count: "exact", head: true }).eq("class_id", id).eq("status", "active"),
+      ]);
+      const list = revs || [];
+      const avg = list.length ? list.reduce((s: number, r: any) => s + r.rating, 0) / list.length : 0;
+      setStats({ rating: avg, reviewCount: list.length, studentCount: enrolled || 0 });
+    })();
   }, [id, user]);
 
   if (loading) {
@@ -154,7 +165,22 @@ const ClassDetailPage = () => {
             <h1 className="font-display text-3xl md:text-5xl font-bold text-foreground mb-4 tracking-tight">{cls.title}</h1>
             <p className="text-muted-foreground text-base md:text-lg max-w-3xl leading-relaxed mb-5">{cls.description}</p>
             <div className="flex flex-wrap items-center gap-5 text-sm text-muted-foreground">
-              <span className="flex items-center gap-1.5"><Users className="w-4 h-4 text-primary" /> {cls.teacherName}</span>
+              {stats.reviewCount > 0 && (
+                <span className="flex items-center gap-1.5">
+                  <Star className="w-4 h-4 fill-accent text-accent" />
+                  <span className="font-bold text-foreground">{stats.rating.toFixed(1)}</span>
+                  <span>({stats.reviewCount} reviews)</span>
+                </span>
+              )}
+              {stats.studentCount > 0 && (
+                <span className="flex items-center gap-1.5">
+                  <Users className="w-4 h-4 text-primary" />
+                  <span className="font-bold text-foreground">{stats.studentCount}</span> enrolled
+                </span>
+              )}
+              <Link to={teacher?.id ? `/tutor/${teacher.id}` : "#"} className="flex items-center gap-1.5 hover:text-foreground transition-colors">
+                <Award className="w-4 h-4 text-primary" /> {cls.teacherName}
+              </Link>
               <span className="flex items-center gap-1.5"><Calendar className="w-4 h-4 text-primary" /> {cls.sessionCount} sessions</span>
               <span className="flex items-center gap-1.5"><Clock className="w-4 h-4 text-primary" /> {cls.duration}</span>
             </div>
@@ -169,11 +195,13 @@ const ClassDetailPage = () => {
               <CountdownTimer targetDate={new Date(`${nextSession.session_date}T${nextSession.start_time}`)} sessionTitle={nextSession.title} zoomLink={nextSession.zoom_link} />
             )}
 
-            <div className="flex gap-1 border-b border-border overflow-x-auto">
+            <div className="flex gap-1.5 overflow-x-auto p-1 rounded-2xl bg-muted/40 border border-border/40">
               {tabs.map((tab) => (
                 <button key={tab} onClick={() => setActiveTab(tab)}
-                  className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
-                    activeTab === tab ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground"
+                  className={`px-4 py-2 text-sm font-semibold rounded-xl transition-all whitespace-nowrap ${
+                    activeTab === tab
+                      ? "bg-background text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
                   }`}>
                   {tab}
                 </button>
@@ -360,7 +388,12 @@ const ClassDetailPage = () => {
           </div>
 
           <div className="space-y-4">
-            <div className="bg-card rounded-xl p-6 card-elevated sticky top-24">
+            <div className="relative bg-gradient-to-br from-card via-card to-primary/5 rounded-2xl p-6 card-elevated sticky top-24 border border-border/60 overflow-hidden">
+              {cls.originalPrice && !isHourly && (
+                <div className="absolute top-0 right-0 bg-accent text-accent-foreground text-xs font-bold px-3 py-1 rounded-bl-xl">
+                  {Math.round(((cls.originalPrice - price) / cls.originalPrice) * 100)}% OFF
+                </div>
+              )}
               {isHourly ? (
                 <div className="mb-4">
                   <p className="text-sm font-medium text-foreground mb-3">Configure your weekly sessions:</p>
@@ -435,16 +468,29 @@ const ClassDetailPage = () => {
               </div>
 
               <div className="mt-6 space-y-3 text-sm">
-                {[
-                  { icon: Calendar, text: isHourly ? `${totalHours} hours/week` : `${cls.sessionCount} sessions` },
-                  { icon: Clock, text: cls.duration },
-                  { icon: Video, text: "Recordings included" },
-                ].map((item) => (
-                  <div key={item.text} className="flex items-center gap-2 text-muted-foreground">
-                    <item.icon className="w-4 h-4 text-secondary" />
-                    {item.text}
+                <div className="pt-4 border-t border-border/40">
+                  <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">What's included</p>
+                  {[
+                    { icon: Calendar, text: isHourly ? `${totalHours} hours/week` : `${cls.sessionCount} live sessions` },
+                    { icon: Clock, text: `${cls.duration} per session` },
+                    { icon: Video, text: "Full session recordings" },
+                    { icon: FileText, text: "Downloadable notes & materials" },
+                    { icon: Globe, text: "Lifetime access while enrolled" },
+                  ].map((item) => (
+                    <div key={item.text} className="flex items-center gap-2 text-muted-foreground mb-2">
+                      <CheckCircle2 className="w-4 h-4 text-secondary flex-shrink-0" />
+                      <span className="text-sm">{item.text}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="pt-3 border-t border-border/40 grid grid-cols-2 gap-2">
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <Shield className="w-3.5 h-3.5 text-primary" /> Secure payment
                   </div>
-                ))}
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <Zap className="w-3.5 h-3.5 text-accent" /> Instant access
+                  </div>
+                </div>
               </div>
             </div>
           </div>
