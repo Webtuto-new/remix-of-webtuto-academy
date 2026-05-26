@@ -13,7 +13,7 @@ import { sendEmail, emailTemplates } from "@/lib/email";
 import FileOrLinkInput from "@/components/FileOrLinkInput";
 import { motion } from "framer-motion";
 import { fadeUp, stagger, viewportOnce } from "@/lib/motion";
-import { Sparkles } from "lucide-react";
+import { Sparkles, DollarSign, Users, CalendarClock, ShieldCheck, ArrowRight } from "lucide-react";
 
 const TutorApplicationPage = () => {
   const { user } = useAuth();
@@ -78,19 +78,73 @@ const TutorApplicationPage = () => {
   return (
     <Layout>
       <SEOHead title="Become a Tutor" description="Join Webtuto and teach thousands of students across Sri Lanka." path="/tutor-application" />
-      <div className="relative bg-mesh pt-24 pb-20">
-        <div className="container mx-auto px-4 max-w-2xl">
-          <motion.div initial="hidden" animate="show" variants={stagger} className="text-center mb-10 space-y-3">
-            <motion.div variants={fadeUp} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass-strong text-xs font-semibold text-primary tracking-wide">
-              <Sparkles className="w-3.5 h-3.5" /> Join Our Tutor Network
+      {/* Hero */}
+      <section className="relative overflow-hidden pt-24 pb-14 sm:pb-20 border-b border-border/40">
+        <div className="absolute inset-0 -z-10 bg-gradient-to-br from-primary/15 via-background to-accent/15" />
+        <div className="absolute -top-32 -right-32 w-[28rem] h-[28rem] rounded-full bg-primary/25 blur-3xl -z-10" />
+        <div className="absolute -bottom-32 -left-32 w-[28rem] h-[28rem] rounded-full bg-accent/20 blur-3xl -z-10" />
+        <div className="absolute inset-0 bg-mesh opacity-40 -z-10" />
+        <div className="container mx-auto px-4 max-w-5xl">
+          <motion.div initial="hidden" animate="show" variants={stagger} className="text-center space-y-4 sm:space-y-5">
+            <motion.div variants={fadeUp} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass-strong text-xs font-semibold text-primary tracking-wider uppercase">
+              <Sparkles className="w-3.5 h-3.5" /> Tutor Vacancy · Now Hiring
             </motion.div>
-            <motion.h1 variants={fadeUp} className="font-display text-3xl md:text-5xl font-bold text-foreground tracking-tight">
-              Become a Tutor
+            <motion.h1 variants={fadeUp} className="font-display text-4xl sm:text-5xl md:text-7xl font-extrabold text-foreground tracking-tight leading-[1.05]">
+              Teach. <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">Earn.</span> <br className="sm:hidden" />Inspire Sri Lanka.
             </motion.h1>
-            <motion.p variants={fadeUp} className="text-muted-foreground max-w-md mx-auto">
-              Join Webtuto and share your knowledge with thousands of students across Sri Lanka
+            <motion.p variants={fadeUp} className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+              Join Webtuto's growing network of educators. Set your own schedule, reach thousands of students nationwide, and get paid for every session you deliver.
             </motion.p>
+            <motion.div variants={fadeUp} className="flex flex-wrap justify-center gap-2 pt-2">
+              <a href="#apply" className="inline-flex items-center gap-2 px-6 h-12 rounded-full bg-gradient-to-r from-primary to-accent text-primary-foreground font-bold text-sm shadow-[0_10px_40px_-10px_hsl(var(--primary)/0.6)] hover:scale-[1.02] active:scale-95 transition">
+                Apply Now <ArrowRight className="w-4 h-4" />
+              </a>
+              <a href="#perks" className="inline-flex items-center gap-2 px-6 h-12 rounded-full border border-border/60 bg-card/40 backdrop-blur font-semibold text-sm hover:border-primary/50 transition">
+                See the perks
+              </a>
+            </motion.div>
           </motion.div>
+
+          {/* Perks strip */}
+          <motion.div
+            id="perks"
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={viewportOnce}
+            transition={{ duration: 0.5 }}
+            className="mt-12 sm:mt-16 grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4"
+          >
+            {[
+              { icon: DollarSign, title: "Competitive Earnings", body: "Set your own rates. Get paid per booked session — no hidden cuts." },
+              { icon: CalendarClock, title: "Flexible Schedule", body: "Teach when you want — live, recorded or hybrid." },
+              { icon: Users, title: "Wide Reach", body: "Thousands of students across National, Cambridge & Edexcel." },
+              { icon: ShieldCheck, title: "Trusted Platform", body: "Secure payments, automatic reminders, and a real support team." },
+            ].map((p, i) => (
+              <motion.div
+                key={p.title}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={viewportOnce}
+                transition={{ duration: 0.4, delay: i * 0.08 }}
+                className="relative rounded-2xl p-4 sm:p-5 bg-card/60 backdrop-blur border border-border/60 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/5 transition group"
+              >
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center mb-3 ring-1 ring-primary/20 group-hover:scale-110 transition">
+                  <p.icon className="w-5 h-5 text-primary" />
+                </div>
+                <h3 className="font-display font-bold text-sm sm:text-base text-foreground">{p.title}</h3>
+                <p className="text-xs sm:text-[13px] text-muted-foreground mt-1 leading-relaxed">{p.body}</p>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      <div id="apply" className="relative bg-mesh pt-12 sm:pt-16 pb-20">
+        <div className="container mx-auto px-4 max-w-2xl">
+          <div className="text-center mb-8">
+            <h2 className="font-display text-2xl sm:text-3xl font-bold text-foreground">Application Form</h2>
+            <p className="text-sm text-muted-foreground mt-2">Takes about 3 minutes. We review every submission within 48 hours.</p>
+          </div>
 
           <motion.form initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }}
             onSubmit={handleSubmit} className="glass-strong rounded-2xl p-6 md:p-8 space-y-6 ring-glow">
