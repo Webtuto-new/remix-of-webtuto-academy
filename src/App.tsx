@@ -32,6 +32,7 @@ import TutorProfilePage from "./pages/TutorProfilePage";
 import TutorsPage from "./pages/TutorsPage";
 import QuizzesPage from "./pages/QuizzesPage";
 import QuizPlayPage from "./pages/QuizPlayPage";
+import QuizJoinPage from "./pages/QuizJoinPage";
 
 // Dashboard pages
 import DashboardLayout from "./pages/dashboard/DashboardLayout";
@@ -47,6 +48,7 @@ import DashboardCertificates from "./pages/dashboard/DashboardCertificates";
 import DashboardNotes from "./pages/dashboard/DashboardNotes";
 import DashboardPlaceholder from "./pages/dashboard/DashboardPlaceholder";
 import DashboardRequests from "./pages/dashboard/DashboardRequests";
+import DashboardQuizHistory from "./pages/dashboard/DashboardQuizHistory";
 
 // Admin pages
 import AdminLayout from "./pages/admin/AdminLayout";
@@ -81,6 +83,8 @@ import TeacherSessions from "./pages/teacher/TeacherSessions";
 import TeacherStudents from "./pages/teacher/TeacherStudents";
 import TeacherRecordings from "./pages/teacher/TeacherRecordings";
 import TeacherEarnings from "./pages/teacher/TeacherEarnings";
+import TeacherQuizCenter from "./pages/teacher/TeacherQuizCenter";
+import TeacherLiveQuizConsole from "./pages/teacher/TeacherLiveQuizConsole";
 
 const queryClient = new QueryClient();
 
@@ -135,6 +139,7 @@ const App = () => (
                 <Route path="/tutor/:id" element={<TutorProfilePage />} />
                 <Route path="/tutors" element={<TutorsPage />} />
                 <Route path="/quizzes" element={<QuizzesPage />} />
+                <Route path="/quizzes/join" element={<QuizJoinPage />} />
                 <Route path="/quiz/:id" element={<QuizPlayPage />} />
 
                 {/* Student Dashboard */}
@@ -231,6 +236,14 @@ const App = () => (
                   element={
                     <DashboardWrapper>
                       <DashboardRequests />
+                    </DashboardWrapper>
+                  }
+                />
+                <Route
+                  path="/dashboard/quiz-history"
+                  element={
+                    <DashboardWrapper>
+                      <DashboardQuizHistory />
                     </DashboardWrapper>
                   }
                 />
@@ -421,6 +434,8 @@ const App = () => (
                 <Route path="/teacher/students" element={<TeacherWrapper><TeacherStudents /></TeacherWrapper>} />
                 <Route path="/teacher/recordings" element={<TeacherWrapper><TeacherRecordings /></TeacherWrapper>} />
                 <Route path="/teacher/earnings" element={<TeacherWrapper><TeacherEarnings /></TeacherWrapper>} />
+                <Route path="/teacher/quiz-center" element={<TeacherWrapper><TeacherQuizCenter /></TeacherWrapper>} />
+                <Route path="/teacher/quiz-center/live/:sessionId" element={<TeacherWrapper><TeacherLiveQuizConsole /></TeacherWrapper>} />
 
                 <Route path="*" element={<NotFound />} />
               </Routes>
