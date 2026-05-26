@@ -61,11 +61,11 @@ const Navbar = () => {
       <div className="container mx-auto px-4 lg:px-6">
         <div className="flex items-center h-16 lg:h-[72px]">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2.5 group shrink-0">
+          <Link to="/" className="flex items-center gap-2.5 group shrink-0 -my-2">
             <img
               src={logo}
               alt="Webtuto.LK"
-              className="h-9 w-auto transition-transform duration-300 group-hover:scale-105"
+              className="h-16 lg:h-20 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
             />
           </Link>
 
