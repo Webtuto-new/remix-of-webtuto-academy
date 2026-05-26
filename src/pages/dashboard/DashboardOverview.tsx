@@ -150,7 +150,21 @@ const DashboardOverview = () => {
             </Link>
           </div>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-            {continueItems.map((item) => (
+            {continueItems.map((item) => {
+              let pct = 0;
+              let resumeLabel = "Resume watching";
+              try {
+                const raw = localStorage.getItem(`webtuto_progress_${item.resource_id}`);
+                if (raw) {
+                  const p = JSON.parse(raw);
+                  if (typeof p?.pct === "number") pct = Math.max(2, Math.min(100, p.pct));
+                  if (p?.t && p?.d) {
+                    const m = Math.floor(p.t / 60); const s = Math.floor(p.t % 60).toString().padStart(2, "0");
+                    resumeLabel = `Resume at ${m}:${s}`;
+                  }
+                }
+              } catch {}
+              return (
               <Link key={item.resource_id} to={`/recording/${item.resource_id}`}
                 className="group relative overflow-hidden rounded-xl glass-strong ring-1 ring-border/60 hover:ring-primary/50 transition-all hover:-translate-y-0.5">
                 <div className="aspect-video bg-muted relative overflow-hidden">
@@ -165,21 +179,27 @@ const DashboardOverview = () => {
                       <Play className="w-5 h-5 text-primary-foreground ml-0.5" />
                     </div>
                   </div>
-                  {/* Progress bar shimmer */}
+                  {/* Real progress bar */}
                   <div className="absolute bottom-0 left-0 right-0 h-1 bg-card/60">
-                    <div className="h-full bg-gradient-to-r from-primary to-secondary" style={{ width: `${30 + (item.resource_id.charCodeAt(0) % 60)}%` }} />
+                    <div className="h-full bg-gradient-to-r from-primary to-secondary transition-all" style={{ width: `${pct}%` }} />
                   </div>
+                  {pct > 0 && (
+                    <div className="absolute top-1.5 right-1.5 px-1.5 py-0.5 rounded-md bg-background/80 backdrop-blur text-[9px] font-bold text-foreground ring-1 ring-border/60">
+                      {pct}%
+                    </div>
+                  )}
                 </div>
                 <div className="p-2.5">
                   <p className="text-xs font-semibold text-foreground truncate group-hover:text-primary transition-colors">
                     {item.recording?.title || item.resource_title || "Recording"}
                   </p>
                   <p className="text-[10px] text-muted-foreground truncate">
-                    {item.recording?.teachers?.name || "Resume watching"}
+                    {pct > 0 ? resumeLabel : (item.recording?.teachers?.name || "Resume watching")}
                   </p>
                 </div>
               </Link>
-            ))}
+              );
+            })}
           </div>
         </motion.section>
       )}
