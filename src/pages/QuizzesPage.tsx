@@ -11,15 +11,25 @@ const QuizzesPage = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase
-      .from("quizzes")
-      .select("*, curriculums(name), grades(name), subjects(name), teachers(name), quiz_questions(count)")
-      .eq("is_published", true)
-      .order("created_at", { ascending: false })
-      .then(({ data }) => {
-        setQuizzes(data || []);
-        setLoading(false);
-      });
+    (async () => {
+      const { data: qz } = await supabase
+        .from("quizzes")
+        .select("*, curriculums(name), grades(name), subjects(name), teachers(name)")
+        .eq("is_published", true)
+        .order("created_at", { ascending: false });
+      const list = qz || [];
+      const ids = list.map((q: any) => q.id);
+      let counts: Record<string, number> = {};
+      if (ids.length) {
+        const { data: qs } = await supabase
+          .from("quiz_questions")
+          .select("quiz_id")
+          .in("quiz_id", ids);
+        (qs || []).forEach((r: any) => (counts[r.quiz_id] = (counts[r.quiz_id] || 0) + 1));
+      }
+      setQuizzes(list.map((q: any) => ({ ...q, _qCount: counts[q.id] || 0 })));
+      setLoading(false);
+    })();
   }, []);
 
   return (
@@ -54,7 +64,7 @@ const QuizzesPage = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {quizzes.map((q, i) => {
-              const qCount = q.quiz_questions?.[0]?.count ?? 0;
+              const qCount = q._qCount ?? 0;
               return (
                 <motion.div
                   key={q.id}
