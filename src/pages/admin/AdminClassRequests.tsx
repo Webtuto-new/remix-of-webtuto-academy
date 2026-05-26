@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { Eye, MessageSquare, Inbox, Search } from "lucide-react";
+import AdminPageHeader from "@/components/premium/AdminPageHeader";
 
 const STATUSES = ["pending", "reviewing", "tutor_assigned", "replied", "accepted", "rejected", "completed"];
 

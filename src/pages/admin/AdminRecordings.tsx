@@ -407,11 +407,16 @@ const AdminRecordings = () => {
   // List view
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <h1 className="font-display text-xl sm:text-2xl font-bold text-gradient">Manage Recordings</h1>
-        <Dialog open={recOpen} onOpenChange={(v) => { setRecOpen(v); if (!v) setEditingRec(null); }}>
+      <AdminPageHeader
+        icon={Play}
+        eyebrow="Lesson library"
+        title="Manage Recordings"
+        description="Create recording packs, attach lessons, and publish to students."
+        accent="secondary"
+        actions={
+          <Dialog open={recOpen} onOpenChange={(v) => { setRecOpen(v); if (!v) setEditingRec(null); }}>
           <DialogTrigger asChild>
-            <Button className="gap-1 w-full sm:w-auto"><Plus className="w-4 h-4" /> Add Recording</Button>
+            <Button variant="premium" size="sm" className="gap-1.5"><Plus className="w-4 h-4" /> Add Recording</Button>
           </DialogTrigger>
           <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
             <DialogHeader><DialogTitle>{editingRec ? "Edit" : "New"} Recording</DialogTitle></DialogHeader>
