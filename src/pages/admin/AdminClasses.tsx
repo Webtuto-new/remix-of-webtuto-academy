@@ -14,6 +14,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { format, addDays } from "date-fns";
+import { motion } from "framer-motion";
+import { fadeUp, stagger } from "@/lib/motion";
+import EmptyState from "@/components/premium/EmptyState";
+import { BookOpen } from "lucide-react";
 
 const emptyForm = {
   title: "", description: "", short_description: "", class_type: "monthly",
@@ -631,11 +635,11 @@ const AdminClasses = () => {
         <Input className="pl-10" placeholder="Search classes..." value={classSearch} onChange={(e) => setClassSearch(e.target.value)} />
       </div>
 
-      <Card>
+      <Card className="glass-strong border-border/50 overflow-hidden">
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead><tr className="border-b border-border">
+              <thead><tr className="border-b border-border bg-muted/30">
                 <th className="text-left p-4 font-medium text-muted-foreground">Title</th>
                 <th className="text-left p-4 font-medium text-muted-foreground">Teacher</th>
                 <th className="text-left p-4 font-medium text-muted-foreground">Type</th>
@@ -644,7 +648,7 @@ const AdminClasses = () => {
                 <th className="text-left p-4 font-medium text-muted-foreground">Status</th>
                 <th className="text-left p-4 font-medium text-muted-foreground">Actions</th>
               </tr></thead>
-              <tbody>
+              <motion.tbody variants={stagger} initial="hidden" animate="show">
                 {filteredClasses.map((c) => (
                   <tr key={c.id} className={`border-b border-border last:border-0 ${!c.is_active ? "opacity-60" : ""}`}>
                     <td className="p-4 font-medium text-foreground">
@@ -680,10 +684,10 @@ const AdminClasses = () => {
                       <Button variant="ghost" size="sm" onClick={() => handleEdit(c)}><Pencil className="w-4 h-4" /></Button>
                       <Button variant="ghost" size="sm" onClick={() => handleDelete(c.id)} className="text-destructive"><Trash2 className="w-4 h-4" /></Button>
                     </td>
-                  </tr>
+                  </motion.tr>
                 ))}
-                {filteredClasses.length === 0 && <tr><td colSpan={7} className="p-8 text-center text-muted-foreground">No classes found.</td></tr>}
-              </tbody>
+                {filteredClasses.length === 0 && <tr><td colSpan={7} className="p-8"><EmptyState icon={BookOpen} title="No classes found" description="Try adjusting your search or create a new class." /></td></tr>}
+              </motion.tbody>
             </table>
           </div>
         </CardContent>

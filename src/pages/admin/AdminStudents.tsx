@@ -8,6 +8,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Copy, UserPlus, BookOpen, Clock, Pencil, Eye, ArrowLeft, CheckCircle2, XCircle, Ban, ShieldCheck } from "lucide-react";
 import { format, addDays } from "date-fns";
+import { motion } from "framer-motion";
+import { fadeUp, stagger } from "@/lib/motion";
+import EmptyState from "@/components/premium/EmptyState";
+import { Users } from "lucide-react";
 
 const AdminStudents = () => {
   const [students, setStudents] = useState<any[]>([]);
@@ -476,11 +480,11 @@ const AdminStudents = () => {
       </Dialog>
 
       {/* Students Table */}
-      <Card>
+      <Card className="glass-strong border-border/50 overflow-hidden">
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead><tr className="border-b border-border">
+              <thead><tr className="border-b border-border bg-muted/30">
                 <th className="text-left p-4 font-medium text-muted-foreground">Admission #</th>
                 <th className="text-left p-4 font-medium text-muted-foreground">Name</th>
                 <th className="text-left p-4 font-medium text-muted-foreground">Email</th>
@@ -488,9 +492,9 @@ const AdminStudents = () => {
                 <th className="text-left p-4 font-medium text-muted-foreground">Joined</th>
                 <th className="text-left p-4 font-medium text-muted-foreground">Actions</th>
               </tr></thead>
-              <tbody>
+              <motion.tbody variants={stagger} initial="hidden" animate="show">
                 {filtered.map((s) => (
-                  <tr key={s.id} className="border-b border-border last:border-0 hover:bg-muted/30 cursor-pointer" onClick={() => openStudentView(s)}>
+                  <motion.tr key={s.id} variants={fadeUp} className="border-b border-border last:border-0 hover:bg-primary/5 transition-colors group cursor-pointer" onClick={() => openStudentView(s)}>
                     <td className="p-4 font-medium text-foreground font-mono text-xs">{s.admission_number || "—"}</td>
                     <td className="p-4 text-foreground">
                       {s.full_name}
@@ -515,10 +519,10 @@ const AdminStudents = () => {
                         </Button>
                       </div>
                     </td>
-                  </tr>
+                  </motion.tr>
                 ))}
-                {filtered.length === 0 && <tr><td colSpan={6} className="p-8 text-center text-muted-foreground">{search ? "No students match your search." : "No students yet."}</td></tr>}
-              </tbody>
+                {filtered.length === 0 && <tr><td colSpan={6} className="p-8"><EmptyState icon={Users} title={search ? "No matches" : "No students yet"} description={search ? "Try a different search term." : "Student accounts will appear here once created."} /></td></tr>}
+              </motion.tbody>
             </table>
           </div>
         </CardContent>
