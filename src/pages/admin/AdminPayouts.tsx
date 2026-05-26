@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import { Plus, Pencil, Trash2, DollarSign } from "lucide-react";
+import AdminPageHeader from "@/components/premium/AdminPageHeader";
 
 const AdminPayouts = () => {
   const [payouts, setPayouts] = useState<any[]>([]);
@@ -69,10 +70,15 @@ const AdminPayouts = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="font-display text-2xl font-bold text-gradient">Teacher Payouts</h1>
-        <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setEditing(null); setForm({ teacher_id: "", amount: "", period_start: "", period_end: "", notes: "" }); } }}>
-          <DialogTrigger asChild><Button className="gap-1"><Plus className="w-4 h-4" /> New Payout</Button></DialogTrigger>
+      <AdminPageHeader
+        icon={DollarSign}
+        eyebrow="Finance"
+        title="Teacher Payouts"
+        description="Track and process payouts to teachers for completed periods."
+        accent="emerald"
+        actions={
+          <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setEditing(null); setForm({ teacher_id: "", amount: "", period_start: "", period_end: "", notes: "" }); } }}>
+            <DialogTrigger asChild><Button variant="premium" size="sm" className="gap-1.5"><Plus className="w-4 h-4" /> New Payout</Button></DialogTrigger>
           <DialogContent>
             <DialogHeader><DialogTitle>{editing ? "Edit" : "Create"} Payout</DialogTitle></DialogHeader>
             <div className="space-y-4">
@@ -89,11 +95,12 @@ const AdminPayouts = () => {
                 <div className="space-y-2"><Label>Period End</Label><Input type="date" value={form.period_end} onChange={(e) => setForm(f => ({ ...f, period_end: e.target.value }))} /></div>
               </div>
               <div className="space-y-2"><Label>Notes</Label><textarea className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm" rows={2} value={form.notes} onChange={(e) => setForm(f => ({ ...f, notes: e.target.value }))} /></div>
-              <Button onClick={handleSave} className="w-full">{editing ? "Update" : "Create"} Payout</Button>
+              <Button onClick={handleSave} variant="premium" className="w-full">{editing ? "Update" : "Create"} Payout</Button>
             </div>
           </DialogContent>
-        </Dialog>
-      </div>
+          </Dialog>
+        }
+      />
       <Card className="glass-strong border-white/10">
         <CardContent className="p-0">
           <div className="overflow-x-auto">

@@ -7,7 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import { Plus, Pencil, Trash2, Tag } from "lucide-react";
+import AdminPageHeader from "@/components/premium/AdminPageHeader";
 
 const AdminCoupons = () => {
   const [coupons, setCoupons] = useState<any[]>([]);
@@ -56,10 +57,15 @@ const AdminCoupons = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="font-display text-2xl font-bold text-gradient">Coupons</h1>
-        <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setEditing(null); setForm({ code: "", discount_percent: "", discount_amount: "", max_uses: "", expires_at: "" }); } }}>
-          <DialogTrigger asChild><Button className="gap-1"><Plus className="w-4 h-4" /> Add Coupon</Button></DialogTrigger>
+      <AdminPageHeader
+        icon={Tag}
+        eyebrow="Promotions"
+        title="Discount Coupons"
+        description="Create promo codes with percentage or fixed discounts and usage limits."
+        accent="accent"
+        actions={
+          <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setEditing(null); setForm({ code: "", discount_percent: "", discount_amount: "", max_uses: "", expires_at: "" }); } }}>
+            <DialogTrigger asChild><Button variant="premium" size="sm" className="gap-1.5"><Plus className="w-4 h-4" /> Add Coupon</Button></DialogTrigger>
           <DialogContent>
             <DialogHeader><DialogTitle>{editing ? "Edit" : "New"} Coupon</DialogTitle></DialogHeader>
             <div className="space-y-4">
@@ -72,11 +78,12 @@ const AdminCoupons = () => {
                 <div className="space-y-2"><Label>Max Uses</Label><Input type="number" value={form.max_uses} onChange={(e) => setForm(f => ({ ...f, max_uses: e.target.value }))} /></div>
                 <div className="space-y-2"><Label>Expires At</Label><Input type="datetime-local" value={form.expires_at} onChange={(e) => setForm(f => ({ ...f, expires_at: e.target.value }))} /></div>
               </div>
-              <Button onClick={handleSave} className="w-full">{editing ? "Update" : "Create"}</Button>
+              <Button onClick={handleSave} variant="premium" className="w-full">{editing ? "Update" : "Create"}</Button>
             </div>
           </DialogContent>
-        </Dialog>
-      </div>
+          </Dialog>
+        }
+      />
       <Card className="glass-strong border-white/10">
         <CardContent className="p-0">
           <div className="overflow-x-auto">
