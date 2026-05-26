@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Play, Info, ChevronLeft, ChevronRight, Radio } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
+import heroBg from "@/assets/hero-bg.jpg";
 
 type ClassRow = any;
 
@@ -22,7 +23,8 @@ const HeroFeature = ({ items }: { items: ClassRow[] }) => {
   return (
     <section className="relative h-[88vh] min-h-[560px] w-full overflow-hidden">
       {/* Ambient base (always visible behind image) */}
-      <div className="absolute inset-0 bg-mesh" />
+      <img src={heroBg} alt="" aria-hidden className="absolute inset-0 w-full h-full object-cover" />
+      <div className="absolute inset-0 bg-mesh opacity-40 mix-blend-overlay" />
       <div className="absolute inset-0">
         <div className="absolute top-1/4 -left-20 w-[480px] h-[480px] rounded-full bg-primary/30 blur-[140px] animate-float-blob" />
         <div className="absolute bottom-0 right-0 w-[520px] h-[520px] rounded-full bg-accent/20 blur-[160px] animate-float-blob" style={{ animationDelay: "-5s" }} />
