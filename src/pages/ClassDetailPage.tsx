@@ -330,15 +330,20 @@ const ClassDetailPage = () => {
 
             {activeTab === "Teacher" && (
               <div className="space-y-4">
-                <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 rounded-full bg-secondary/10 flex items-center justify-center">
-                    <span className="font-display font-bold text-secondary text-xl">{cls.teacherName.charAt(0)}</span>
+                <Link to={teacher?.id ? `/tutor/${teacher.id}` : "#"} className="flex items-center gap-4 group hover:opacity-80 transition">
+                  <div className="w-16 h-16 rounded-full overflow-hidden bg-secondary/10 flex items-center justify-center ring-2 ring-accent/30">
+                    {teacher?.avatar_url ? (
+                      <img src={teacher.avatar_url} alt={cls.teacherName} className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="font-display font-bold text-secondary text-xl">{cls.teacherName.charAt(0)}</span>
+                    )}
                   </div>
                   <div>
-                    <h2 className="font-display text-xl font-semibold text-foreground">{cls.teacherName}</h2>
+                    <h2 className="font-display text-xl font-semibold text-foreground group-hover:text-accent transition-colors">{cls.teacherName}</h2>
                     <p className="text-muted-foreground">{teacher?.qualifications || "Educator"}</p>
+                    <p className="text-xs text-accent font-semibold mt-0.5">View full profile →</p>
                   </div>
-                </div>
+                </Link>
                 <p className="text-muted-foreground leading-relaxed">
                   {teacher?.bio || "An experienced educator dedicated to helping students succeed."}
                 </p>
