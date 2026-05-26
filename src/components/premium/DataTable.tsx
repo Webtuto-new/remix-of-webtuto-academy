@@ -18,7 +18,7 @@ interface DataTableProps<T> {
   loading?: boolean;
   emptyTitle?: string;
   emptyDescription?: string;
-  emptyIcon?: ReactNode;
+  emptyIcon?: typeof Inbox;
   rowKey?: (row: T, index: number) => string;
   onRowClick?: (row: T) => void;
   className?: string;
@@ -73,7 +73,7 @@ function DataTable<T>({
         ) : !rows || rows.length === 0 ? (
           <div className="p-10">
             <EmptyState
-              icon={emptyIcon ?? <Inbox className="h-6 w-6" />}
+              icon={emptyIcon ?? Inbox}
               title={emptyTitle}
               description={emptyDescription}
             />
