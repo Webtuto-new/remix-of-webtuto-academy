@@ -12,6 +12,7 @@ const navItems = [
   { label: "Curriculum", path: "/curriculum", hint: "Explore syllabi" },
   { label: "Classes", path: "/classes", hint: "Live & on-demand" },
   { label: "Recordings", path: "/recordings", hint: "Watch anytime" },
+  { label: "Quizzes", path: "/quizzes", hint: "Test your knowledge" },
   { label: "Request a Class", path: "/request-class", hint: "Custom requests" },
 ];
 

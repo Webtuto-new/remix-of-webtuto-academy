@@ -939,6 +939,216 @@ export type Database = {
         }
         Relationships: []
       }
+      quiz_attempt_answers: {
+        Row: {
+          answer_text: string | null
+          attempt_id: string
+          created_at: string
+          id: string
+          is_correct: boolean
+          points_earned: number
+          question_id: string
+          selected_option_id: string | null
+          time_taken_seconds: number | null
+        }
+        Insert: {
+          answer_text?: string | null
+          attempt_id: string
+          created_at?: string
+          id?: string
+          is_correct?: boolean
+          points_earned?: number
+          question_id: string
+          selected_option_id?: string | null
+          time_taken_seconds?: number | null
+        }
+        Update: {
+          answer_text?: string | null
+          attempt_id?: string
+          created_at?: string
+          id?: string
+          is_correct?: boolean
+          points_earned?: number
+          question_id?: string
+          selected_option_id?: string | null
+          time_taken_seconds?: number | null
+        }
+        Relationships: []
+      }
+      quiz_attempts: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          id: string
+          max_score: number
+          passed: boolean
+          percentage: number
+          quiz_id: string
+          score: number
+          started_at: string
+          time_taken_seconds: number | null
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          max_score?: number
+          passed?: boolean
+          percentage?: number
+          quiz_id: string
+          score?: number
+          started_at?: string
+          time_taken_seconds?: number | null
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          max_score?: number
+          passed?: boolean
+          percentage?: number
+          quiz_id?: string
+          score?: number
+          started_at?: string
+          time_taken_seconds?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      quiz_options: {
+        Row: {
+          created_at: string
+          id: string
+          is_correct: boolean
+          option_text: string
+          question_id: string
+          sort_order: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_correct?: boolean
+          option_text: string
+          question_id: string
+          sort_order?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_correct?: boolean
+          option_text?: string
+          question_id?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
+      quiz_questions: {
+        Row: {
+          created_at: string
+          explanation: string | null
+          id: string
+          image_url: string | null
+          points: number
+          question_text: string
+          question_type: string
+          quiz_id: string
+          sort_order: number
+          time_limit_seconds: number | null
+        }
+        Insert: {
+          created_at?: string
+          explanation?: string | null
+          id?: string
+          image_url?: string | null
+          points?: number
+          question_text: string
+          question_type?: string
+          quiz_id: string
+          sort_order?: number
+          time_limit_seconds?: number | null
+        }
+        Update: {
+          created_at?: string
+          explanation?: string | null
+          id?: string
+          image_url?: string | null
+          points?: number
+          question_text?: string
+          question_type?: string
+          quiz_id?: string
+          sort_order?: number
+          time_limit_seconds?: number | null
+        }
+        Relationships: []
+      }
+      quizzes: {
+        Row: {
+          class_id: string | null
+          created_at: string
+          created_by: string | null
+          curriculum_id: string | null
+          description: string | null
+          grade_id: string | null
+          id: string
+          is_live: boolean
+          is_published: boolean
+          max_attempts: number | null
+          passing_score: number | null
+          recording_id: string | null
+          show_correct_answers: boolean
+          shuffle_questions: boolean
+          subject_id: string | null
+          teacher_id: string | null
+          time_limit_seconds: number | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          class_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          curriculum_id?: string | null
+          description?: string | null
+          grade_id?: string | null
+          id?: string
+          is_live?: boolean
+          is_published?: boolean
+          max_attempts?: number | null
+          passing_score?: number | null
+          recording_id?: string | null
+          show_correct_answers?: boolean
+          shuffle_questions?: boolean
+          subject_id?: string | null
+          teacher_id?: string | null
+          time_limit_seconds?: number | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          class_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          curriculum_id?: string | null
+          description?: string | null
+          grade_id?: string | null
+          id?: string
+          is_live?: boolean
+          is_published?: boolean
+          max_attempts?: number | null
+          passing_score?: number | null
+          recording_id?: string | null
+          show_correct_answers?: boolean
+          shuffle_questions?: boolean
+          subject_id?: string | null
+          teacher_id?: string | null
+          time_limit_seconds?: number | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       recording_notes: {
         Row: {
           created_at: string

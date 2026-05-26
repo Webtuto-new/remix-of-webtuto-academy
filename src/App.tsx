@@ -29,6 +29,8 @@ import CheckoutPage from "./pages/CheckoutPage";
 import NotFound from "./pages/NotFound";
 import RequestClassPage from "./pages/RequestClassPage";
 import TutorProfilePage from "./pages/TutorProfilePage";
+import QuizzesPage from "./pages/QuizzesPage";
+import QuizPlayPage from "./pages/QuizPlayPage";
 
 // Dashboard pages
 import DashboardLayout from "./pages/dashboard/DashboardLayout";
@@ -68,6 +70,7 @@ import AdminTeacherProfile from "./pages/admin/AdminTeacherProfile";
 import AdminClassRequests from "./pages/admin/AdminClassRequests";
 import AdminWhatsApp from "./pages/admin/AdminWhatsApp";
 import AdminWhatsAppAutomation from "./pages/admin/AdminWhatsAppAutomation";
+import AdminQuizzes from "./pages/admin/AdminQuizzes";
 
 // Teacher pages
 import TeacherLayout from "./pages/teacher/TeacherLayout";
@@ -129,6 +132,8 @@ const App = () => (
                 <Route path="/contact" element={<ContactPage />} />
                 <Route path="/request-class" element={<RequestClassPage />} />
                 <Route path="/tutor/:id" element={<TutorProfilePage />} />
+                <Route path="/quizzes" element={<QuizzesPage />} />
+                <Route path="/quiz/:id" element={<QuizPlayPage />} />
 
                 {/* Student Dashboard */}
                 <Route
@@ -395,6 +400,14 @@ const App = () => (
                   element={
                     <AdminWrapper>
                       <AdminWhatsAppAutomation />
+                    </AdminWrapper>
+                  }
+                />
+                <Route
+                  path="/admin/quizzes"
+                  element={
+                    <AdminWrapper>
+                      <AdminQuizzes />
                     </AdminWrapper>
                   }
                 />

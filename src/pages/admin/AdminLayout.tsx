@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   LayoutDashboard, BookOpen, Users, GraduationCap, Play, CreditCard,
-  FileText, BarChart3, Tag, Bell, Settings, LogOut, Menu, Sun, Moon, Megaphone, Award, DollarSign, Package, Building2, Shield, MessageSquare
+  FileText, BarChart3, Tag, Bell, Settings, LogOut, Menu, Sun, Moon, Megaphone, Award, DollarSign, Package, Building2, Shield, MessageSquare, Brain
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import logo from "@/assets/logo.png";
@@ -20,6 +20,7 @@ const adminMenu = [
   { label: "WhatsApp Messages", path: "/admin/whatsapp", icon: MessageSquare },
   { label: "WhatsApp Automation", path: "/admin/whatsapp-automation", icon: Bell },
   { label: "Recordings", path: "/admin/recordings", icon: Play },
+  { label: "Quizzes", path: "/admin/quizzes", icon: Brain },
   { label: "Curriculum", path: "/admin/curriculum", icon: BookOpen },
   { label: "Bundles", path: "/admin/bundles", icon: Package },
   { label: "Payments", path: "/admin/payments", icon: CreditCard },
