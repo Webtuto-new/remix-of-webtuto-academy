@@ -60,7 +60,7 @@ const Navbar = () => {
       <div className="container mx-auto px-4 lg:px-6">
         <div className="flex items-center h-16 lg:h-[72px]">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2.5 group shrink-0 lg:w-48">
+          <Link to="/" className="flex items-center gap-2.5 group shrink-0">
             <img
               src={logo}
               alt="Webtuto.LK"
@@ -72,7 +72,7 @@ const Navbar = () => {
           <div className="flex-1" />
 
           {/* Right Actions */}
-          <div className="flex items-center gap-1.5 lg:w-48 lg:justify-end">
+          <div className="flex items-center gap-1.5 justify-end">
             <Link
               to="/search"
               className="p-2 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-all duration-200"
