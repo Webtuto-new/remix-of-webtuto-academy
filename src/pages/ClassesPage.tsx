@@ -22,6 +22,7 @@ const ClassesPage = () => {
 
   const subjectSlug = searchParams.get("subject");
   const gradeSlug = searchParams.get("grade");
+  const teacherId = searchParams.get("teacher");
 
   useEffect(() => {
     const fetchClasses = async () => {
@@ -38,6 +39,9 @@ const ClassesPage = () => {
       }
       if (gradeSlug) {
         classes = classes.filter(c => c.grades?.slug === gradeSlug);
+      }
+      if (teacherId) {
+        classes = classes.filter(c => c.teacher_id === teacherId);
       }
 
       setDbClasses(classes);
@@ -59,7 +63,7 @@ const ClassesPage = () => {
       setLoading(false);
     };
     fetchClasses();
-  }, [subjectSlug, gradeSlug]);
+  }, [subjectSlug, gradeSlug, teacherId]);
 
   const filtered = dbClasses.filter(c => {
     const matchesQuery = !query || c.title.toLowerCase().includes(query.toLowerCase()) || (c.teachers?.name || "").toLowerCase().includes(query.toLowerCase());
