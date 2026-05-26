@@ -136,17 +136,17 @@ const DashboardLayout = ({ children }: Props) => {
 
       {/* Main Content */}
       <div className="flex-1 lg:ml-64">
-        <header className="sticky top-0 z-20 glass-strong border-b border-border/60 px-4 lg:px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <button onClick={() => setSidebarOpen(true)} className="lg:hidden p-2 rounded-lg text-muted-foreground hover:bg-card/60">
+        <header className="sticky top-0 z-20 glass-strong border-b border-border/60 px-3 lg:px-6 h-16 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 lg:gap-3 min-w-0 flex-1">
+            <button onClick={() => setSidebarOpen(true)} className="lg:hidden p-2 rounded-lg text-muted-foreground hover:bg-card/60 shrink-0">
               <Menu className="w-5 h-5" />
             </button>
-            <div>
-              <p className="text-sm font-semibold text-foreground">Welcome back, {profile?.full_name || "Student"}</p>
-              <p className="text-xs text-muted-foreground">{profile?.admission_number || ""}</p>
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-foreground truncate">Welcome back, {profile?.full_name || "Student"}</p>
+              <p className="text-xs text-muted-foreground truncate">{profile?.admission_number || ""}</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 lg:gap-2 shrink-0">
             <button className="p-2 rounded-lg text-muted-foreground hover:bg-card/60 relative">
               <Bell className="w-5 h-5" />
               <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-accent animate-pulse" />
@@ -154,10 +154,9 @@ const DashboardLayout = ({ children }: Props) => {
             <button
               onClick={handleSignOut}
               aria-label="Sign out"
-              className="lg:hidden inline-flex items-center gap-1.5 px-3 h-9 rounded-full text-xs font-semibold text-destructive bg-destructive/10 hover:bg-destructive/20 active:scale-95 transition"
+              className="lg:hidden inline-flex items-center justify-center w-9 h-9 rounded-lg text-destructive bg-destructive/10 hover:bg-destructive/20 active:scale-95 transition"
             >
-              <LogOut className="w-3.5 h-3.5" />
-              <span className="hidden xs:inline">Sign out</span>
+              <LogOut className="w-4 h-4" />
             </button>
             <Link to="/dashboard/profile">
               <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center ring-2 ring-primary/30 hover:ring-primary/60 transition-all">
