@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Clock, Video, Users, ExternalLink, ArrowLeft, Play, FileText, Download } from "lucide-react";
+import { Calendar, Clock, Video, Users, ExternalLink, ArrowLeft, Play, FileText, Download, Star, Shield, Award, Zap, CheckCircle2, Globe } from "lucide-react";
 import PurchaseButton from "@/components/PurchaseButton";
 import WishlistButton from "@/components/WishlistButton";
 import ReviewForm from "@/components/ReviewForm";
@@ -32,6 +32,7 @@ const ClassDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [hoursPerWeek, setHoursPerWeek] = useState(1);
   const [classesPerWeek, setClassesPerWeek] = useState(1);
+  const [stats, setStats] = useState<{ rating: number; reviewCount: number; studentCount: number }>({ rating: 0, reviewCount: 0, studentCount: 0 });
 
   useEffect(() => {
     if (!id) return;
@@ -55,6 +56,16 @@ const ClassDetailPage = () => {
       supabase.from("enrollments").select("id, expires_at, enrolled_at").eq("user_id", user.id).eq("class_id", id).eq("status", "active").maybeSingle()
         .then(({ data }) => setEnrollment(data));
     }
+    // Rating + student count for trust signals
+    (async () => {
+      const [{ data: revs }, { count: enrolled }] = await Promise.all([
+        supabase.from("reviews").select("rating").eq("class_id", id),
+        supabase.from("enrollments").select("id", { count: "exact", head: true }).eq("class_id", id).eq("status", "active"),
+      ]);
+      const list = revs || [];
+      const avg = list.length ? list.reduce((s: number, r: any) => s + r.rating, 0) / list.length : 0;
+      setStats({ rating: avg, reviewCount: list.length, studentCount: enrolled || 0 });
+    })();
   }, [id, user]);
 
   if (loading) {
