@@ -9,7 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Trash2, Upload, Tag, ShoppingCart, CheckCircle, Building2, Copy } from "lucide-react";
+import { Trash2, Upload, Tag, ShoppingCart, CheckCircle, Building2, Copy, Shield, Clock, Sparkles, Receipt, ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
 
 const CheckoutPage = () => {
   const { items, removeItem, clearCart, total } = useCart();
@@ -113,11 +114,31 @@ const CheckoutPage = () => {
   if (submitted) {
     return (
       <Layout>
-        <div className="container mx-auto px-4 py-24 max-w-lg text-center">
-          <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-          <h1 className="font-display text-2xl font-bold text-foreground mb-2">Payment Submitted!</h1>
-          <p className="text-muted-foreground mb-6">Your receipt has been uploaded. Our team will review it and activate your enrollment within 24 hours.</p>
-          <Button onClick={() => navigate("/dashboard/payments")}>View My Payments</Button>
+        <div className="container mx-auto px-4 py-24 max-w-xl">
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="text-center relative"
+          >
+            <div className="absolute inset-0 -z-10 bg-gradient-to-br from-secondary/10 via-transparent to-primary/10 blur-3xl" />
+            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-secondary to-primary mx-auto mb-6 flex items-center justify-center shadow-2xl shadow-secondary/30">
+              <CheckCircle className="w-12 h-12 text-white" strokeWidth={2.5} />
+            </div>
+            <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-3">
+              Payment Submitted!
+            </h1>
+            <p className="text-muted-foreground mb-8 max-w-md mx-auto">
+              Your receipt has been uploaded successfully. Our team is reviewing it now and will activate your enrollment within 24 hours.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Button onClick={() => navigate("/dashboard/payments")} size="lg" className="gap-2">
+                <Receipt className="w-4 h-4" /> View My Payments
+              </Button>
+              <Button onClick={() => navigate("/dashboard")} variant="outline" size="lg">
+                Go to Dashboard
+              </Button>
+            </div>
+          </motion.div>
         </div>
       </Layout>
     );
@@ -141,12 +162,48 @@ const CheckoutPage = () => {
 
   return (
     <Layout>
-      <div className="container mx-auto px-4 py-24">
-        <h1 className="font-display text-3xl font-bold text-foreground mb-8">Checkout</h1>
+      <div className="relative pt-20 pb-16 overflow-hidden">
+        <div className="absolute top-20 -right-40 w-[500px] h-[500px] rounded-full bg-primary/10 blur-[140px] -z-10" />
+        <div className="container mx-auto px-4 py-8">
+          {/* Header + progress */}
+          <div className="mb-8 max-w-3xl">
+            <div className="flex items-center gap-2 text-xs font-bold tracking-[0.3em] text-primary uppercase mb-3">
+              <Sparkles className="w-3.5 h-3.5" /> Secure Checkout
+            </div>
+            <h1 className="font-display text-3xl md:text-5xl font-bold text-foreground tracking-tight">
+              Complete your enrollment
+            </h1>
+            <p className="text-muted-foreground mt-2">
+              Review your cart, transfer payment, and upload your receipt — we'll handle the rest.
+            </p>
+          </div>
+
+          {/* Step indicator */}
+          <div className="flex items-center gap-2 mb-8 overflow-x-auto pb-1">
+            {[
+              { n: 1, label: "Review cart", done: true },
+              { n: 2, label: "Transfer payment", done: !!bankDetails.length },
+              { n: 3, label: "Upload receipt", done: !!receiptFile },
+              { n: 4, label: "Confirm", done: false },
+            ].map((s, i, arr) => (
+              <div key={s.n} className="flex items-center gap-2 flex-shrink-0">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
+                  s.done ? "bg-secondary text-secondary-foreground" : "bg-muted text-muted-foreground"
+                }`}>
+                  {s.done ? <CheckCircle className="w-4 h-4" /> : s.n}
+                </div>
+                <span className={`text-sm font-semibold whitespace-nowrap ${s.done ? "text-foreground" : "text-muted-foreground"}`}>
+                  {s.label}
+                </span>
+                {i < arr.length - 1 && <ArrowRight className="w-4 h-4 text-muted-foreground/50 ml-1" />}
+              </div>
+            ))}
+          </div>
+
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Cart Items */}
           <div className="lg:col-span-2 space-y-4">
-            <Card>
+            <Card className="border-border/60 bg-card/60 backdrop-blur">
               <CardContent className="p-6">
                 <h2 className="font-display text-lg font-semibold text-foreground mb-4">Cart Items ({items.length})</h2>
                 <div className="divide-y divide-border">
@@ -242,7 +299,7 @@ const CheckoutPage = () => {
 
           {/* Order Summary Sidebar */}
           <div className="space-y-4">
-            <Card className="sticky top-24">
+            <Card className="sticky top-24 border-border/60 bg-gradient-to-br from-card via-card to-primary/5 overflow-hidden">
               <CardContent className="p-6 space-y-4">
                 <h2 className="font-display text-lg font-semibold text-foreground">Order Summary</h2>
                 <div className="space-y-2">
@@ -279,9 +336,18 @@ const CheckoutPage = () => {
                   {loading ? "Submitting..." : "Submit Payment"}
                 </Button>
                 <p className="text-xs text-center text-muted-foreground">Your enrollment will be activated after receipt verification.</p>
+                <div className="pt-3 border-t border-border/40 grid grid-cols-2 gap-2">
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <Shield className="w-3.5 h-3.5 text-primary" /> Secure
+                  </div>
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <Clock className="w-3.5 h-3.5 text-accent" /> Reviewed in 24h
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </div>
+        </div>
         </div>
       </div>
     </Layout>
