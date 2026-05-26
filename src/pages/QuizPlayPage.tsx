@@ -38,20 +38,33 @@ const QuizPlayPage = () => {
 
   useEffect(() => {
     if (!id) return;
-    supabase
-      .from("quizzes")
-      .select("*, quiz_questions(*, quiz_options(*))")
-      .eq("id", id)
-      .eq("is_published", true)
-      .maybeSingle()
-      .then(({ data }) => {
-        if (!data) return;
-        setQuiz(data);
-        const qs = (data.quiz_questions || []).sort((a: any, b: any) => a.sort_order - b.sort_order);
-        if (data.shuffle_questions) qs.sort(() => Math.random() - 0.5);
-        setQuestions(qs);
-        setMaxScore(qs.reduce((s: number, q: Question) => s + q.points, 0));
+    (async () => {
+      const { data: qz } = await supabase
+        .from("quizzes")
+        .select("*")
+        .eq("id", id)
+        .eq("is_published", true)
+        .maybeSingle();
+      if (!qz) return;
+      setQuiz(qz);
+      const { data: qs } = await supabase
+        .from("quiz_questions")
+        .select("*")
+        .eq("quiz_id", id)
+        .order("sort_order");
+      const qIds = (qs || []).map((x: any) => x.id);
+      const { data: opts } = qIds.length
+        ? await supabase.from("quiz_options").select("*").in("question_id", qIds)
+        : { data: [] as any[] };
+      const byQ: Record<string, any[]> = {};
+      (opts || []).forEach((o: any) => {
+        (byQ[o.question_id] ||= []).push(o);
       });
+      let merged: Question[] = (qs || []).map((q: any) => ({ ...q, quiz_options: byQ[q.id] || [] }));
+      if (qz.shuffle_questions) merged = [...merged].sort(() => Math.random() - 0.5);
+      setQuestions(merged);
+      setMaxScore(merged.reduce((s, q) => s + q.points, 0));
+    })();
   }, [id]);
 
   // Per-question timer
