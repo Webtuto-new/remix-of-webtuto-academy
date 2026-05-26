@@ -159,12 +159,12 @@ const RowCard = ({ c }: { c: ClassRow }) => {
   return (
     <Link
       to={`/class/${c.id}`}
-      className="snap-start shrink-0 w-[78vw] xs:w-[60vw] sm:w-[300px] md:w-[320px] lg:w-[340px] xl:w-[360px] max-w-[380px] group/card relative"
+      className="snap-start shrink-0 w-[78vw] xs:w-[60vw] sm:w-[300px] md:w-[320px] lg:w-[340px] xl:w-[360px] max-w-[380px] group/card relative outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-md"
     >
       <motion.div
         whileHover={{ scale: 1.06, zIndex: 30 }}
         transition={{ type: "spring", stiffness: 300, damping: 24 }}
-        className="relative rounded-md overflow-hidden bg-card aspect-video shadow-lg ring-1 ring-foreground/5 hover:ring-2 hover:ring-accent hover:shadow-[0_20px_60px_-10px_hsl(var(--accent)/0.5)]"
+        className="relative rounded-md overflow-hidden bg-card aspect-video shadow-lg ring-1 ring-foreground/5 hover:ring-2 hover:ring-primary hover:shadow-[0_20px_60px_-10px_hsl(var(--primary)/0.5)]"
       >
         {c.thumbnail_url ? (
           <img src={c.thumbnail_url} alt={c.title} className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
