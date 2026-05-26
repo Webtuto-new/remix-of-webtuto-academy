@@ -221,7 +221,15 @@ const RecordingPlayerPage = () => {
         path={`/recording/${id}`} 
         image={recording.thumbnail_url || undefined} 
       />
-      <div className="pt-16 sm:pt-20 pb-12 sm:pb-16 min-h-screen">
+      <div className="relative pt-16 sm:pt-20 pb-12 sm:pb-16 min-h-screen overflow-hidden">
+        {/* Cinematic backdrop */}
+        {recording.thumbnail_url && (
+          <div className="absolute inset-0 -z-10 pointer-events-none">
+            <img src={recording.thumbnail_url} alt="" className="w-full h-[60vh] object-cover opacity-20 scale-110 blur-3xl" />
+            <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/85 to-background" />
+          </div>
+        )}
+        <div className="absolute inset-0 -z-10 bg-mesh opacity-50 pointer-events-none" />
         <div className="container mx-auto px-3 sm:px-4">
           {/* Back button */}
           <Link
@@ -235,7 +243,7 @@ const RecordingPlayerPage = () => {
             <>
               {/* Video player - full width on mobile */}
               <div className="space-y-3 sm:space-y-4">
-                <div className="aspect-video bg-card rounded-lg sm:rounded-xl overflow-hidden relative shadow-lg border border-border/60">
+                <div className="aspect-video bg-black rounded-xl sm:rounded-2xl overflow-hidden relative shadow-2xl ring-1 ring-white/10 hover:ring-glow transition-shadow">
                   {!hasAnyVideo ? (
                     <div className="flex flex-col items-center justify-center h-full text-muted-foreground/60 bg-muted/50">
                       <Play className="w-10 h-10 sm:w-14 sm:h-14 mb-2" />
@@ -329,7 +337,7 @@ const RecordingPlayerPage = () => {
 
                 {/* Notes & Share */}
                 {recordingNotes.length > 0 && (
-                  <div className="bg-card border border-border/60 rounded-lg p-3 sm:p-4 space-y-2">
+                  <div className="glass-strong rounded-2xl p-3 sm:p-4 space-y-2">
                     <h3 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
                       <FileText className="w-4 h-4 text-primary" /> Notes & Materials
                     </h3>
@@ -361,7 +369,7 @@ const RecordingPlayerPage = () => {
                   const hasChapters = chapters.some(c => c.name);
 
                   return (
-                  <div className="bg-card border border-border/60 rounded-lg sm:rounded-xl overflow-hidden shadow-sm">
+                  <div className="glass-strong rounded-2xl overflow-hidden">
                     <button
                       onClick={() => setShowLessons(!showLessons)}
                       className="w-full p-3 flex items-center justify-between sm:cursor-default"
