@@ -18,7 +18,6 @@ const DashboardOverview = () => {
   const [continueItems, setContinueItems] = useState<any[]>([]);
   const [achievements, setAchievements] = useState({ certificates: 0, quizzes: 0, bestScore: 0 });
   const [recommended, setRecommended] = useState<any[]>([]);
-  void recommended;
 
   const handleSendTestEmail = async () => {
     if (!user?.email) return;
