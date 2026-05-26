@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Clock, Users, ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
 
 export interface ClassCardProps {
   id: string;
@@ -48,7 +49,15 @@ const ClassCard = ({
   const discount = originalPrice ? Math.round(((originalPrice - price) / originalPrice) * 100) : 0;
 
   return (
-    <Link to={`/class/${id}`} className="block bg-card rounded-xl overflow-hidden card-elevated group hover:ring-2 hover:ring-primary/20 transition-all duration-300">
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-40px" }}
+      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+      whileHover={{ y: -4 }}
+      className="h-full"
+    >
+    <Link to={`/class/${id}`} className="block bg-card/70 backdrop-blur-sm rounded-2xl overflow-hidden card-elevated group hover:ring-2 hover:ring-primary/30 transition-all duration-300 h-full">
       {/* Thumbnail — auto-generate from title if none */}
       <div className="relative aspect-video bg-muted overflow-hidden">
         {thumbnail ? (
@@ -120,6 +129,7 @@ const ClassCard = ({
         </div>
       </div>
     </Link>
+    </motion.div>
   );
 };
 
