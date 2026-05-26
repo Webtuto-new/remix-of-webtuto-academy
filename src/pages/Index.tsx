@@ -137,7 +137,7 @@ const Row = ({ title, items }: { title: string; items: ClassRow[] }) => {
         </button>
         <div
           ref={scroller}
-          className="flex gap-4 sm:gap-5 lg:gap-6 overflow-x-auto scroll-smooth px-4 sm:px-8 pb-6 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+          className="flex gap-4 sm:gap-5 lg:gap-6 overflow-x-auto scroll-smooth px-4 sm:px-8 lg:px-12 pb-6 snap-x snap-mandatory scroll-pl-4 sm:scroll-pl-8 lg:scroll-pl-12 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
         >
           {items.map((c) => (
             <RowCard key={c.id} c={c} />
@@ -223,7 +223,7 @@ const TutorRow = ({ title, tutors }: { title: string; tutors: any[] }) => {
         <button onClick={() => scroll(-1)} className="absolute left-0 top-0 bottom-0 z-20 w-12 sm:w-16 flex items-center justify-center bg-gradient-to-r from-background/90 to-transparent opacity-0 group-hover/row:opacity-100 transition-opacity" aria-label="Scroll left">
           <ChevronLeft className="w-8 h-8 text-foreground" />
         </button>
-        <div ref={scroller} className="flex gap-4 sm:gap-5 lg:gap-6 overflow-x-auto scroll-smooth px-4 sm:px-8 pb-6 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+        <div ref={scroller} className="flex gap-4 sm:gap-5 lg:gap-6 overflow-x-auto scroll-smooth px-4 sm:px-8 lg:px-12 pb-6 snap-x snap-mandatory scroll-pl-4 sm:scroll-pl-8 lg:scroll-pl-12 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           {tutors.map((t) => (
             <Link key={t.id} to={`/tutor/${t.id}`} className="snap-start shrink-0 w-[170px] sm:w-[200px] lg:w-[220px] group/tutor">
               <motion.div whileHover={{ y: -6 }} transition={{ type: "spring", stiffness: 300, damping: 22 }} className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-card to-muted/40 ring-1 ring-foreground/10 hover:ring-2 hover:ring-accent shadow-lg p-5 text-center h-full">
