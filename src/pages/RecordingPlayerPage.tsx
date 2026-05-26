@@ -341,6 +341,10 @@ const RecordingPlayerPage = () => {
                       url={activeUrl}
                       title={mainTitle ?? recording.title}
                       onEnded={handleVideoEnded}
+                      storageKey={id && (activeLesson?.id || activeModuleVideo?.id) ? `webtuto_pos_${id}_${activeLesson?.id ?? activeModuleVideo?.id}` : undefined}
+                      recordingId={id}
+                      lessonId={activeLesson?.id ?? activeModuleVideo?.id}
+                      lessonTitle={mainTitle ?? recording.title}
                       onError={() =>
                         setPlayerError("The video URL is invalid, blocked, or the storage bucket is not public.")
                       }
