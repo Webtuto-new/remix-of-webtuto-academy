@@ -593,8 +593,9 @@ const AdminClasses = () => {
               </div>
             </DialogContent>
           </Dialog>
-        </div>
-      </div>
+          </div>
+        }
+      />
 
       {/* Manual Enrollment Dialog */}
       <Dialog open={enrollOpen} onOpenChange={setEnrollOpen}>
