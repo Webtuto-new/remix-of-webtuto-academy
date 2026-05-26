@@ -8,9 +8,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Pencil, Trash2, ChevronRight, Video, ArrowLeft, User, UserPlus, Search, FileText, Users } from "lucide-react";
+import { Plus, Pencil, Trash2, ChevronRight, Video, ArrowLeft, User, UserPlus, Search, FileText, Users, Play } from "lucide-react";
 import EnrolledStudentsDialog from "@/components/EnrolledStudentsDialog";
 import { Badge } from "@/components/ui/badge";
+import AdminPageHeader from "@/components/premium/AdminPageHeader";
 import ThumbnailUpload from "@/components/ThumbnailUpload";
 import FileOrLinkInput from "@/components/FileOrLinkInput";
 import LessonModuleManager from "@/components/lessons/LessonModuleManager";

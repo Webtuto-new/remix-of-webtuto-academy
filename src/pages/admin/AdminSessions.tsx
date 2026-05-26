@@ -212,11 +212,15 @@ const AdminSessions = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="font-display text-2xl font-bold text-gradient">Class Sessions & Zoom</h1>
-        {selectedClass && (
+      <AdminPageHeader
+        icon={Video}
+        eyebrow="Live operations"
+        title="Class Sessions & Zoom"
+        description="Schedule sessions, attach Zoom links, and share session notes."
+        accent="primary"
+        actions={selectedClass ? (
           <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) setEditing(null); }}>
-            <DialogTrigger asChild><Button className="gap-1"><Plus className="w-4 h-4" /> Add Session</Button></DialogTrigger>
+            <DialogTrigger asChild><Button variant="premium" size="sm" className="gap-1.5"><Plus className="w-4 h-4" /> Add Session</Button></DialogTrigger>
             <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
               <DialogHeader><DialogTitle>{editing ? "Edit" : "New"} Session</DialogTitle></DialogHeader>
               <div className="space-y-4">
