@@ -68,6 +68,7 @@ import AdminPayouts from "./pages/admin/AdminPayouts";
 import AdminCertificates from "./pages/admin/AdminCertificates";
 import AdminCoupons from "./pages/admin/AdminCoupons";
 import AdminAnnouncements from "./pages/admin/AdminAnnouncements";
+import AdminTestimonials from "./pages/admin/AdminTestimonials";
 import AdminAnalytics from "./pages/admin/AdminAnalytics";
 import AdminBundles from "./pages/admin/AdminBundles";
 import AdminAdmins from "./pages/admin/AdminAdmins";
