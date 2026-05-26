@@ -165,7 +165,22 @@ const ClassDetailPage = () => {
             <h1 className="font-display text-3xl md:text-5xl font-bold text-foreground mb-4 tracking-tight">{cls.title}</h1>
             <p className="text-muted-foreground text-base md:text-lg max-w-3xl leading-relaxed mb-5">{cls.description}</p>
             <div className="flex flex-wrap items-center gap-5 text-sm text-muted-foreground">
-              <span className="flex items-center gap-1.5"><Users className="w-4 h-4 text-primary" /> {cls.teacherName}</span>
+              {stats.reviewCount > 0 && (
+                <span className="flex items-center gap-1.5">
+                  <Star className="w-4 h-4 fill-accent text-accent" />
+                  <span className="font-bold text-foreground">{stats.rating.toFixed(1)}</span>
+                  <span>({stats.reviewCount} reviews)</span>
+                </span>
+              )}
+              {stats.studentCount > 0 && (
+                <span className="flex items-center gap-1.5">
+                  <Users className="w-4 h-4 text-primary" />
+                  <span className="font-bold text-foreground">{stats.studentCount}</span> enrolled
+                </span>
+              )}
+              <Link to={teacher?.id ? `/tutor/${teacher.id}` : "#"} className="flex items-center gap-1.5 hover:text-foreground transition-colors">
+                <Award className="w-4 h-4 text-primary" /> {cls.teacherName}
+              </Link>
               <span className="flex items-center gap-1.5"><Calendar className="w-4 h-4 text-primary" /> {cls.sessionCount} sessions</span>
               <span className="flex items-center gap-1.5"><Clock className="w-4 h-4 text-primary" /> {cls.duration}</span>
             </div>
