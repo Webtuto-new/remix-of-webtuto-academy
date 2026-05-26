@@ -1,68 +1,72 @@
 
-# Plan: Make WebTuto the best student experience (with growth built-in)
+# Plan: Installable Web App (PWA) with one-time install modal
 
-Goal: combine marketing/growth surfaces with student-experience polish, so the site both attracts new students and keeps them engaged.
+Make Webtuto installable to the home screen on Android & iPhone, with a friendly centered modal that only ever shows once per user.
 
-## 1. Hero & social proof on homepage
-- Refresh hero with a strong promise + clear CTAs ("Browse Classes", "Meet Tutors").
-- Add a **live stats strip**: active students, lessons available, tutor count, hours of content (pulled from DB).
-- Add a **testimonials carousel** with student quotes (new `testimonials` table; admin-managed).
-- Add **trust badges**: curriculum logos (Cambridge / Edexcel / Local), payment methods.
+## Approach: manifest-only PWA (no service worker)
 
-## 2. Student dashboard upgrades
-- **Continue Watching** rail (uses existing localStorage resume state + recent lessons).
-- **My Progress** per subject: % lessons watched, current chapter, next-up lesson.
-- **Streak & achievements** (light gamification: 3-day, 7-day, 30-day streaks; first-lesson, first-class badges).
-- **Recommended for you** rail: classes matching enrolled grade/curriculum that the student hasn't joined.
+Per Lovable PWA guidance, full PWA + service workers can break the editor preview and add cache/offline complexity you don't need just for installability. We'll go **manifest-only**: enough for "Add to Home Screen" / Chrome's native install prompt, without service-worker pitfalls.
 
-## 3. Discovery & search
-- Global **search bar** in header: classes, tutors, lessons (debounced, grouped results).
-- **Filter chips** on classes page: delivery mode (live / recorded / hybrid), price range, tutor.
-- **"New this week"** and **"Popular"** sections on the classes page.
+## What gets built
 
-## 4. Growth loops
-- **Referral program**: each student gets a referral code; referred signups grant both sides a discount credit (new `referrals` table, admin-tracked).
-- **Free preview funnel**: ensure every class has at least one free preview lesson; CTA at end of preview prompts enrollment.
-- **Email/WhatsApp digest**: weekly "new lessons added" notification (manual trigger from admin for now; later automated).
-- **Share buttons** on class & tutor pages (WhatsApp, Facebook, copy link).
+### 1. Web app manifest (`public/manifest.webmanifest`)
+- `name`: "Webtuto — Sri Lanka's #1 Online Learning Platform"
+- `short_name`: "Webtuto"
+- `display: standalone`, `theme_color`, `background_color` matching dark theme
+- `start_url: "/"`, `scope: "/"`
+- Icons: 192x192 and 512x512 (generated from existing logo)
+- Apple touch icon for iOS
 
-## 5. SEO & marketing surfaces
-- Per-route meta (title, description, canonical, og:*) via `react-helmet-async` on:
-  - Home, Classes index, Class detail, Tutors index, Tutor detail, Curriculum pages.
-- JSON-LD: `Organization` sitewide, `Course` per class, `Person` per tutor, `BreadcrumbList` on detail pages.
-- Public `/blog` section (admin-authored study tips, exam guides) — strong long-tail SEO.
-- `sitemap.xml` auto-generated from active classes/tutors/blog posts.
+### 2. `index.html` head additions
+- `<link rel="manifest" href="/manifest.webmanifest">`
+- `<link rel="apple-touch-icon">`
+- `<meta name="apple-mobile-web-app-capable" content="yes">`
+- `<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">`
+- `<meta name="theme-color" content="...">`
 
-## 6. Engagement touches
-- **Notification bell** in student header (new lesson added, class starting soon, payment approved).
-- **"Ask a doubt"** button on each lesson → opens WhatsApp with prefilled context.
-- **Confetti + toast** on milestones (first lesson watched, class enrolled, streak hit).
+### 3. Install modal component (`src/components/InstallAppModal.tsx`)
+- Centered shadcn `Dialog` with:
+  - App icon (logo) + tagline "Get the Webtuto app"
+  - 3 benefit bullets (fast access, full-screen, push-ready)
+  - **Android/Chrome**: "Install" button that fires the captured `beforeinstallprompt` event
+  - **iOS Safari**: shows step-by-step instructions ("Tap Share → Add to Home Screen") since iOS has no programmatic install
+  - "Maybe later" button
+- Listens for `beforeinstallprompt` (captured globally) and `appinstalled`
+- Hidden in:
+  - Lovable preview hosts / iframes (so it doesn't bother you in the editor)
+  - Already-installed mode (`display-mode: standalone`)
+  - Any user who already saw it (localStorage flag `wt_install_prompt_seen`)
 
-## 7. Trust & polish
-- **Help Center / FAQ** page (categorized: enrollment, payments, technical).
-- **About** page with mission + team.
-- Clearer **pricing transparency** on class cards (per-month + per-lesson breakdown).
+### 4. Show-once logic
+- localStorage key `wt_install_prompt_seen` — set the moment the modal opens, regardless of outcome (install / dismiss / close).
+- Trigger conditions ALL must be true:
+  1. Not already installed
+  2. Not on Lovable preview / not in iframe
+  3. localStorage flag not set
+  4. Either: `beforeinstallprompt` fired (Android/Chrome), OR user is on iOS Safari (we know there'll never be an event there)
+- Delay: appears 8 seconds after first page load so it doesn't slap the user on arrival.
+- Mounted once in `Layout` so it works on every public route.
 
----
+### 5. Optional: manual re-trigger
+- Tiny "Install app" link in the footer for users who dismissed it and changed their mind (re-uses the same modal, ignores the seen flag when triggered manually).
 
-## Technical notes
-- New tables: `testimonials`, `referrals`, `notifications`, `blog_posts`, `student_streaks`, `achievements`, `student_achievements`. All with RLS + grants.
-- Recommendation logic is client-side (filter active classes by enrollment.grade, exclude already-enrolled).
-- Search is client-side over a cached list initially; move to RPC if dataset grows.
-- Streaks computed from `student_events` (existing tracking table).
-- Helmet provider added at `src/main.tsx`; sitemap as a build-time script.
-- All UI uses existing dark theme + Space Grotesk / Plus Jakarta Sans tokens.
+## What we explicitly will NOT do
+- No `vite-plugin-pwa`
+- No service worker / offline cache
+- No background sync
+- No push notifications (out of scope for installability)
 
----
+## Trade-offs (honest)
+- No offline support. Users still need internet to load lessons (which is true today anyway).
+- Push notifications require a real service worker — not included. If you want them later, that's a separate plan.
+- The install banner only shows on browsers that meet Chrome's installability heuristics (HTTPS published site, valid manifest, user has visited before). It will NOT show in the Lovable preview — that's expected.
 
-## Suggested rollout order (build in this sequence)
-1. Homepage hero + testimonials + live stats (immediate marketing lift)
-2. Per-route SEO meta + JSON-LD + sitemap
-3. Student dashboard: Continue Watching + Recommended
-4. Search + filters
-5. Streaks & achievements
-6. Referral program
-7. Blog + Help Center
-8. Notifications + share buttons
+## Files touched / created
+- `public/manifest.webmanifest` (new)
+- `public/icons/icon-192.png`, `icon-512.png`, `apple-touch-icon.png` (generated)
+- `index.html` (head tags)
+- `src/components/InstallAppModal.tsx` (new)
+- `src/components/Layout.tsx` (mount modal)
+- `src/components/Footer.tsx` or equivalent (small "Install app" link — optional)
 
-Pick a starting point (or a subset) and I'll build it.
+Approve and I'll build it.
