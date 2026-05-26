@@ -137,7 +137,7 @@ const Row = ({ title, items }: { title: string; items: ClassRow[] }) => {
         </button>
         <div
           ref={scroller}
-          className="flex gap-4 sm:gap-5 lg:gap-6 overflow-x-auto scroll-smooth px-4 sm:px-8 lg:px-12 pb-6 snap-x snap-mandatory scroll-pl-4 sm:scroll-pl-8 lg:scroll-pl-12 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+          className="flex gap-4 sm:gap-5 lg:gap-6 overflow-x-auto scroll-smooth px-8 sm:px-12 lg:px-16 pt-6 pb-10 snap-x snap-mandatory scroll-pl-8 sm:scroll-pl-12 lg:scroll-pl-16 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
         >
           {items.map((c) => (
             <RowCard key={c.id} c={c} />
@@ -162,7 +162,7 @@ const RowCard = ({ c }: { c: ClassRow }) => {
       className="snap-start shrink-0 w-[78vw] xs:w-[60vw] sm:w-[300px] md:w-[320px] lg:w-[340px] xl:w-[360px] max-w-[380px] group/card relative outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-md"
     >
       <motion.div
-        whileHover={{ scale: 1.06, zIndex: 30 }}
+        whileHover={{ scale: 1.04, zIndex: 30 }}
         transition={{ type: "spring", stiffness: 300, damping: 24 }}
         className="relative rounded-md overflow-hidden bg-card aspect-video shadow-lg ring-1 ring-foreground/5 hover:ring-2 hover:ring-primary hover:shadow-[0_20px_60px_-10px_hsl(var(--primary)/0.5)]"
       >
