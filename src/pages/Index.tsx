@@ -224,7 +224,7 @@ const TutorRow = ({ title, tutors }: { title: string; tutors: any[] }) => {
         </button>
         <div ref={scroller} className="flex gap-4 overflow-x-auto scroll-smooth px-4 sm:px-8 pb-4 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           {tutors.map((t) => (
-            <Link key={t.id} to={`/classes?teacher=${t.id}`} className="snap-start shrink-0 w-[180px] sm:w-[200px] group/tutor">
+            <Link key={t.id} to={`/tutor/${t.id}`} className="snap-start shrink-0 w-[180px] sm:w-[200px] group/tutor">
               <motion.div whileHover={{ y: -6 }} transition={{ type: "spring", stiffness: 300, damping: 22 }} className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-card to-muted/40 ring-1 ring-foreground/10 hover:ring-2 hover:ring-accent shadow-lg p-5 text-center h-full">
                 <div className="relative w-20 h-20 mx-auto mb-3 rounded-full overflow-hidden ring-2 ring-accent/40 ring-offset-2 ring-offset-background bg-gradient-to-br from-primary/30 to-secondary/30">
                   {t.avatar_url ? (
