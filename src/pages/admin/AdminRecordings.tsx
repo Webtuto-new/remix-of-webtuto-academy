@@ -451,11 +451,12 @@ const AdminRecordings = () => {
                 <Input value={recForm.recording_type} onChange={(e) => setRecForm(f => ({ ...f, recording_type: e.target.value }))} placeholder="e.g. Workshop, Course, Masterclass (leave blank for 'Recording')" />
                 <p className="text-xs text-muted-foreground">Custom label shown as a badge — leave empty to show "Recording"</p>
               </div>
-              <Button onClick={handleSaveRecording} className="w-full">{editingRec ? "Update" : "Create"}</Button>
+              <Button onClick={handleSaveRecording} variant="premium" className="w-full">{editingRec ? "Update" : "Create"}</Button>
             </div>
           </DialogContent>
-        </Dialog>
-      </div>
+          </Dialog>
+        }
+      />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {recordings.map(r => (
