@@ -304,6 +304,7 @@ const IndexInner = () => {
   const [classes, setClasses] = useState<ClassRow[]>([]);
   const [curriculums, setCurriculums] = useState<any[]>([]);
   const [teachers, setTeachers] = useState<any[]>([]);
+  const [grades, setGrades] = useState<any[]>([]);
 
   useEffect(() => {
     supabase
@@ -315,8 +316,24 @@ const IndexInner = () => {
       .then(({ data }) => setClasses(data || []));
     supabase.from("curriculums").select("*").eq("is_active", true).order("sort_order")
       .then(({ data }) => setCurriculums(data || []));
-    supabase.from("teachers").select("id,name,bio,avatar_url,qualifications").eq("is_active", true).limit(20)
-      .then(({ data }) => setTeachers(data || []));
+    supabase.from("teachers").select("id,name,bio,avatar_url,qualifications").eq("is_active", true).order("name")
+      .then(({ data }) => {
+        // Dedupe by normalized name (DB has a few legacy duplicates with trailing spaces)
+        const seen = new Set<string>();
+        const unique = (data || []).filter((t: any) => {
+          const key = (t.name || "").trim().toLowerCase().replace(/\s+/g, " ");
+          if (!key || seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        });
+        setTeachers(unique);
+      });
+    supabase
+      .from("grades")
+      .select("id,name,slug,curriculum_id,curriculums(name,slug)")
+      .eq("is_active", true)
+      .order("sort_order")
+      .then(({ data }) => setGrades(data || []));
   }, []);
 
   const shuffle = <T,>(arr: T[]) => {

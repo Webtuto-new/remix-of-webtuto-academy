@@ -151,6 +151,14 @@ const DashboardLayout = ({ children }: Props) => {
               <Bell className="w-5 h-5" />
               <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-accent animate-pulse" />
             </button>
+            <button
+              onClick={handleSignOut}
+              aria-label="Sign out"
+              className="lg:hidden inline-flex items-center gap-1.5 px-3 h-9 rounded-full text-xs font-semibold text-destructive bg-destructive/10 hover:bg-destructive/20 active:scale-95 transition"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span className="hidden xs:inline">Sign out</span>
+            </button>
             <Link to="/dashboard/profile">
               <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center ring-2 ring-primary/30 hover:ring-primary/60 transition-all">
                 <span className="text-primary-foreground text-sm font-bold">
