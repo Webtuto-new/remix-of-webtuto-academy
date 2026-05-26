@@ -310,7 +310,9 @@ const IndexInner = () => {
 
       <HeroFeature items={featured} />
 
-      <div className="relative -mt-32 sm:-mt-40 z-10 space-y-2 pb-20 bg-mesh">
+      <div className="relative -mt-32 sm:-mt-40 z-10 space-y-2 pb-20">
+        {/* Soft top-to-bottom blend so it merges with the hero seamlessly */}
+        <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-transparent via-background to-background" />
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           <div className="absolute top-40 -right-32 w-[420px] h-[420px] rounded-full bg-primary/15 blur-[140px]" />
           <div className="absolute bottom-40 -left-32 w-[420px] h-[420px] rounded-full bg-accent/10 blur-[140px]" />
