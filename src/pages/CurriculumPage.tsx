@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Layout from "@/components/Layout";
 import SEOHead from "@/components/SEOHead";
 import { Link, useSearchParams } from "react-router-dom";
-import { GraduationCap, ArrowRight, BookOpen, ArrowLeft } from "lucide-react";
+import { GraduationCap, ArrowRight, BookOpen, ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
@@ -16,6 +16,12 @@ const CurriculumPage = () => {
   const [subjects, setSubjects] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState<string>("");
   const [selectedGrade, setSelectedGrade] = useState<any>(null);
+  const gradeScroller = useRef<HTMLDivElement>(null);
+  const scrollGrades = (dir: 1 | -1) => {
+    const el = gradeScroller.current;
+    if (!el) return;
+    el.scrollBy({ left: dir * el.clientWidth * 0.85, behavior: "smooth" });
+  };
 
   useEffect(() => {
     supabase.from("curriculums").select("*").eq("is_active", true).order("sort_order")
@@ -128,27 +134,57 @@ const CurriculumPage = () => {
               ) : (
                 <motion.div key="grades" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.3 }} className="relative">
                   {currentGrades.length > 0 ? (
-                    <motion.div initial="hidden" animate="show" variants={stagger} className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                      {currentGrades.map((grade) => (
-                        <motion.button
-                          key={grade.id}
-                          variants={fadeUp}
-                          whileHover={{ y: -4 }}
-                          onClick={() => handleGradeClick(grade)}
-                          className="bg-card/70 backdrop-blur-sm rounded-2xl p-6 card-elevated group text-left w-full gradient-border"
-                        >
-                          <div className="flex items-center gap-3 mb-4">
-                            <div className="w-11 h-11 rounded-xl bg-secondary/15 flex items-center justify-center group-hover:bg-secondary/25 transition-colors ring-1 ring-secondary/20">
-                              <GraduationCap className="w-5 h-5 text-secondary" />
+                    <div className="relative group/rail">
+                      <button
+                        onClick={() => scrollGrades(-1)}
+                        aria-label="Scroll left"
+                        className="hidden sm:flex absolute left-0 top-1/2 -translate-y-1/2 z-20 w-10 h-10 items-center justify-center rounded-full bg-background/80 backdrop-blur border border-border/60 shadow-lg opacity-0 group-hover/rail:opacity-100 transition"
+                      >
+                        <ChevronLeft className="w-5 h-5" />
+                      </button>
+                      <div
+                        ref={gradeScroller}
+                        className="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-4 -mx-4 px-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+                      >
+                        {currentGrades.map((grade, i) => (
+                          <motion.button
+                            key={grade.id}
+                            initial={{ opacity: 0, y: 12 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.35, delay: i * 0.04 }}
+                            whileHover={{ y: -6, scale: 1.02 }}
+                            onClick={() => handleGradeClick(grade)}
+                            className="snap-start shrink-0 w-[200px] sm:w-[230px] lg:w-[250px] h-[200px] relative rounded-2xl overflow-hidden p-5 flex flex-col justify-between text-left ring-1 ring-border/60 hover:ring-2 hover:ring-primary shadow-lg bg-gradient-to-br from-primary/20 via-card to-accent/20 group"
+                          >
+                            <div className="absolute -top-12 -right-12 w-40 h-40 rounded-full bg-primary/30 blur-3xl opacity-60 group-hover:opacity-100 transition" />
+                            <div className="absolute -bottom-12 -left-12 w-40 h-40 rounded-full bg-accent/25 blur-3xl opacity-50" />
+                            <div className="relative flex items-start justify-between">
+                              <div className="w-11 h-11 rounded-xl bg-background/60 backdrop-blur flex items-center justify-center ring-1 ring-foreground/10">
+                                <GraduationCap className="w-5 h-5 text-primary" />
+                              </div>
+                              <span className="text-[10px] font-bold tracking-widest uppercase text-foreground/60">
+                                {String(i + 1).padStart(2, "0")}
+                              </span>
                             </div>
-                            <h3 className="font-display font-semibold text-foreground text-lg">{grade.name}</h3>
-                          </div>
-                          <div className="flex items-center text-sm text-primary font-semibold gap-1 group-hover:gap-2 transition-all">
-                            View subjects <ArrowRight className="w-3.5 h-3.5" />
-                          </div>
-                        </motion.button>
-                      ))}
-                    </motion.div>
+                            <div className="relative">
+                              <h3 className="font-display font-bold text-foreground text-xl leading-tight line-clamp-2">
+                                {grade.name}
+                              </h3>
+                              <div className="flex items-center text-sm text-primary font-semibold gap-1 mt-3 group-hover:gap-2 transition-all">
+                                View subjects <ArrowRight className="w-3.5 h-3.5" />
+                              </div>
+                            </div>
+                          </motion.button>
+                        ))}
+                      </div>
+                      <button
+                        onClick={() => scrollGrades(1)}
+                        aria-label="Scroll right"
+                        className="hidden sm:flex absolute right-0 top-1/2 -translate-y-1/2 z-20 w-10 h-10 items-center justify-center rounded-full bg-background/80 backdrop-blur border border-border/60 shadow-lg opacity-0 group-hover/rail:opacity-100 transition"
+                      >
+                        <ChevronRight className="w-5 h-5" />
+                      </button>
+                    </div>
                   ) : (
                     <EmptyState icon={GraduationCap} title="No grades yet" description="Grades for this curriculum haven't been added." />
                   )}

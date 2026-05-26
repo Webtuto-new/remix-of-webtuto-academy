@@ -54,7 +54,15 @@ const TutorsPage = () => {
         ]);
 
       const tutorList = (ts || []) as TutorRow[];
-      setTutors(tutorList);
+      // Dedupe by normalized name to hide legacy duplicates
+      const seen = new Set<string>();
+      const unique = tutorList.filter((t) => {
+        const key = (t.name || "").trim().toLowerCase().replace(/\s+/g, " ");
+        if (!key || seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+      setTutors(unique);
 
       // class_id -> teacher_id map
       const classToTeacher: Record<string, string> = {};
