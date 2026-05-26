@@ -101,7 +101,7 @@ const Navbar = () => {
 
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className={`relative ml-2 h-10 px-3 rounded-full overflow-hidden group transition-all duration-300 border ${
+              className={`relative ml-2 h-10 pl-3 pr-4 rounded-full overflow-hidden group transition-all duration-300 border shrink-0 ${
                 isOpen
                   ? "border-primary/60 bg-primary/10"
                   : "border-border/60 hover:border-primary/50 bg-muted/30 hover:bg-muted/60"
