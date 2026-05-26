@@ -1,12 +1,17 @@
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart3, TrendingUp, Users, CreditCard, BookOpen, Video, FileText, Eye } from "lucide-react";
+import AdminPageHeader from "@/components/premium/AdminPageHeader";
+import { SkeletonStat } from "@/components/premium/SkeletonCard";
+import { fadeUp, stagger, viewportOnce } from "@/lib/motion";
 
 const AdminAnalytics = () => {
   const [data, setData] = useState({ totalRevenue: 0, monthlyRevenue: 0, totalStudents: 0, totalEnrollments: 0, topClasses: [] as any[] });
   const [activity, setActivity] = useState<any[]>([]);
   const [activityStats, setActivityStats] = useState({ recordings: 0, notes: 0 });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchAnalytics = async () => {
@@ -35,6 +40,7 @@ const AdminAnalytics = () => {
       const topClasses = Object.values(classCounts).sort((a, b) => b.count - a.count).slice(0, 5);
 
       setData({ totalRevenue, monthlyRevenue, totalStudents: studentsRes.count || 0, totalEnrollments: enrollmentsRes.count || 0, topClasses });
+      setLoading(false);
     };
 
     const fetchActivity = async () => {
@@ -51,34 +57,45 @@ const AdminAnalytics = () => {
 
   return (
     <div className="space-y-6">
-      <h1 className="font-display text-2xl font-bold text-gradient">Analytics</h1>
+      <AdminPageHeader
+        icon={BarChart3}
+        eyebrow="Insights"
+        title="Platform Analytics"
+        description="Revenue trends, enrollments, and live student activity across the academy."
+        accent="emerald"
+      />
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="glass-strong border-white/10"><CardContent className="p-4 text-center">
-          <CreditCard className="w-8 h-8 mx-auto mb-2 text-secondary" />
-          <p className="text-2xl font-bold text-gradient">LKR {data.totalRevenue.toLocaleString()}</p>
-          <p className="text-xs text-muted-foreground">Total Revenue</p>
-        </CardContent></Card>
-        <Card className="glass-strong border-white/10"><CardContent className="p-4 text-center">
-          <TrendingUp className="w-8 h-8 mx-auto mb-2 text-accent" />
-          <p className="text-2xl font-bold text-gradient">LKR {data.monthlyRevenue.toLocaleString()}</p>
-          <p className="text-xs text-muted-foreground">This Month</p>
-        </CardContent></Card>
-        <Card className="glass-strong border-white/10"><CardContent className="p-4 text-center">
-          <Users className="w-8 h-8 mx-auto mb-2 text-primary" />
-          <p className="text-2xl font-bold text-gradient">{data.totalStudents}</p>
-          <p className="text-xs text-muted-foreground">Total Students</p>
-        </CardContent></Card>
-        <Card className="glass-strong border-white/10"><CardContent className="p-4 text-center">
-          <BookOpen className="w-8 h-8 mx-auto mb-2 text-secondary" />
-          <p className="text-2xl font-bold text-gradient">{data.totalEnrollments}</p>
-          <p className="text-xs text-muted-foreground">Total Enrollments</p>
-        </CardContent></Card>
-      </div>
+      {loading ? (
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {Array.from({ length: 4 }).map((_, i) => <SkeletonStat key={i} />)}
+        </div>
+      ) : (
+        <motion.div variants={stagger} initial="hidden" whileInView="show" viewport={viewportOnce}
+          className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {[
+            { icon: CreditCard, label: "Total Revenue", value: `LKR ${data.totalRevenue.toLocaleString()}`, tint: "from-emerald-500/25 to-emerald-500/5", color: "text-emerald-400" },
+            { icon: TrendingUp, label: "This Month", value: `LKR ${data.monthlyRevenue.toLocaleString()}`, tint: "from-accent/25 to-accent/5", color: "text-accent" },
+            { icon: Users, label: "Total Students", value: data.totalStudents, tint: "from-primary/25 to-primary/5", color: "text-primary" },
+            { icon: BookOpen, label: "Total Enrollments", value: data.totalEnrollments, tint: "from-secondary/25 to-secondary/5", color: "text-secondary" },
+          ].map((c) => (
+            <motion.div key={c.label} variants={fadeUp}
+              className="group relative overflow-hidden rounded-2xl glass-strong border border-white/10 p-5 transition-all hover:-translate-y-1 hover:ring-glow">
+              <div className={`absolute inset-0 bg-gradient-to-br ${c.tint} opacity-60 pointer-events-none`} />
+              <div className="relative">
+                <div className={`w-11 h-11 rounded-xl bg-card/80 flex items-center justify-center ring-1 ring-border/60 ${c.color} mb-3`}>
+                  <c.icon className="w-5 h-5" />
+                </div>
+                <p className="text-2xl font-bold text-gradient tracking-tight">{c.value}</p>
+                <p className="text-xs text-muted-foreground mt-0.5">{c.label}</p>
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
+      )}
 
       {/* Student Activity Stats */}
       <div className="grid grid-cols-2 gap-4">
-        <Card className="glass-strong border-white/10"><CardContent className="p-4 flex items-center gap-4">
+        <Card className="glass-strong border-white/10 hover:ring-glow transition-all"><CardContent className="p-4 flex items-center gap-4">
           <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
             <Video className="w-6 h-6 text-primary" />
           </div>
@@ -87,7 +104,7 @@ const AdminAnalytics = () => {
             <p className="text-xs text-muted-foreground">Recording Views</p>
           </div>
         </CardContent></Card>
-        <Card className="glass-strong border-white/10"><CardContent className="p-4 flex items-center gap-4">
+        <Card className="glass-strong border-white/10 hover:ring-glow transition-all"><CardContent className="p-4 flex items-center gap-4">
           <div className="w-12 h-12 rounded-lg bg-accent/10 flex items-center justify-center">
             <FileText className="w-6 h-6 text-accent" />
           </div>

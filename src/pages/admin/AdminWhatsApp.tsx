@@ -14,6 +14,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "@/hooks/use-toast";
 import { Plus, Pencil, Trash2, Send, ExternalLink, Copy, MessageSquare } from "lucide-react";
+import AdminPageHeader from "@/components/premium/AdminPageHeader";
 import MessagePreviewDialog from "@/components/whatsapp/MessagePreviewDialog";
 import {
   TEMPLATE_VARIABLES, TYPE_LABELS, renderTemplate, buildWaLink, normalizePhone,
@@ -37,10 +38,13 @@ const AdminWhatsApp = () => {
   const [tab, setTab] = useState("templates");
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-display font-semibold flex items-center gap-2"><MessageSquare className="w-6 h-6" />WhatsApp Messaging Center</h1>
-        <p className="text-muted-foreground text-sm">Manage templates, send messages, and review history. Currently in <b>manual mode</b> (wa.me links).</p>
-      </div>
+      <AdminPageHeader
+        icon={MessageSquare}
+        eyebrow="Communications"
+        title="WhatsApp Messaging Center"
+        description="Manage templates, send messages, and review history. Currently in manual mode (wa.me links)."
+        accent="emerald"
+      />
       <Tabs value={tab} onValueChange={setTab}>
         <TabsList className="flex-wrap h-auto">
           <TabsTrigger value="templates">Templates</TabsTrigger>
