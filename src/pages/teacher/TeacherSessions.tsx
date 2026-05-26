@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,7 +10,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Pencil, Video, FileText } from "lucide-react";
+import { Plus, Pencil, Video, FileText, CalendarDays } from "lucide-react";
+import EmptyState from "@/components/premium/EmptyState";
+import { fadeUp, stagger } from "@/lib/motion";
 
 const TeacherSessions = () => {
   const { user } = useAuth();
@@ -87,20 +90,25 @@ const TeacherSessions = () => {
     setOpen(true);
   };
 
-  if (!teacher) return <div className="py-20 text-center text-muted-foreground">Loading...</div>;
+  if (!teacher) return (
+    <div className="space-y-6">
+      <div className="h-8 w-48 bg-muted/60 rounded-lg animate-pulse" />
+      <div className="h-64 bg-muted/40 rounded-2xl animate-pulse" />
+    </div>
+  );
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-3">
-        <h1 className="font-display text-2xl font-bold text-foreground">Sessions & Zoom</h1>
+        <h1 className="font-display text-2xl font-bold text-gradient">Sessions & Zoom</h1>
         {selectedClassId && classes.length > 0 && (
           <p className="text-sm text-muted-foreground">
             Class: <span className="font-medium text-foreground">{classes.find(c => c.id === selectedClassId)?.title}</span>
           </p>
         )}
         <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) setEditing(null); }}>
-          <DialogTrigger asChild><Button className="gap-1" disabled={!selectedClassId}><Plus className="w-4 h-4" /> Add Session</Button></DialogTrigger>
-          <DialogContent className="max-w-lg">
+          <DialogTrigger asChild><Button variant="premium" className="gap-1" disabled={!selectedClassId}><Plus className="w-4 h-4" /> Add Session</Button></DialogTrigger>
+          <DialogContent className="max-w-lg glass-strong border-border/50">
             <DialogHeader><DialogTitle>{editing ? "Edit" : "Add"} Session</DialogTitle></DialogHeader>
             <div className="space-y-4">
               <div className="space-y-2"><Label>Title</Label><Input value={form.title} onChange={(e) => setForm(f => ({ ...f, title: e.target.value }))} placeholder="Week 1 - Introduction" /></div>
@@ -112,7 +120,7 @@ const TeacherSessions = () => {
               <div className="space-y-2"><Label>Zoom Link</Label><Input value={form.zoom_link} onChange={(e) => setForm(f => ({ ...f, zoom_link: e.target.value }))} placeholder="https://zoom.us/j/..." /></div>
               <div className="space-y-2"><Label>Recording URL</Label><Input value={form.recording_url} onChange={(e) => setForm(f => ({ ...f, recording_url: e.target.value }))} placeholder="Optional recording link" /></div>
               <div className="space-y-2"><Label>Notes URL</Label><Input value={form.notes_url} onChange={(e) => setForm(f => ({ ...f, notes_url: e.target.value }))} placeholder="Optional notes link" /></div>
-              <Button onClick={handleSave} className="w-full">{editing ? "Update" : "Create"} Session</Button>
+              <Button onClick={handleSave} className="w-full" variant="premium">{editing ? "Update" : "Create"} Session</Button>
             </div>
           </DialogContent>
         </Dialog>
@@ -120,44 +128,53 @@ const TeacherSessions = () => {
 
       {classes.length > 0 && (
         <Select value={selectedClassId} onValueChange={loadSessions}>
-          <SelectTrigger className="w-full md:w-72"><SelectValue placeholder="Select Class" /></SelectTrigger>
+          <SelectTrigger className="w-full md:w-72 glass-strong border-border/50"><SelectValue placeholder="Select Class" /></SelectTrigger>
           <SelectContent>{classes.map(c => <SelectItem key={c.id} value={c.id}>{c.title}</SelectItem>)}</SelectContent>
         </Select>
       )}
 
-      <Card>
-        <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead><tr className="border-b border-border">
-                <th className="text-left p-4 font-medium text-muted-foreground">Title</th>
-                <th className="text-left p-4 font-medium text-muted-foreground">Date</th>
-                <th className="text-left p-4 font-medium text-muted-foreground">Time</th>
-                <th className="text-left p-4 font-medium text-muted-foreground">Links</th>
-                <th className="text-left p-4 font-medium text-muted-foreground">Actions</th>
-              </tr></thead>
-              <tbody>
-                {sessions.map(s => (
-                  <tr key={s.id} className="border-b border-border last:border-0">
-                    <td className="p-4 font-medium text-foreground">{s.title}</td>
-                    <td className="p-4 text-muted-foreground">{s.session_date}</td>
-                    <td className="p-4 text-muted-foreground">{s.start_time}–{s.end_time}</td>
-                    <td className="p-4 flex gap-1">
-                      {s.zoom_link && <Badge variant="outline" className="text-xs">Zoom</Badge>}
-                      {s.recording_url && <Video className="w-4 h-4 text-muted-foreground" />}
-                      {s.notes_url && <FileText className="w-4 h-4 text-muted-foreground" />}
-                    </td>
-                    <td className="p-4">
-                      <Button variant="ghost" size="sm" onClick={() => handleEdit(s)}><Pencil className="w-4 h-4" /></Button>
-                    </td>
+      {sessions.length === 0 ? (
+        <EmptyState
+          icon={CalendarDays}
+          title="No sessions yet"
+          description="Add your first session for the selected class."
+        />
+      ) : (
+        <Card className="glass-strong border-border/50 overflow-hidden">
+          <CardContent className="p-0">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border bg-muted/30">
+                    <th className="text-left p-4 font-medium text-muted-foreground">Title</th>
+                    <th className="text-left p-4 font-medium text-muted-foreground">Date</th>
+                    <th className="text-left p-4 font-medium text-muted-foreground">Time</th>
+                    <th className="text-left p-4 font-medium text-muted-foreground">Links</th>
+                    <th className="text-left p-4 font-medium text-muted-foreground">Actions</th>
                   </tr>
-                ))}
-                {sessions.length === 0 && <tr><td colSpan={5} className="p-8 text-center text-muted-foreground">No sessions yet.</td></tr>}
-              </tbody>
-            </table>
-          </div>
-        </CardContent>
-      </Card>
+                </thead>
+                <motion.tbody variants={stagger} initial="hidden" animate="show">
+                  {sessions.map((s) => (
+                    <motion.tr key={s.id} variants={fadeUp} className="border-b border-border last:border-0 hover:bg-primary/5 transition-colors group">
+                      <td className="p-4 font-medium text-foreground">{s.title}</td>
+                      <td className="p-4 text-muted-foreground">{s.session_date}</td>
+                      <td className="p-4 text-muted-foreground">{s.start_time}–{s.end_time}</td>
+                      <td className="p-4 flex gap-1">
+                        {s.zoom_link && <Badge variant="outline" className="text-xs border-blue-500/40 text-blue-400 bg-blue-500/10">Zoom</Badge>}
+                        {s.recording_url && <Video className="w-4 h-4 text-muted-foreground" />}
+                        {s.notes_url && <FileText className="w-4 h-4 text-muted-foreground" />}
+                      </td>
+                      <td className="p-4">
+                        <Button variant="ghost" size="sm" className="hover:bg-primary/10 hover:text-primary" onClick={() => handleEdit(s)}><Pencil className="w-4 h-4" /></Button>
+                      </td>
+                    </motion.tr>
+                  ))}
+                </motion.tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };
