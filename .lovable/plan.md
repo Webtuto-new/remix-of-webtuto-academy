@@ -1,65 +1,139 @@
-## Goal
 
-Transform the existing Webtuto.LK platform into a cinematic, premium learning ecosystem (Netflix + Udemy + Linear feel) without touching any backend, data, routing, auth, RLS, edge functions, or schema.
+# Master Quiz Center — Redesign Plan
 
-This is too large for a single pass. Foundations from Phase 1 are already live (dark-first tokens, glass, gradient mesh, Framer Motion page transitions, animated hero, modern card). The plan below redesigns every remaining surface in focused phases so each can be reviewed before moving on.
+Scope: Replace only the quiz module. Existing classes, recordings, payments, profiles, teachers, enrollments, curriculum, etc. are untouched.
 
-## Non-negotiable preservation
+## 1. Database changes (additive — no destructive drops)
 
-No changes to: database schema, RLS policies, edge functions, auth flow, routes, permissions, enrollment/access logic, payment workflow, syllabus hierarchy, recordings, lessons, students, tutors, admin data, WhatsApp automation, storage buckets. Only `.tsx`, `.css`, and `tailwind.config.ts` files are edited.
+Extend existing `quizzes`, `quiz_questions`, `quiz_options`, `quiz_attempts`, `quiz_attempt_answers`. Add new tables for live sessions and join control.
 
-## Phase A — Public marketing & discovery surfaces
+### `quizzes` — add columns
+- `quiz_mode` text: `live` | `self_paced` | `published_grade` (default `self_paced`)
+- `syllabus` text (Cambridge / Edexcel / National / Other)
+- `chapter` text, `lesson` text
+- `difficulty` text: `easy` | `medium` | `hard`
+- `negative_marks_per_question` numeric default 0
+- `shuffle_options` boolean default true
+- `show_score_immediately` boolean default true
+- `allow_review` boolean default true
+- `show_leaderboard` boolean default true
+- `available_from`, `available_until` timestamptz
+- `require_password` boolean default false
+- `join_code` text (6-char alphanumeric, indexed unique when not null)
+- `status` text: `draft` | `published` | `archived`
 
-1. Homepage v2: cinematic hero with animated gradient mesh + subtle parallax, "Continue Learning" rail for logged-in users (pulls existing enrollments), Featured Classes rail, Live Now strip, syllabus showcase, testimonials from existing reviews, stats, premium CTA.
-2. Curriculum / Grades / Subjects pages: glass cards with gradient borders, hover lift, animated grade selector, sticky filter chips on mobile.
-3. Classes / Recordings / Bundles / Seminars / Workshops listing pages: filter sidebar collapsible on mobile, skeleton grids while loading, motion stagger on card reveal, empty states with illustration.
-4. Class detail + Recording detail public pages: cinematic header with thumbnail backdrop blur, sticky purchase/enroll panel on desktop, mobile bottom sheet.
-5. Auth pages (Login / Signup / Forgot / Reset): split-screen with gradient artwork, glass form card, motion entry.
-6. Contact / How-to-use / Tutor application / Request class: editorial layout, larger type, glass forms.
+### `quiz_questions` — add columns
+- `negative_marks` numeric default 0
+- `correct_answer_text` text (for short-answer auto-grading / explanation)
 
-## Phase B — Student experience
+### `quiz_attempts` — add columns
+- `attempt_number` int default 1
+- `status` text: `in_progress` | `submitted` | `auto_submitted` | `disqualified`
+- `live_session_id` uuid (nullable)
+- `rank` int (computed at submit for live)
 
-1. Dashboard shell: app-like sidebar with active glow, top bar with greeting + quick search, mobile bottom tab nav.
-2. Overview: Continue Learning carousel, upcoming live class countdowns, recent lessons, watch history, achievements/certificates strip, notification feed.
-3. Classes / Recordings / Schedule / Wishlist / Notes / Certificates / Payments / Requests / History / Profile: redesigned with consistent card system, charts where relevant, premium empty states.
-4. Recording player page: Netflix-style layout — large player, chapter sidebar (sticky desktop, drawer mobile), next-lesson auto-advance UI (using existing localStorage resume), bookmarks list, lesson notes panel, materials tab.
-5. PhonePrompt modal: cinematic blocking modal redesign.
+### New table: `quiz_live_sessions`
+Tracks a single "broadcast" of a live quiz.
+- `id`, `quiz_id`, `host_user_id`, `join_code`, `password_hash` (nullable), `status` (`waiting`|`active`|`paused`|`ended`), `current_question_id`, `current_question_started_at`, `started_at`, `ended_at`, `created_at`
+- RLS: host (teacher/admin) full control; joined participants read; admins all.
 
-## Phase C — Teacher experience
+### New table: `quiz_live_participants`
+- `id`, `live_session_id`, `user_id`, `joined_at`, `left_at`, `status` (`waiting`|`active`|`left`)
+- Unique (`live_session_id`, `user_id`).
 
-1. Teacher layout: same sidebar system in teacher accent.
-2. Dashboard, Classes, Sessions, Students, Recordings, Earnings: chart cards, modern tables (zebra-free, glass rows, sticky headers, mobile card view).
-3. Public teacher profile page: shareable hero with avatar ring-glow, stats, courses taught grid, reviews, share buttons.
+### New table: `quiz_imports` (optional — for traceability of bulk pastes)
+- `id`, `quiz_id`, `source` (`paste`|`pdf`|`csv`), `raw_text`, `parsed_count`, `created_by`, `created_at`.
 
-## Phase D — Admin experience
+All new tables: GRANT to `authenticated` and `service_role`, RLS enabled with policies matching existing tutor/admin/student pattern. Realtime publication enabled on `quiz_live_sessions` and `quiz_live_participants` for live updates.
 
-1. Admin layout: collapsible glass sidebar, command-palette-style search shortcut, quick action header.
-2. Admin Dashboard: KPI cards with sparklines, recent activity feed, quick actions.
-3. All admin tables (Classes, Students, Teachers, Applications, Class Requests, WhatsApp, Recordings, Curriculum, Bundles, Payments, Bank Details, Payouts, Certificates, Coupons, Announcements, Analytics, Admins): unified modern DataTable component with filters, search, pagination, row hover, mobile card fallback. Existing dialogs restyled.
-4. WhatsApp Messages + Automation pages: keep all existing controls (Preview, Copy, Open WhatsApp, Mark as Sent, Send Test) — only restyle.
+## 2. Frontend architecture
 
-## Phase E — Cross-cutting polish
+New route tree under `/quizzes` (student) and `/admin/quiz-center` + `/teacher/quiz-center` (admin/tutor). Old `AdminQuizzes` page becomes a redirect to the new Quiz Center.
 
-1. Component library upgrades: Button variants (premium, glow, ghost-glass), Input/Textarea (floating label, focus ring-glow), Dialog (glass + spring motion), Sheet (mobile drawer), Tabs (pill underline glow), Badge (live pulse, status), Tooltip, Toast.
-2. Skeletons for every list/grid (extend `SkeletonCard`, add `SkeletonRow`, `SkeletonStat`).
-3. Page transitions already in `Layout`; add same wrapper to Dashboard/Admin/Teacher layouts.
-4. SEO heads audited per page (titles <60, descriptions <160, H1 unique, JSON-LD where useful).
-5. Mobile pass: 360–414px viewport audit on every redesigned page, touch targets ≥44px, sticky CTAs, safe-area padding.
-6. Performance: `loading="lazy"` on non-hero images, `content-visibility: auto` on long lists, code-split heavy admin routes, drop unused shadcn imports.
+### Shared components (`src/components/quiz/`)
+- `QuizCard`, `QuizModeBadge`, `DifficultyChip`, `LeaderboardList`, `QuestionRenderer`, `OptionGrid`, `Timer`, `QuizProgressBar`, `JoinCodeDisplay` (big screen-friendly), `ResultSummary`, `AnswerReview`, `BulkPasteImporter` (parses the spec'd block format), `QuestionEditor` (MCQ / TF / short-answer with image upload to `documents` bucket).
 
-## Technical details
+### Admin Quiz Center (`/admin/quiz-center`)
+Tabs: Overview, Quizzes, Live Sessions, Results, Analytics.
+- Overview: KPI tiles (total quizzes, live now, completion rate, avg score), charts (per-class avg, weak chapters).
+- Quizzes table with filters (mode, status, grade, subject, tutor), actions: edit / duplicate / publish / unpublish / assign / delete.
+- Quiz Builder modal/page: settings tab + questions tab (manual + bulk paste) + preview tab.
+- Live Sessions: list of active broadcasts, host info, participant count, end-session control.
+- Results: per-attempt list, export CSV, reset attempt, manual short-answer grading.
+- Analytics: weak students, weak questions, weak chapters, completion rate, avg score per class.
 
-- Stack stays: React 18 + Vite + Tailwind v3 + shadcn + Framer Motion (just added) + next-themes (already dark-default after Phase 1).
-- All colors continue to use semantic tokens in `src/index.css` (HSL). No hard-coded hex/Tailwind color classes in components.
-- New shared primitives go under `src/components/ui/` (extend existing shadcn) or `src/components/premium/` for higher-level patterns (HeroBackdrop, GlassPanel, StatCard, DataTable, EmptyState, SectionHeader, Carousel).
-- Framer Motion: shared variants in `src/lib/motion.ts` (fadeUp, stagger, springSoft) to keep timings consistent.
-- Typography: keep mandated Space Grotesk + Plus Jakarta Sans (project memory rule) — do not switch to Inter/Satoshi/Poppins despite the brief, because project memory locks the pair. Will confirm with user before deviating.
-- No new dependencies unless strictly needed (chart upgrades reuse existing `recharts`).
-- Each phase ships as one batch of edits and waits for review before the next.
+### Tutor Quiz Center (`/teacher/quiz-center`)
+Same builder, scoped to own teacher records (RLS-enforced). Tabs: My Quizzes, Live Console, Results.
+- Live Console: start/pause/next/end controls, big join-code panel (copy/regenerate/show-hide), live participant list, per-question timer, mid-quiz leaderboard.
 
-## What I need from you
+### Student quiz UX
+- `/quizzes` — browse: Live Now, Available (self-paced + published grade), Completed. Filters by subject/grade/class/type.
+- `/quizzes/join` — enter join code + password for live.
+- `/quizzes/:id/take` — taker UI: timer, question, options, auto-submit, navigation if allowed.
+- `/quizzes/:id/result/:attemptId` — score, percentage, rank, review with explanations.
+- `/dashboard/quiz-history` — full history with filters (subject, grade, class, type, month, score) + search. Click row → detailed review.
 
-1. Confirm I should keep Space Grotesk + Plus Jakarta Sans (current locked pair), or override to Inter/Satoshi/Poppins.
-2. Confirm we start with Phase A (public/marketing + auth) and proceed phase-by-phase, OR pick a different starting phase (e.g. start with the Recording player since that's where students spend most time).
+## 3. Bulk paste importer
 
-I'll begin implementing the chosen phase immediately after you reply.
+Client-side parser that handles the documented format:
+```
+Question text
+A) ...
+B) ...
+C) ...
+D) ...
+Correct Answer: B
+Explanation: ...
+```
+- Tolerant to `1.`/`A.`/`a)` variants, blank lines between questions.
+- True/False detected when only two options or "True/False:" prefix.
+- Short answer detected when no options block.
+- Preview parsed questions before commit; user can edit inline, then bulk insert.
+- Optional PDF import: extract text via `pdfjs-dist` then run through the same parser.
+
+## 4. Live quiz realtime
+
+Use Supabase Realtime channels on `quiz_live_sessions` and `quiz_live_participants`:
+- Host updates `current_question_id` and `current_question_started_at` → all clients react.
+- Participants insert a row on join, update status on leave.
+- Answers still write to `quiz_attempt_answers`; ranks recomputed on each submit.
+- Join code: 6-char base32, generated server-side via a SECURITY DEFINER function; password stored as bcrypt-style hash via a small edge function `quiz-join` that verifies and returns an attempt token.
+
+## 5. Edge functions
+- `quiz-join` — validates join code + password, creates `quiz_live_participants` + `quiz_attempts` row, returns attempt id.
+- `quiz-submit` — finalizes an attempt, computes score + rank, marks status.
+- `quiz-export` — streams CSV/PDF of results for a quiz (admin/tutor only).
+- `quiz-bulk-parse` (optional) — server-side fallback parser for very large pastes.
+
+All with CORS, zod validation, JWT validation in code.
+
+## 6. Design system
+
+Reuse existing premium tokens (Space Grotesk / Plus Jakarta Sans, glass cards, dark mode). New visual elements:
+- Big `JoinCodeDisplay` — 96px monospace, copy/regenerate buttons, gradient ring.
+- Live "now playing" question card with circular timer.
+- Leaderboard with rank chips, avatar, animated reordering (framer-motion `layout`).
+- Result page with radial score gauge + per-question breakdown strip.
+
+## 7. Migration / safety
+- New schema is purely additive. No existing data deleted.
+- Old `/admin/quizzes` route redirects to `/admin/quiz-center`.
+- Existing `quiz_attempts` keep working — new columns default safely.
+
+## 8. Build order (suggested phases)
+
+Given the size, I'd ship this in 4 phases so you can review each:
+
+1. **Phase 1 — Schema + Quiz Builder + Bulk Paste + Self-Paced flow + Student take/result + Quiz History.** (Foundation everyone needs.)
+2. **Phase 2 — Published Grade Quiz browsing, filters, admin analytics tiles, CSV export.**
+3. **Phase 3 — Live Quiz: sessions table, realtime host console, join code/password, participant lobby, live leaderboard.**
+4. **Phase 4 — PDF import, manual short-answer grading UI, weak-students/questions/chapters analytics, PDF result export.**
+
+## Questions before I start
+
+1. **Confirm phased build?** Or do you want me to attempt everything in one pass (much larger PR, slower to review, higher risk)?
+2. **Live quiz realtime:** OK to use Supabase Realtime (works out-of-the-box, no extra service)? Alternative would be a polling fallback only.
+3. **PDF import:** Add `pdfjs-dist` dependency for client-side PDF parsing? Skips a server roundtrip.
+4. **Old quiz data:** Keep existing `quizzes` rows visible in the new Quiz Center (marked as legacy/self-paced), or hide until manually migrated?
+
+Reply with answers (or just "go phase 1") and I'll start with the migration + builder.
