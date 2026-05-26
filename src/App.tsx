@@ -403,6 +403,14 @@ const App = () => (
                     </AdminWrapper>
                   }
                 />
+                <Route
+                  path="/admin/quizzes"
+                  element={
+                    <AdminWrapper>
+                      <AdminQuizzes />
+                    </AdminWrapper>
+                  }
+                />
 
                 {/* Teacher Dashboard */}
                 <Route path="/teacher" element={<TeacherWrapper><TeacherDashboard /></TeacherWrapper>} />
