@@ -40,9 +40,10 @@ export default function LiveQuizParticipantPage() {
       lastQuestionId.current = s.current_question_id;
       setSelected(null);
       setAnswered(false);
-      const { data: q } = await supabase.from("quiz_questions").select("*, quiz_options(*)").eq("id", s.current_question_id).maybeSingle();
+      const { data: q } = await supabase.from("quiz_questions").select("*").eq("id", s.current_question_id).maybeSingle();
       setQuestion(q);
-      setOptions((q?.quiz_options || []).sort((a: any, b: any) => a.sort_order - b.sort_order));
+      const { data: opts } = await supabase.from("quiz_options").select("*").eq("question_id", s.current_question_id).order("sort_order");
+      setOptions(opts || []);
       if (q?.time_limit_seconds) setTimeLeft(q.time_limit_seconds);
     }
     if (s.status === "ended") {
