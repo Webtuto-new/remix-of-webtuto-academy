@@ -264,10 +264,15 @@ const Index = () => {
         </div>
         <div className="relative">
         {liveNow.length > 0 && <Row title="🔴 Live Now" items={liveNow} />}
+        <Row title="New Releases" items={newReleases} />
+        {teachers.length > 0 && <TutorRow title="Meet the Tutors" tutors={teachers} />}
         <Row title="Trending This Week" items={trending} />
         {recordings.length > 0 && <Row title="On-Demand Recordings" items={recordings} />}
         {curriculums.map((cur) => {
-          const items = classes.filter((c) => c.curriculums?.slug === cur.slug);
+          // Curriculum rows: exclude items already shown above (live + recordings) for variety
+          const items = classes.filter(
+            (c) => c.curriculums?.slug === cur.slug && !c.is_live && c.class_type !== "recording" && c.class_type !== "bundle"
+          );
           if (!items.length) return null;
           return <Row key={cur.id} title={cur.name} items={items} />;
         })}
