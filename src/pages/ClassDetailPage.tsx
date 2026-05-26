@@ -195,11 +195,13 @@ const ClassDetailPage = () => {
               <CountdownTimer targetDate={new Date(`${nextSession.session_date}T${nextSession.start_time}`)} sessionTitle={nextSession.title} zoomLink={nextSession.zoom_link} />
             )}
 
-            <div className="flex gap-1 border-b border-border overflow-x-auto">
+            <div className="flex gap-1.5 overflow-x-auto p-1 rounded-2xl bg-muted/40 border border-border/40">
               {tabs.map((tab) => (
                 <button key={tab} onClick={() => setActiveTab(tab)}
-                  className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
-                    activeTab === tab ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground"
+                  className={`px-4 py-2 text-sm font-semibold rounded-xl transition-all whitespace-nowrap ${
+                    activeTab === tab
+                      ? "bg-background text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
                   }`}>
                   {tab}
                 </button>
