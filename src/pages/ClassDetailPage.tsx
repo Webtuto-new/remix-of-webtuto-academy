@@ -134,21 +134,29 @@ const ClassDetailPage = () => {
   return (
     <Layout>
       <SEOHead title={cls.title} description={cls.description} path={`/class/${classId}`} image={cls.thumbnail || undefined} />
-      <div className="hero-gradient pt-24 pb-12">
+      <div className="relative pt-24 pb-14 overflow-hidden">
+        {cls.thumbnail && (
+          <div className="absolute inset-0 -z-10">
+            <img src={cls.thumbnail} alt="" aria-hidden className="w-full h-full object-cover opacity-25 scale-110 blur-2xl" />
+            <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/80 to-background" />
+          </div>
+        )}
+        <div className="absolute inset-0 -z-10 bg-mesh" />
         <div className="container mx-auto px-4">
           <div className="max-w-4xl">
-            <div className="flex flex-wrap gap-2 mb-4">
+            <div className="flex flex-wrap gap-2 mb-5">
               <Badge variant="secondary">{cls.curriculum}</Badge>
-              {cls.grade !== "—" && <Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground/80">{cls.grade}</Badge>}
-              {cls.subject !== "—" && <Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground/80">{cls.subject}</Badge>}
-              <Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground/80 capitalize">{cls.classType}</Badge>
+              {cls.grade !== "—" && <Badge variant="outline">{cls.grade}</Badge>}
+              {cls.subject !== "—" && <Badge variant="outline">{cls.subject}</Badge>}
+              <Badge variant="outline" className="capitalize">{cls.classType}</Badge>
+              {cls.isLive && <span className="badge-live"><span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" /> LIVE</span>}
             </div>
-            <h1 className="font-display text-3xl md:text-4xl font-bold text-primary-foreground mb-3">{cls.title}</h1>
-            <p className="text-primary-foreground/70 mb-4">{cls.description}</p>
-            <div className="flex items-center gap-4 text-sm text-primary-foreground/60">
-              <span className="flex items-center gap-1"><Users className="w-4 h-4" /> {cls.teacherName}</span>
-              <span className="flex items-center gap-1"><Calendar className="w-4 h-4" /> {cls.sessionCount} sessions</span>
-              <span className="flex items-center gap-1"><Clock className="w-4 h-4" /> {cls.duration}</span>
+            <h1 className="font-display text-3xl md:text-5xl font-bold text-foreground mb-4 tracking-tight">{cls.title}</h1>
+            <p className="text-muted-foreground text-base md:text-lg max-w-3xl leading-relaxed mb-5">{cls.description}</p>
+            <div className="flex flex-wrap items-center gap-5 text-sm text-muted-foreground">
+              <span className="flex items-center gap-1.5"><Users className="w-4 h-4 text-primary" /> {cls.teacherName}</span>
+              <span className="flex items-center gap-1.5"><Calendar className="w-4 h-4 text-primary" /> {cls.sessionCount} sessions</span>
+              <span className="flex items-center gap-1.5"><Clock className="w-4 h-4 text-primary" /> {cls.duration}</span>
             </div>
           </div>
         </div>

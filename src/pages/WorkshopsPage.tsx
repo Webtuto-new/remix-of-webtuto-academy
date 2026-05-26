@@ -3,37 +3,41 @@ import Layout from "@/components/Layout";
 import SEOHead from "@/components/SEOHead";
 import ClassCard from "@/components/ClassCard";
 import { supabase } from "@/integrations/supabase/client";
-import { BookOpen } from "lucide-react";
+import { Hammer } from "lucide-react";
+import { motion } from "framer-motion";
+import { fadeUp, stagger, viewportOnce } from "@/lib/motion";
+import SectionHeader from "@/components/premium/SectionHeader";
+import EmptyState from "@/components/premium/EmptyState";
+import { SkeletonCard } from "@/components/ui/skeleton";
 
 const WorkshopsPage = () => {
   const [classes, setClasses] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     supabase.from("classes").select("*, teachers(name), curriculums(name), grades(name), subjects(name)")
       .eq("is_active", true).eq("class_type", "workshop").order("created_at", { ascending: false })
-      .then(({ data }) => setClasses(data || []));
+      .then(({ data }) => { setClasses(data || []); setLoading(false); });
   }, []);
 
   return (
     <Layout>
       <SEOHead title="Workshops" description="Intensive hands-on learning workshops on Webtuto." path="/workshops" />
-      <div className="pt-24 pb-20">
+      <div className="relative bg-mesh pt-24 pb-20">
         <div className="container mx-auto px-4">
-          <div className="mb-10">
-            <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-2">Workshops</h1>
-            <p className="text-muted-foreground">Intensive hands-on learning experiences</p>
-          </div>
-          {classes.length > 0 ? (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <SectionHeader eyebrow="Hands-on" title="Workshops" description="Intensive practice-led learning experiences. Build real skills with guided projects and live feedback." />
+          {loading ? (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">{Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}</div>
+          ) : classes.length > 0 ? (
+            <motion.div variants={stagger} initial="hidden" whileInView="show" viewport={viewportOnce} className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
               {classes.map((c) => (
-                <ClassCard key={c.id} id={c.id} title={c.title} curriculum={c.curriculums?.name || "—"} grade={c.grades?.name || "—"} subject={c.subjects?.name || "—"} teacherName={c.teachers?.name || "Tutor"} classType={c.class_type} price={Number(c.price)} originalPrice={c.original_price ? Number(c.original_price) : undefined} duration={c.duration_minutes ? `${c.duration_minutes} min` : undefined} isLive={c.is_live} description={c.short_description || c.description} thumbnail={c.thumbnail_url} />
+                <motion.div key={c.id} variants={fadeUp}>
+                  <ClassCard id={c.id} title={c.title} curriculum={c.curriculums?.name || "—"} grade={c.grades?.name || "—"} subject={c.subjects?.name || "—"} teacherName={c.teachers?.name || "Tutor"} classType={c.class_type} price={Number(c.price)} originalPrice={c.original_price ? Number(c.original_price) : undefined} duration={c.duration_minutes ? `${c.duration_minutes} min` : undefined} isLive={c.is_live} description={c.short_description || c.description} thumbnail={c.thumbnail_url} />
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
           ) : (
-            <div className="text-center py-16 text-muted-foreground">
-              <BookOpen className="w-12 h-12 mx-auto mb-3 opacity-50" />
-              <p className="text-lg font-medium">No workshops available yet</p>
-            </div>
+            <EmptyState icon={Hammer} title="No workshops available yet" description="Check back soon — new hands-on workshops drop regularly." />
           )}
         </div>
       </div>

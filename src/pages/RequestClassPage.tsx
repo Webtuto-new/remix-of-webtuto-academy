@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
+import { motion } from "framer-motion";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -127,15 +128,15 @@ const RequestClassPage = () => {
   return (
     <Layout>
       <SEOHead title="Request a Class | Webtuto" description="Tell us what you want to learn — subject, grade, budget — and we'll match you with a tutor." path="/request-class" />
-      <div className="pt-20 pb-16">
+      <div className="relative bg-mesh pt-24 pb-20">
         <div className="container mx-auto px-4 max-w-3xl">
-          <div className="text-center mb-8 space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-medium">
+          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="text-center mb-10 space-y-3">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass-strong text-xs font-semibold text-primary tracking-wide">
               <GraduationCap className="w-3.5 h-3.5" /> Custom Class Request
             </div>
-            <h1 className="font-display text-3xl sm:text-4xl font-bold text-foreground">Request a Class</h1>
-            <p className="text-sm text-muted-foreground">Can't find what you need? Tell us your subject, level, and budget — we'll match you with a tutor.</p>
-          </div>
+            <h1 className="font-display text-3xl sm:text-5xl font-bold text-foreground tracking-tight">Request a Class</h1>
+            <p className="text-muted-foreground max-w-lg mx-auto">Can't find what you need? Tell us your subject, level, and budget — we'll match you with a tutor.</p>
+          </motion.div>
 
           {!user && (
             <Card className="mb-4 border-primary/40 bg-primary/5">
@@ -145,7 +146,7 @@ const RequestClassPage = () => {
             </Card>
           )}
 
-          <Card>
+          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.15 }} className="glass-strong rounded-2xl ring-glow">
             <CardContent className="p-5 sm:p-6 space-y-4">
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
@@ -240,11 +241,11 @@ const RequestClassPage = () => {
                 <Textarea rows={4} value={form.message} onChange={(e) => update("message", e.target.value)} maxLength={2000} placeholder="Tell us what you're trying to learn or any specific needs..." />
               </div>
 
-              <Button onClick={submit} disabled={submitting || !user} className="w-full gap-2" size="lg">
+              <Button onClick={submit} disabled={submitting || !user} variant="premium" className="w-full gap-2" size="lg">
                 <Send className="w-4 h-4" /> {submitting ? "Submitting..." : "Submit Request"}
               </Button>
             </CardContent>
-          </Card>
+          </motion.div>
         </div>
       </div>
     </Layout>

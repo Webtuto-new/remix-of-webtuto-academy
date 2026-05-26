@@ -11,6 +11,9 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { sendEmail, emailTemplates } from "@/lib/email";
 import FileOrLinkInput from "@/components/FileOrLinkInput";
+import { motion } from "framer-motion";
+import { fadeUp, stagger, viewportOnce } from "@/lib/motion";
+import { Sparkles } from "lucide-react";
 
 const TutorApplicationPage = () => {
   const { user } = useAuth();
@@ -75,18 +78,22 @@ const TutorApplicationPage = () => {
   return (
     <Layout>
       <SEOHead title="Become a Tutor" description="Join Webtuto and teach thousands of students across Sri Lanka." path="/tutor-application" />
-      <div className="pt-24 pb-20">
+      <div className="relative bg-mesh pt-24 pb-20">
         <div className="container mx-auto px-4 max-w-2xl">
-          <div className="text-center mb-10">
-            <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-3">
+          <motion.div initial="hidden" animate="show" variants={stagger} className="text-center mb-10 space-y-3">
+            <motion.div variants={fadeUp} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass-strong text-xs font-semibold text-primary tracking-wide">
+              <Sparkles className="w-3.5 h-3.5" /> Join Our Tutor Network
+            </motion.div>
+            <motion.h1 variants={fadeUp} className="font-display text-3xl md:text-5xl font-bold text-foreground tracking-tight">
               Become a Tutor
-            </h1>
-            <p className="text-muted-foreground">
+            </motion.h1>
+            <motion.p variants={fadeUp} className="text-muted-foreground max-w-md mx-auto">
               Join Webtuto and share your knowledge with thousands of students across Sri Lanka
-            </p>
-          </div>
+            </motion.p>
+          </motion.div>
 
-          <form onSubmit={handleSubmit} className="bg-card rounded-xl p-6 md:p-8 card-elevated space-y-6">
+          <motion.form initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }}
+            onSubmit={handleSubmit} className="glass-strong rounded-2xl p-6 md:p-8 space-y-6 ring-glow">
             <div className="grid sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="name">Full Name</Label>
@@ -191,10 +198,10 @@ const TutorApplicationPage = () => {
               </label>
             </div>
 
-            <Button type="submit" size="lg" className="w-full" disabled={loading}>
+            <Button type="submit" size="lg" variant="premium" className="w-full" disabled={loading}>
               {loading ? "Submitting..." : "Submit Application"}
             </Button>
-          </form>
+          </motion.form>
         </div>
       </div>
     </Layout>
