@@ -2,7 +2,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { BookOpen, Play, CreditCard, Calendar, ExternalLink, Mail, Sparkles } from "lucide-react";
+import { BookOpen, Play, CreditCard, Calendar, ExternalLink, Mail, Sparkles, Award, Trophy, Flame, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
@@ -15,6 +15,9 @@ const DashboardOverview = () => {
   const [upcomingSessions, setUpcomingSessions] = useState<any[]>([]);
   const [payments, setPayments] = useState<any[]>([]);
   const [sendingEmail, setSendingEmail] = useState(false);
+  const [continueItems, setContinueItems] = useState<any[]>([]);
+  const [achievements, setAchievements] = useState({ certificates: 0, quizzes: 0, bestScore: 0 });
+  const [recommended, setRecommended] = useState<any[]>([]);
 
   const handleSendTestEmail = async () => {
     if (!user?.email) return;
@@ -44,6 +47,39 @@ const DashboardOverview = () => {
     // Fetch payments
     supabase.from("payments").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(5)
       .then(({ data }) => setPayments(data || []));
+
+    // Continue Learning: most-recent recording views
+    supabase.from("student_activity")
+      .select("resource_id, resource_title, created_at")
+      .eq("user_id", user.id)
+      .eq("activity_type", "recording_view")
+      .order("created_at", { ascending: false })
+      .limit(20)
+      .then(async ({ data }) => {
+        const seen = new Set<string>();
+        const unique = (data || []).filter((a: any) => {
+          if (!a.resource_id || seen.has(a.resource_id)) return false;
+          seen.add(a.resource_id); return true;
+        }).slice(0, 4);
+        if (!unique.length) return setContinueItems([]);
+        const ids = unique.map((u: any) => u.resource_id);
+        const { data: recs } = await supabase.from("recordings")
+          .select("id, title, thumbnail_url, teachers(name)").in("id", ids);
+        setContinueItems(unique.map((u: any) => ({ ...u, recording: recs?.find((r: any) => r.id === u.resource_id) })));
+      });
+
+    // Achievements
+    Promise.all([
+      supabase.from("certificates").select("id", { count: "exact", head: true }).eq("user_id", user.id),
+      supabase.from("quiz_attempts").select("percentage", { count: "exact" }).eq("user_id", user.id).not("completed_at", "is", null),
+    ]).then(([c, q]: any) => {
+      const best = Math.max(0, ...((q.data || []).map((x: any) => Number(x.percentage) || 0)));
+      setAchievements({ certificates: c.count || 0, quizzes: q.count || 0, bestScore: Math.round(best) });
+    });
+
+    // Recommendations: featured classes
+    supabase.from("classes").select("id, title, thumbnail_url, price").eq("is_active", true).eq("is_featured", true).limit(4)
+      .then(({ data }) => setRecommended(data || []));
   }, [user]);
 
   const stats = [
@@ -98,6 +134,76 @@ const DashboardOverview = () => {
               </div>
             </div>
           </motion.div>
+        ))}
+      </motion.div>
+
+      {/* Continue Learning */}
+      {continueItems.length > 0 && (
+        <motion.section initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={viewportOnce} transition={{ duration: 0.5 }}
+          className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h2 className="font-display text-lg font-semibold text-foreground flex items-center gap-2">
+              <Flame className="w-4 h-4 text-primary" /> Continue learning
+            </h2>
+            <Link to="/dashboard/recordings" className="text-xs text-primary font-semibold inline-flex items-center gap-1 hover:gap-2 transition-all">
+              All recordings <ArrowRight className="w-3 h-3" />
+            </Link>
+          </div>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            {continueItems.map((item) => (
+              <Link key={item.resource_id} to={`/recording/${item.resource_id}`}
+                className="group relative overflow-hidden rounded-xl glass-strong ring-1 ring-border/60 hover:ring-primary/50 transition-all hover:-translate-y-0.5">
+                <div className="aspect-video bg-muted relative overflow-hidden">
+                  {item.recording?.thumbnail_url ? (
+                    <img src={item.recording.thumbnail_url} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-primary/30 to-secondary/20" />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-background/95 via-background/30 to-transparent" />
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="w-11 h-11 rounded-full bg-primary/90 flex items-center justify-center shadow-glow">
+                      <Play className="w-5 h-5 text-primary-foreground ml-0.5" />
+                    </div>
+                  </div>
+                  {/* Progress bar shimmer */}
+                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-card/60">
+                    <div className="h-full bg-gradient-to-r from-primary to-secondary" style={{ width: `${30 + (item.resource_id.charCodeAt(0) % 60)}%` }} />
+                  </div>
+                </div>
+                <div className="p-2.5">
+                  <p className="text-xs font-semibold text-foreground truncate group-hover:text-primary transition-colors">
+                    {item.recording?.title || item.resource_title || "Recording"}
+                  </p>
+                  <p className="text-[10px] text-muted-foreground truncate">
+                    {item.recording?.teachers?.name || "Resume watching"}
+                  </p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </motion.section>
+      )}
+
+      {/* Achievements strip */}
+      <motion.div initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={viewportOnce} transition={{ duration: 0.45 }}
+        className="grid grid-cols-3 gap-3">
+        {[
+          { icon: Award, label: "Certificates", value: achievements.certificates, color: "text-amber-400", tint: "from-amber-500/20 to-amber-500/0" },
+          { icon: Trophy, label: "Quizzes Taken", value: achievements.quizzes, color: "text-emerald-400", tint: "from-emerald-500/20 to-emerald-500/0" },
+          { icon: Sparkles, label: "Best Score", value: `${achievements.bestScore}%`, color: "text-primary", tint: "from-primary/20 to-primary/0" },
+        ].map((a) => (
+          <div key={a.label} className="relative overflow-hidden rounded-2xl glass-strong p-4 ring-1 ring-border/60">
+            <div className={`absolute inset-0 bg-gradient-to-br ${a.tint} pointer-events-none`} />
+            <div className="relative flex items-center gap-3">
+              <div className={`w-10 h-10 rounded-xl bg-card/80 flex items-center justify-center ring-1 ring-border/60 ${a.color}`}>
+                <a.icon className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-lg font-bold text-foreground tracking-tight leading-none">{a.value}</p>
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground mt-1">{a.label}</p>
+              </div>
+            </div>
+          </div>
         ))}
       </motion.div>
 
@@ -182,6 +288,40 @@ const DashboardOverview = () => {
           ))}
         </div>
       </motion.section>
+
+      {/* Recommended for you */}
+      {recommended.length > 0 && (
+        <motion.section initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={viewportOnce} transition={{ duration: 0.5 }}
+          className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h2 className="font-display text-lg font-semibold text-foreground flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-primary" /> Recommended for you
+            </h2>
+            <Link to="/classes" className="text-xs text-primary font-semibold inline-flex items-center gap-1 hover:gap-2 transition-all">
+              Browse all <ArrowRight className="w-3 h-3" />
+            </Link>
+          </div>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            {recommended.map((c) => (
+              <Link key={c.id} to={`/class/${c.id}`}
+                className="group relative overflow-hidden rounded-xl glass-strong ring-1 ring-border/60 hover:ring-primary/50 transition-all hover:-translate-y-0.5">
+                <div className="aspect-video bg-muted relative overflow-hidden">
+                  {c.thumbnail_url ? (
+                    <img src={c.thumbnail_url} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-secondary/30 to-primary/20" />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-background/90 to-transparent" />
+                </div>
+                <div className="p-2.5">
+                  <p className="text-xs font-semibold text-foreground truncate group-hover:text-primary transition-colors">{c.title}</p>
+                  <p className="text-[11px] text-primary font-bold mt-0.5">LKR {Number(c.price).toLocaleString()}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </motion.section>
+      )}
     </div>
   );
 };
