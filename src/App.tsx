@@ -384,6 +384,14 @@ const App = () => (
                   }
                 />
                 <Route
+                  path="/admin/testimonials"
+                  element={
+                    <AdminWrapper>
+                      <AdminTestimonials />
+                    </AdminWrapper>
+                  }
+                />
+                <Route
                   path="/admin/analytics"
                   element={
                     <AdminWrapper>
