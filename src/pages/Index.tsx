@@ -192,6 +192,8 @@ const Row = ({ title, items }: { title: string; items: ClassRow[] }) => {
 };
 
 const RowCard = ({ c }: { c: ClassRow }) => {
+  const next = useMemo(() => getNextOccurrence(c.schedule_day, c.schedule_time), [c.schedule_day, c.schedule_time]);
+  const countdown = useCountdown(next);
   return (
     <Link
       to={`/class/${c.id}`}
@@ -209,8 +211,17 @@ const RowCard = ({ c }: { c: ClassRow }) => {
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent opacity-80 group-hover/card:opacity-100 transition" />
         {c.is_live && (
-          <span className="absolute top-2 left-2 inline-flex items-center gap-1 px-2 py-0.5 rounded bg-destructive text-destructive-foreground text-[10px] font-bold tracking-wider">
-            <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" /> LIVE
+          <span className="absolute top-2 left-2 inline-flex items-center gap-1 px-2 py-0.5 rounded bg-destructive text-destructive-foreground text-[10px] font-bold tracking-wider shadow-[0_0_18px_hsl(var(--destructive)/0.7)] ring-1 ring-destructive/60">
+            <span className="relative flex h-1.5 w-1.5">
+              <span className="absolute inline-flex h-full w-full rounded-full bg-current opacity-75 animate-ping" />
+              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-current" />
+            </span>
+            LIVE
+          </span>
+        )}
+        {!c.is_live && countdown && countdown !== "LIVE NOW" && (
+          <span className="absolute top-2 right-2 inline-flex items-center gap-1 px-2 py-0.5 rounded bg-background/80 backdrop-blur text-foreground text-[10px] font-bold tracking-wider ring-1 ring-border/60">
+            <Clock className="w-2.5 h-2.5 text-primary" /> {countdown}
           </span>
         )}
         <div className="absolute inset-x-0 bottom-0 p-3 sm:p-4 space-y-1.5">
