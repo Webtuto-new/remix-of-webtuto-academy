@@ -3,7 +3,7 @@ import Layout from "@/components/Layout";
 import SEOHead from "@/components/SEOHead";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Play, Info, ChevronLeft, ChevronRight, Radio } from "lucide-react";
+import { Play, Info, ChevronLeft, ChevronRight, Radio, GraduationCap } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import heroBg from "@/assets/hero-bg.jpg";
@@ -184,6 +184,12 @@ const RowCard = ({ c }: { c: ClassRow }) => {
             {c.grades?.name && <span>{c.grades.name}</span>}
             {c.subjects?.name && <span>· {c.subjects.name}</span>}
           </div>
+          {c.teachers?.name && (
+            <div className="flex items-center gap-1.5 text-[11px] text-foreground/60">
+              <GraduationCap className="w-3 h-3 text-accent" />
+              <span className="truncate">{c.teachers.name}</span>
+            </div>
+          )}
           <div className="opacity-0 group-hover/card:opacity-100 transition flex items-center gap-2 pt-1">
             <span className="text-accent text-sm font-bold">Rs. {Number(c.price).toLocaleString()}</span>
             {c.original_price && Number(c.original_price) > Number(c.price) && (
@@ -197,8 +203,61 @@ const RowCard = ({ c }: { c: ClassRow }) => {
 };
 
 const Index = () => {
+  return <IndexInner />;
+};
+
+const TutorRow = ({ title, tutors }: { title: string; tutors: any[] }) => {
+  const scroller = useRef<HTMLDivElement>(null);
+  const scroll = (dir: 1 | -1) => {
+    const el = scroller.current;
+    if (!el) return;
+    el.scrollBy({ left: dir * el.clientWidth * 0.85, behavior: "smooth" });
+  };
+  return (
+    <section className="relative group/row py-6">
+      <div className="container mx-auto px-4 sm:px-8 mb-3">
+        <h2 className="font-display text-xl sm:text-2xl font-bold text-foreground">{title}</h2>
+      </div>
+      <div className="relative">
+        <button onClick={() => scroll(-1)} className="absolute left-0 top-0 bottom-0 z-20 w-12 sm:w-16 flex items-center justify-center bg-gradient-to-r from-background/90 to-transparent opacity-0 group-hover/row:opacity-100 transition-opacity" aria-label="Scroll left">
+          <ChevronLeft className="w-8 h-8 text-foreground" />
+        </button>
+        <div ref={scroller} className="flex gap-4 overflow-x-auto scroll-smooth px-4 sm:px-8 pb-4 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+          {tutors.map((t) => (
+            <Link key={t.id} to={`/classes?teacher=${t.id}`} className="snap-start shrink-0 w-[180px] sm:w-[200px] group/tutor">
+              <motion.div whileHover={{ y: -6 }} transition={{ type: "spring", stiffness: 300, damping: 22 }} className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-card to-muted/40 ring-1 ring-foreground/10 hover:ring-2 hover:ring-accent shadow-lg p-5 text-center h-full">
+                <div className="relative w-20 h-20 mx-auto mb-3 rounded-full overflow-hidden ring-2 ring-accent/40 ring-offset-2 ring-offset-background bg-gradient-to-br from-primary/30 to-secondary/30">
+                  {t.avatar_url ? (
+                    <img src={t.avatar_url} alt={t.name} className="w-full h-full object-cover" loading="lazy" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center font-display font-bold text-2xl text-foreground/80">
+                      {t.name?.charAt(0) || "T"}
+                    </div>
+                  )}
+                </div>
+                <h3 className="font-display font-bold text-sm text-foreground line-clamp-1">{t.name}</h3>
+                {t.qualifications && (
+                  <p className="text-[11px] text-foreground/60 line-clamp-2 mt-1">{t.qualifications}</p>
+                )}
+                <div className="mt-3 inline-flex items-center gap-1 text-[11px] text-accent font-semibold opacity-0 group-hover/tutor:opacity-100 transition">
+                  View Classes <ChevronRight className="w-3 h-3" />
+                </div>
+              </motion.div>
+            </Link>
+          ))}
+        </div>
+        <button onClick={() => scroll(1)} className="absolute right-0 top-0 bottom-0 z-20 w-12 sm:w-16 flex items-center justify-center bg-gradient-to-l from-background/90 to-transparent opacity-0 group-hover/row:opacity-100 transition-opacity" aria-label="Scroll right">
+          <ChevronRight className="w-8 h-8 text-foreground" />
+        </button>
+      </div>
+    </section>
+  );
+};
+
+const IndexInner = () => {
   const [classes, setClasses] = useState<ClassRow[]>([]);
   const [curriculums, setCurriculums] = useState<any[]>([]);
+  const [teachers, setTeachers] = useState<any[]>([]);
 
   useEffect(() => {
     supabase
@@ -210,7 +269,18 @@ const Index = () => {
       .then(({ data }) => setClasses(data || []));
     supabase.from("curriculums").select("*").eq("is_active", true).order("sort_order")
       .then(({ data }) => setCurriculums(data || []));
+    supabase.from("teachers").select("id,name,bio,avatar_url,qualifications").eq("is_active", true).limit(20)
+      .then(({ data }) => setTeachers(data || []));
   }, []);
+
+  const shuffle = <T,>(arr: T[]) => {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  };
 
   const featured = useMemo(() => {
     const f = classes.filter((c) => c.is_featured);
@@ -218,8 +288,16 @@ const Index = () => {
   }, [classes]);
 
   const liveNow = useMemo(() => classes.filter((c) => c.is_live), [classes]);
-  const trending = useMemo(() => classes.slice(0, 12), [classes]);
-  const recordings = useMemo(() => classes.filter((c) => c.class_type === "recording" || c.class_type === "bundle"), [classes]);
+  // Trending excludes live (live has its own row) and is shuffled for variety
+  const trending = useMemo(
+    () => shuffle(classes.filter((c) => !c.is_live)).slice(0, 12),
+    [classes]
+  );
+  const recordings = useMemo(
+    () => classes.filter((c) => c.class_type === "recording" || c.class_type === "bundle"),
+    [classes]
+  );
+  const newReleases = useMemo(() => classes.slice(0, 12), [classes]); // freshest by created_at
 
   return (
     <Layout>
@@ -238,10 +316,15 @@ const Index = () => {
         </div>
         <div className="relative">
         {liveNow.length > 0 && <Row title="🔴 Live Now" items={liveNow} />}
+        <Row title="New Releases" items={newReleases} />
+        {teachers.length > 0 && <TutorRow title="Meet the Tutors" tutors={teachers} />}
         <Row title="Trending This Week" items={trending} />
         {recordings.length > 0 && <Row title="On-Demand Recordings" items={recordings} />}
         {curriculums.map((cur) => {
-          const items = classes.filter((c) => c.curriculums?.slug === cur.slug);
+          // Curriculum rows: exclude items already shown above (live + recordings) for variety
+          const items = classes.filter(
+            (c) => c.curriculums?.slug === cur.slug && !c.is_live && c.class_type !== "recording" && c.class_type !== "bundle"
+          );
           if (!items.length) return null;
           return <Row key={cur.id} title={cur.name} items={items} />;
         })}
