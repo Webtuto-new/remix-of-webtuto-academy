@@ -169,9 +169,7 @@ const RowCard = ({ c }: { c: ClassRow }) => {
         {c.thumbnail_url ? (
           <img src={c.thumbnail_url} alt={c.title} className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
         ) : (
-          <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary/30 to-secondary/30 p-4">
-            <span className="font-display font-bold text-foreground/80 text-center line-clamp-3">{c.title}</span>
-          </div>
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/30 to-secondary/30" />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent opacity-80 group-hover/card:opacity-100 transition" />
         {c.is_live && (
