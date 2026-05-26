@@ -20,7 +20,14 @@ const HeroFeature = ({ items }: { items: ClassRow[] }) => {
   if (!c) return null;
   const bg = c.thumbnail_url;
   return (
-    <section className="relative h-[88vh] min-h-[560px] w-full overflow-hidden -mt-[var(--nav-h,0px)]">
+    <section className="relative h-[88vh] min-h-[560px] w-full overflow-hidden">
+      {/* Ambient base (always visible behind image) */}
+      <div className="absolute inset-0 bg-mesh" />
+      <div className="absolute inset-0">
+        <div className="absolute top-1/4 -left-20 w-[480px] h-[480px] rounded-full bg-primary/30 blur-[140px] animate-float-blob" />
+        <div className="absolute bottom-0 right-0 w-[520px] h-[520px] rounded-full bg-accent/20 blur-[160px] animate-float-blob" style={{ animationDelay: "-5s" }} />
+        <div className="absolute top-0 right-1/4 w-[360px] h-[360px] rounded-full bg-secondary/25 blur-[120px] animate-float-blob" style={{ animationDelay: "-2s" }} />
+      </div>
       <AnimatePresence mode="sync">
         <motion.div
           key={c.id}
@@ -33,12 +40,14 @@ const HeroFeature = ({ items }: { items: ClassRow[] }) => {
           {bg ? (
             <img src={bg} alt={c.title} className="absolute inset-0 w-full h-full object-cover" />
           ) : (
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/40 via-background to-secondary/30" />
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-transparent to-secondary/20" />
           )}
           {/* Netflix-like gradients */}
           <div className="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-transparent" />
           <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-background via-background/70 to-transparent" />
           <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-background to-transparent" />
+          {/* Subtle noise/grain via radial dots */}
+          <div className="absolute inset-0 opacity-[0.05] mix-blend-overlay pointer-events-none" style={{ backgroundImage: "radial-gradient(hsl(var(--foreground)) 1px, transparent 1px)", backgroundSize: "3px 3px" }} />
         </motion.div>
       </AnimatePresence>
 
