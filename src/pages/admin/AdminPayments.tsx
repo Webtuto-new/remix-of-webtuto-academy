@@ -12,6 +12,7 @@ import { motion } from "framer-motion";
 import { fadeUp, stagger } from "@/lib/motion";
 import EmptyState from "@/components/premium/EmptyState";
 import { CreditCard } from "lucide-react";
+import AdminPageHeader from "@/components/premium/AdminPageHeader";
 
 const AdminPayments = () => {
   const [payments, setPayments] = useState<any[]>([]);
@@ -227,11 +228,12 @@ const AdminPayments = () => {
                   ))}
                 </select>
               </div>
-              <Button onClick={handleSave} className="w-full">{editing ? "Update" : "Add"} Payment</Button>
+              <Button onClick={handleSave} variant="premium" className="w-full">{editing ? "Update" : "Add"} Payment</Button>
             </div>
           </DialogContent>
-        </Dialog>
-      </div>
+          </Dialog>
+        }
+      />
 
       <div className="flex flex-wrap gap-3">
         <Input placeholder="Search by student, reference..." value={search} onChange={(e) => setSearch(e.target.value)} className="max-w-sm" />
