@@ -136,7 +136,7 @@ const Row = ({ title, items }: { title: string; items: ClassRow[] }) => {
         </button>
         <div
           ref={scroller}
-          className="flex gap-3 overflow-x-auto scroll-smooth px-4 sm:px-8 pb-4 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+          className="flex gap-4 sm:gap-5 lg:gap-6 overflow-x-auto scroll-smooth px-4 sm:px-8 pb-6 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
         >
           {items.map((c) => (
             <RowCard key={c.id} c={c} />
@@ -158,7 +158,7 @@ const RowCard = ({ c }: { c: ClassRow }) => {
   return (
     <Link
       to={`/class/${c.id}`}
-      className="snap-start shrink-0 w-[240px] sm:w-[300px] md:w-[340px] group/card relative"
+      className="snap-start shrink-0 w-[78vw] xs:w-[60vw] sm:w-[300px] md:w-[320px] lg:w-[340px] xl:w-[360px] max-w-[380px] group/card relative"
     >
       <motion.div
         whileHover={{ scale: 1.06, zIndex: 30 }}
@@ -178,14 +178,14 @@ const RowCard = ({ c }: { c: ClassRow }) => {
             <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" /> LIVE
           </span>
         )}
-        <div className="absolute inset-x-0 bottom-0 p-3 space-y-1">
-          <h3 className="font-display font-bold text-sm sm:text-base text-foreground line-clamp-2 leading-tight">{c.title}</h3>
-          <div className="flex items-center gap-2 text-[11px] text-foreground/70">
+        <div className="absolute inset-x-0 bottom-0 p-3 sm:p-4 space-y-1.5">
+          <h3 className="font-display font-bold text-sm sm:text-base lg:text-lg text-foreground line-clamp-2 leading-tight">{c.title}</h3>
+          <div className="flex items-center gap-2 text-[11px] sm:text-xs text-foreground/70">
             {c.grades?.name && <span>{c.grades.name}</span>}
             {c.subjects?.name && <span>· {c.subjects.name}</span>}
           </div>
           {c.teachers?.name && (
-            <div className="flex items-center gap-1.5 text-[11px] text-foreground/60">
+            <div className="flex items-center gap-1.5 text-[11px] sm:text-xs text-foreground/60">
               <GraduationCap className="w-3 h-3 text-accent" />
               <span className="truncate">{c.teachers.name}</span>
             </div>
@@ -222,9 +222,9 @@ const TutorRow = ({ title, tutors }: { title: string; tutors: any[] }) => {
         <button onClick={() => scroll(-1)} className="absolute left-0 top-0 bottom-0 z-20 w-12 sm:w-16 flex items-center justify-center bg-gradient-to-r from-background/90 to-transparent opacity-0 group-hover/row:opacity-100 transition-opacity" aria-label="Scroll left">
           <ChevronLeft className="w-8 h-8 text-foreground" />
         </button>
-        <div ref={scroller} className="flex gap-4 overflow-x-auto scroll-smooth px-4 sm:px-8 pb-4 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+        <div ref={scroller} className="flex gap-4 sm:gap-5 lg:gap-6 overflow-x-auto scroll-smooth px-4 sm:px-8 pb-6 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           {tutors.map((t) => (
-            <Link key={t.id} to={`/tutor/${t.id}`} className="snap-start shrink-0 w-[180px] sm:w-[200px] group/tutor">
+            <Link key={t.id} to={`/tutor/${t.id}`} className="snap-start shrink-0 w-[170px] sm:w-[200px] lg:w-[220px] group/tutor">
               <motion.div whileHover={{ y: -6 }} transition={{ type: "spring", stiffness: 300, damping: 22 }} className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-card to-muted/40 ring-1 ring-foreground/10 hover:ring-2 hover:ring-accent shadow-lg p-5 text-center h-full">
                 <div className="relative w-20 h-20 mx-auto mb-3 rounded-full overflow-hidden ring-2 ring-accent/40 ring-offset-2 ring-offset-background bg-gradient-to-br from-primary/30 to-secondary/30">
                   {t.avatar_url ? (
