@@ -3,7 +3,7 @@ import Layout from "@/components/Layout";
 import SEOHead from "@/components/SEOHead";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Play, Info, ChevronLeft, ChevronRight, Radio } from "lucide-react";
+import { Play, Info, ChevronLeft, ChevronRight, Radio, GraduationCap } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import heroBg from "@/assets/hero-bg.jpg";
@@ -184,6 +184,12 @@ const RowCard = ({ c }: { c: ClassRow }) => {
             {c.grades?.name && <span>{c.grades.name}</span>}
             {c.subjects?.name && <span>· {c.subjects.name}</span>}
           </div>
+          {c.teachers?.name && (
+            <div className="flex items-center gap-1.5 text-[11px] text-foreground/60">
+              <GraduationCap className="w-3 h-3 text-accent" />
+              <span className="truncate">{c.teachers.name}</span>
+            </div>
+          )}
           <div className="opacity-0 group-hover/card:opacity-100 transition flex items-center gap-2 pt-1">
             <span className="text-accent text-sm font-bold">Rs. {Number(c.price).toLocaleString()}</span>
             {c.original_price && Number(c.original_price) > Number(c.price) && (
@@ -199,6 +205,7 @@ const RowCard = ({ c }: { c: ClassRow }) => {
 const Index = () => {
   const [classes, setClasses] = useState<ClassRow[]>([]);
   const [curriculums, setCurriculums] = useState<any[]>([]);
+  const [teachers, setTeachers] = useState<any[]>([]);
 
   useEffect(() => {
     supabase
@@ -210,7 +217,18 @@ const Index = () => {
       .then(({ data }) => setClasses(data || []));
     supabase.from("curriculums").select("*").eq("is_active", true).order("sort_order")
       .then(({ data }) => setCurriculums(data || []));
+    supabase.from("teachers").select("id,name,bio,avatar_url,qualifications").eq("is_active", true).limit(20)
+      .then(({ data }) => setTeachers(data || []));
   }, []);
+
+  const shuffle = <T,>(arr: T[]) => {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  };
 
   const featured = useMemo(() => {
     const f = classes.filter((c) => c.is_featured);
@@ -218,8 +236,16 @@ const Index = () => {
   }, [classes]);
 
   const liveNow = useMemo(() => classes.filter((c) => c.is_live), [classes]);
-  const trending = useMemo(() => classes.slice(0, 12), [classes]);
-  const recordings = useMemo(() => classes.filter((c) => c.class_type === "recording" || c.class_type === "bundle"), [classes]);
+  // Trending excludes live (live has its own row) and is shuffled for variety
+  const trending = useMemo(
+    () => shuffle(classes.filter((c) => !c.is_live)).slice(0, 12),
+    [classes]
+  );
+  const recordings = useMemo(
+    () => classes.filter((c) => c.class_type === "recording" || c.class_type === "bundle"),
+    [classes]
+  );
+  const newReleases = useMemo(() => classes.slice(0, 12), [classes]); // freshest by created_at
 
   return (
     <Layout>
