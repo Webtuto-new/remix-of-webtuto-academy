@@ -164,11 +164,45 @@ const DashboardLayout = ({ children }: Props) => {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-          className="p-4 lg:p-6"
+          className="p-4 lg:p-6 pb-24 lg:pb-6"
         >
           {children}
         </motion.main>
       </div>
+
+      {/* Mobile bottom tab nav */}
+      <nav className="lg:hidden fixed bottom-0 inset-x-0 z-40 glass-strong border-t border-border/60 px-2 pt-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+        <div className="grid grid-cols-5 gap-1">
+          {[
+            { label: "Home", path: "/dashboard", icon: LayoutDashboard },
+            { label: "Classes", path: "/dashboard/classes", icon: BookOpen },
+            { label: "Watch", path: "/dashboard/recordings", icon: Play },
+            { label: "Schedule", path: "/dashboard/schedule", icon: Calendar },
+            { label: "Profile", path: "/dashboard/profile", icon: User },
+          ].map((t) => {
+            const active = location.pathname === t.path;
+            return (
+              <Link
+                key={t.path}
+                to={t.path}
+                className={`relative flex flex-col items-center justify-center gap-0.5 py-1.5 rounded-xl transition-colors ${
+                  active ? "text-primary" : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {active && (
+                  <motion.span
+                    layoutId="tab-active-bg"
+                    className="absolute inset-0 rounded-xl bg-gradient-to-b from-primary/20 to-secondary/10 ring-1 ring-primary/30"
+                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                  />
+                )}
+                <t.icon className="w-5 h-5 relative" />
+                <span className="text-[10px] font-semibold relative">{t.label}</span>
+              </Link>
+            );
+          })}
+        </div>
+      </nav>
     </div>
   );
 };
