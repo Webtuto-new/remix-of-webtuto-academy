@@ -650,7 +650,7 @@ const AdminClasses = () => {
               </tr></thead>
               <motion.tbody variants={stagger} initial="hidden" animate="show">
                 {filteredClasses.map((c) => (
-                  <tr key={c.id} className={`border-b border-border last:border-0 ${!c.is_active ? "opacity-60" : ""}`}>
+                  <motion.tr key={c.id} variants={fadeUp} className={`border-b border-border last:border-0 hover:bg-primary/5 transition-colors group ${!c.is_active ? "opacity-60" : ""}`}>
                     <td className="p-4 font-medium text-foreground">
                       <div className="flex items-center gap-2">
                         {c.title}
