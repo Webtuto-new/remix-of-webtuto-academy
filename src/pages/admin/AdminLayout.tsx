@@ -1,5 +1,6 @@
 import { ReactNode, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   LayoutDashboard, BookOpen, Users, GraduationCap, Play, CreditCard,
@@ -109,7 +110,15 @@ const AdminLayout = ({ children }: Props) => {
             <Shield className="w-4 h-4 text-destructive" /> Admin Control Center
           </p>
         </header>
-        <main className="p-4 lg:p-6">{children}</main>
+        <motion.main
+          key={location.pathname}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+          className="p-4 lg:p-6"
+        >
+          {children}
+        </motion.main>
       </div>
     </div>
   );
