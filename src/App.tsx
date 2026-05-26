@@ -34,6 +34,7 @@ import QuizzesPage from "./pages/QuizzesPage";
 import QuizPlayPage from "./pages/QuizPlayPage";
 import QuizJoinPage from "./pages/QuizJoinPage";
 import LiveQuizParticipantPage from "./pages/LiveQuizParticipantPage";
+import QuizResultsPage from "./pages/QuizResultsPage";
 
 // Dashboard pages
 import DashboardLayout from "./pages/dashboard/DashboardLayout";
@@ -86,6 +87,7 @@ import TeacherRecordings from "./pages/teacher/TeacherRecordings";
 import TeacherEarnings from "./pages/teacher/TeacherEarnings";
 import TeacherQuizCenter from "./pages/teacher/TeacherQuizCenter";
 import TeacherLiveQuizConsole from "./pages/teacher/TeacherLiveQuizConsole";
+import TeacherQuizAnalytics from "./pages/teacher/TeacherQuizAnalytics";
 
 const queryClient = new QueryClient();
 
@@ -143,6 +145,7 @@ const App = () => (
                 <Route path="/quizzes/join" element={<QuizJoinPage />} />
                 <Route path="/quizzes/live/:sessionId" element={<LiveQuizParticipantPage />} />
                 <Route path="/quiz/:id" element={<QuizPlayPage />} />
+                <Route path="/quiz/results/:attemptId" element={<QuizResultsPage />} />
 
                 {/* Student Dashboard */}
                 <Route
@@ -438,6 +441,7 @@ const App = () => (
                 <Route path="/teacher/earnings" element={<TeacherWrapper><TeacherEarnings /></TeacherWrapper>} />
                 <Route path="/teacher/quiz-center" element={<TeacherWrapper><TeacherQuizCenter /></TeacherWrapper>} />
                 <Route path="/teacher/quiz-center/live/:sessionId" element={<TeacherWrapper><TeacherLiveQuizConsole /></TeacherWrapper>} />
+                <Route path="/teacher/quiz-center/:quizId/analytics" element={<TeacherWrapper><TeacherQuizAnalytics /></TeacherWrapper>} />
 
                 <Route path="*" element={<NotFound />} />
               </Routes>
