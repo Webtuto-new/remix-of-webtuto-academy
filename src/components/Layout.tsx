@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useLocation } from "react-router-dom";
 import Navbar from "./Navbar";
