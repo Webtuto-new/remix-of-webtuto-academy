@@ -21,10 +21,17 @@ export default function TeacherLiveQuizConsole() {
     if (s) {
       const { data: q } = await supabase.from("quizzes").select("*").eq("id", s.quiz_id).maybeSingle();
       setQuiz(q);
-      const { data: qs } = await supabase.from("quiz_questions").select("*, quiz_options(*)").eq("quiz_id", s.quiz_id).order("sort_order");
-      setQuestions(qs || []);
-      if (s.current_question_id && qs) {
-        const idx = qs.findIndex((x: any) => x.id === s.current_question_id);
+      const { data: qs } = await supabase.from("quiz_questions").select("*").eq("quiz_id", s.quiz_id).order("sort_order");
+      const qIds = (qs || []).map((x: any) => x.id);
+      const { data: opts } = qIds.length
+        ? await supabase.from("quiz_options").select("*").in("question_id", qIds)
+        : { data: [] as any[] };
+      const byQ: Record<string, any[]> = {};
+      (opts || []).forEach((o: any) => { (byQ[o.question_id] ||= []).push(o); });
+      const merged = (qs || []).map((x: any) => ({ ...x, quiz_options: byQ[x.id] || [] }));
+      setQuestions(merged);
+      if (s.current_question_id && merged.length) {
+        const idx = merged.findIndex((x: any) => x.id === s.current_question_id);
         if (idx >= 0) setCurrentIdx(idx);
       }
     }

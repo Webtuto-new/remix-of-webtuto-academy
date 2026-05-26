@@ -35,7 +35,7 @@ export default function QuizJoinPage() {
       { live_session_id: session.id, user_id: user.id, status: "waiting" } as any,
       { onConflict: "live_session_id,user_id" } as any
     );
-    navigate(`/quiz/${session.quiz_id}?live=${session.id}`);
+    navigate(`/quizzes/live/${session.id}`);
   };
 
   return (

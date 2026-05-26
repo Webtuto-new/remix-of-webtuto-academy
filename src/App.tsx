@@ -33,6 +33,7 @@ import TutorsPage from "./pages/TutorsPage";
 import QuizzesPage from "./pages/QuizzesPage";
 import QuizPlayPage from "./pages/QuizPlayPage";
 import QuizJoinPage from "./pages/QuizJoinPage";
+import LiveQuizParticipantPage from "./pages/LiveQuizParticipantPage";
 
 // Dashboard pages
 import DashboardLayout from "./pages/dashboard/DashboardLayout";
@@ -140,6 +141,7 @@ const App = () => (
                 <Route path="/tutors" element={<TutorsPage />} />
                 <Route path="/quizzes" element={<QuizzesPage />} />
                 <Route path="/quizzes/join" element={<QuizJoinPage />} />
+                <Route path="/quizzes/live/:sessionId" element={<LiveQuizParticipantPage />} />
                 <Route path="/quiz/:id" element={<QuizPlayPage />} />
 
                 {/* Student Dashboard */}
