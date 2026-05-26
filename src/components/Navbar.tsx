@@ -60,24 +60,8 @@ const Navbar = () => {
             />
           </Link>
 
-          {/* Desktop Nav — Centered */}
-          <div className="hidden lg:flex flex-1 justify-center">
-            <div className="flex items-center bg-muted/50 rounded-full px-1.5 py-1.5">
-              {navItems.map((item) => (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className={`relative px-5 py-1.5 rounded-full text-sm font-body font-semibold tracking-[0.02em] transition-all duration-300 ${
-                    location.pathname === item.path
-                      ? "bg-primary text-primary-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </div>
-          </div>
+          {/* Spacer (nav moved to hamburger menu on all sizes) */}
+          <div className="flex-1" />
 
           {/* Right Actions */}
           <div className="flex items-center gap-1.5 lg:w-48 lg:justify-end">
@@ -107,47 +91,11 @@ const Navbar = () => {
               {isDark ? <Sun className="w-[18px] h-[18px]" /> : <Moon className="w-[18px] h-[18px]" />}
             </button>
 
-            <div className="hidden lg:flex items-center gap-2 ml-2">
-              {user ? (
-                <>
-                  <Link to="/dashboard">
-                    <Button variant="ghost" size="sm" className="rounded-full text-sm font-semibold tracking-[0.01em]">
-                      Dashboard
-                    </Button>
-                  </Link>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleSignOut}
-                    className="rounded-full text-sm font-semibold tracking-[0.01em]"
-                  >
-                    Sign out
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Link to="/login">
-                    <Button variant="ghost" size="sm" className="rounded-full text-sm font-semibold tracking-[0.01em]">
-                      Log in
-                    </Button>
-                  </Link>
-                  <Link to="/signup">
-                    <Button
-                      size="sm"
-                      className="rounded-full bg-accent text-accent-foreground hover:bg-accent/90 text-sm font-bold tracking-[0.01em] px-5 shadow-sm"
-                    >
-                      Get Started
-                      <ChevronRight className="w-3.5 h-3.5 ml-0.5" />
-                    </Button>
-                  </Link>
-                </>
-              )}
-            </div>
-
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="lg:hidden p-2 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-all"
+              className="p-2 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-all ml-1"
               type="button"
+              aria-label="Menu"
             >
               {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -155,10 +103,10 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Menu (all sizes) */}
       {isOpen && (
-        <div className="lg:hidden bg-background/95 glass border-t border-border/50 animate-in slide-in-from-top-2 duration-300">
-          <div className="container mx-auto px-4 py-5 space-y-1">
+        <div className="bg-background/95 glass-strong border-t border-border/50 animate-in slide-in-from-top-2 duration-300">
+          <div className="container mx-auto px-4 py-6 space-y-1 max-w-2xl">
             {navItems.map((item) => (
               <Link
                 key={item.path}
@@ -173,7 +121,7 @@ const Navbar = () => {
                 <ChevronRight className="w-4 h-4 opacity-40" />
               </Link>
             ))}
-            <div className="flex gap-2.5 pt-5 border-t border-border/50 mt-4">
+            <div className="flex flex-col sm:flex-row gap-2.5 pt-5 border-t border-border/50 mt-4">
               {user ? (
                 <>
                   <Link to="/dashboard" className="flex-1">
