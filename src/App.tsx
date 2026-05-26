@@ -29,6 +29,7 @@ import CheckoutPage from "./pages/CheckoutPage";
 import NotFound from "./pages/NotFound";
 import RequestClassPage from "./pages/RequestClassPage";
 import TutorProfilePage from "./pages/TutorProfilePage";
+import TutorsPage from "./pages/TutorsPage";
 import QuizzesPage from "./pages/QuizzesPage";
 import QuizPlayPage from "./pages/QuizPlayPage";
 
@@ -132,6 +133,7 @@ const App = () => (
                 <Route path="/contact" element={<ContactPage />} />
                 <Route path="/request-class" element={<RequestClassPage />} />
                 <Route path="/tutor/:id" element={<TutorProfilePage />} />
+                <Route path="/tutors" element={<TutorsPage />} />
                 <Route path="/quizzes" element={<QuizzesPage />} />
                 <Route path="/quiz/:id" element={<QuizPlayPage />} />
 
