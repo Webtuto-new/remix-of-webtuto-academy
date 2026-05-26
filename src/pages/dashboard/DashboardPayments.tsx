@@ -4,6 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CreditCard, Download, Clock, CheckCircle2, XCircle, AlertTriangle } from "lucide-react";
+import { motion } from "framer-motion";
+import { EmptyState } from "@/components/premium/EmptyState";
+import { fadeUp, stagger } from "@/lib/motion";
 import { format, formatDistanceToNow, isPast, differenceInDays } from "date-fns";
 import jsPDF from "jspdf";
 
@@ -181,30 +184,33 @@ const DashboardPayments = () => {
 
   return (
     <div className="space-y-8">
-      <h1 className="font-display text-2xl font-bold text-foreground">Payments & Subscriptions</h1>
+      <h1 className="font-display text-2xl md:text-3xl font-bold text-gradient">Payments & Subscriptions</h1>
 
       {/* Active Enrollments with Expiry */}
       <div className="space-y-3">
         <h2 className="text-lg font-semibold text-foreground">My Enrollments</h2>
         {enrollments.length === 0 ? (
-          <Card><CardContent className="py-8 text-center text-muted-foreground text-sm">No enrollments yet.</CardContent></Card>
+          <EmptyState icon={CheckCircle2} title="No enrollments yet" />
         ) : (
-          <div className="grid sm:grid-cols-2 gap-3">
+          <motion.div initial="hidden" animate="show" variants={stagger} className="grid sm:grid-cols-2 gap-3">
             {enrollments.map(e => {
               const expiry = getExpiryInfo(e);
               const Icon = expiry.icon;
               const itemName = e.classes?.title || e.recordings?.title || "Unknown";
               const isActive = e.status === "active" && (!e.expires_at || !isPast(new Date(e.expires_at)));
               return (
-                <Card key={e.id} className={!isActive ? "opacity-60" : ""}>
-                  <CardContent className="p-4 space-y-2">
+                <motion.div
+                  key={e.id}
+                  variants={fadeUp}
+                  className={`glass-strong rounded-2xl p-4 space-y-2 transition-all hover:ring-glow ${!isActive ? "opacity-60" : ""}`}
+                >
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
                         <p className="font-medium text-foreground text-sm truncate">{itemName}</p>
                         <p className="text-xs text-muted-foreground">{e.class_id ? e.classes?.class_type || "Class" : "Recording"}</p>
                       </div>
-                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium shrink-0 ${
-                        isActive ? "bg-secondary/20 text-secondary" : "bg-destructive/20 text-destructive"
+                      <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold uppercase tracking-wider shrink-0 ring-1 ${
+                        isActive ? "bg-emerald-500/15 text-emerald-400 ring-emerald-500/30" : "bg-destructive/15 text-destructive ring-destructive/30"
                       }`}>{isActive ? "Active" : "Expired"}</span>
                     </div>
                     <div className={`flex items-center gap-1.5 text-xs ${expiry.color}`}>
@@ -215,11 +221,10 @@ const DashboardPayments = () => {
                       )}
                     </div>
                     <p className="text-xs text-muted-foreground">Enrolled: {format(new Date(e.enrolled_at), "PP")}</p>
-                  </CardContent>
-                </Card>
+                </motion.div>
               );
             })}
-          </div>
+          </motion.div>
         )}
       </div>
 
@@ -227,19 +232,13 @@ const DashboardPayments = () => {
       <div className="space-y-3">
         <h2 className="text-lg font-semibold text-foreground">Payment History</h2>
         {payments.length === 0 ? (
-          <Card>
-            <CardContent className="py-12 text-center text-muted-foreground">
-              <CreditCard className="w-12 h-12 mx-auto mb-3 opacity-50" />
-              <p>No payment history yet.</p>
-            </CardContent>
-          </Card>
+          <EmptyState icon={CreditCard} title="No payment history yet" />
         ) : (
-          <Card>
-            <CardContent className="p-0">
+          <div className="glass-strong rounded-2xl overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-border">
+                    <tr className="border-b border-border/60 bg-card/40">
                       <th className="text-left p-4 font-medium text-muted-foreground">Date</th>
                       <th className="text-left p-4 font-medium text-muted-foreground">Item</th>
                       <th className="text-left p-4 font-medium text-muted-foreground">Amount</th>
@@ -253,16 +252,16 @@ const DashboardPayments = () => {
                     {payments.map((p) => {
                       const itemName = p.enrollments?.classes?.title || p.enrollments?.recordings?.title || "—";
                       return (
-                        <tr key={p.id} className="border-b border-border last:border-0">
+                        <tr key={p.id} className="border-b border-border/40 last:border-0 hover:bg-card/40 transition-colors">
                           <td className="p-4 text-foreground">{format(new Date(p.created_at), "PP")}</td>
                           <td className="p-4 text-foreground text-xs max-w-[150px] truncate">{itemName}</td>
                           <td className="p-4 font-medium text-foreground">{p.currency} {p.amount}</td>
                           <td className="p-4 text-muted-foreground">{p.payment_method || "—"}</td>
                           <td className="p-4">
-                            <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-                              p.payment_status === "completed" ? "bg-secondary/20 text-secondary" :
-                              p.payment_status === "failed" ? "bg-destructive/20 text-destructive" :
-                              "bg-muted text-muted-foreground"
+                            <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold uppercase tracking-wider ring-1 ${
+                              p.payment_status === "completed" ? "bg-emerald-500/15 text-emerald-400 ring-emerald-500/30" :
+                              p.payment_status === "failed" ? "bg-destructive/15 text-destructive ring-destructive/30" :
+                              "bg-muted text-muted-foreground ring-border/60"
                             }`}>{p.payment_status}</span>
                           </td>
                           <td className="p-4 text-muted-foreground text-xs">{p.transaction_ref || "—"}</td>
@@ -279,8 +278,7 @@ const DashboardPayments = () => {
                   </tbody>
                 </table>
               </div>
-            </CardContent>
-          </Card>
+          </div>
         )}
       </div>
     </div>

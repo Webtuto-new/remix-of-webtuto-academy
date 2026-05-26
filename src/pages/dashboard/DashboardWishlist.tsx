@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Heart, HeartOff } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { EmptyState } from "@/components/premium/EmptyState";
+import { fadeUp, stagger } from "@/lib/motion";
 
 const DashboardWishlist = () => {
   const { user } = useAuth();
@@ -27,29 +29,34 @@ const DashboardWishlist = () => {
 
   return (
     <div className="space-y-6">
-      <h1 className="font-display text-2xl font-bold text-foreground">My Wishlist</h1>
+      <h1 className="font-display text-2xl md:text-3xl font-bold text-gradient">My Wishlist</h1>
       {wishlist.length === 0 ? (
-        <Card><CardContent className="py-12 text-center text-muted-foreground">
-          <Heart className="w-12 h-12 mx-auto mb-3 opacity-50" />
-          <p>Your wishlist is empty.</p>
-          <Link to="/classes"><Button size="sm" className="mt-3">Browse Classes</Button></Link>
-        </CardContent></Card>
+        <EmptyState
+          icon={Heart}
+          title="Your wishlist is empty"
+          description="Save classes you love to revisit them later."
+          action={<Link to="/classes"><Button variant="premium" size="sm">Browse Classes</Button></Link>}
+        />
       ) : (
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <motion.div initial="hidden" animate="show" variants={stagger} className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {wishlist.map(w => (
-            <Card key={w.id}>
-              <CardContent className="p-4">
-                <h3 className="font-medium text-foreground mb-1">{w.classes?.title || "Class"}</h3>
-                <p className="text-xs text-muted-foreground mb-2">{w.classes?.short_description || ""}</p>
-                <p className="text-sm font-bold text-foreground mb-3">LKR {w.classes?.price || 0}</p>
-                <div className="flex gap-2">
-                  <Link to={`/class/${w.class_id}`}><Button size="sm">View</Button></Link>
-                  <Button variant="ghost" size="sm" onClick={() => removeFromWishlist(w.id)}><HeartOff className="w-4 h-4 text-destructive" /></Button>
-                </div>
-              </CardContent>
-            </Card>
+            <motion.div
+              key={w.id}
+              variants={fadeUp}
+              className="glass-strong rounded-2xl p-5 transition-all hover:ring-glow hover:-translate-y-1"
+            >
+              <h3 className="font-display font-semibold text-foreground mb-1">{w.classes?.title || "Class"}</h3>
+              <p className="text-xs text-muted-foreground mb-3 line-clamp-2">{w.classes?.short_description || ""}</p>
+              <p className="text-base font-bold text-gradient mb-4">LKR {w.classes?.price || 0}</p>
+              <div className="flex gap-2">
+                <Link to={`/class/${w.class_id}`}><Button variant="premium" size="sm">View</Button></Link>
+                <Button variant="ghost" size="sm" onClick={() => removeFromWishlist(w.id)}>
+                  <HeartOff className="w-4 h-4 text-destructive" />
+                </Button>
+              </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       )}
     </div>
   );

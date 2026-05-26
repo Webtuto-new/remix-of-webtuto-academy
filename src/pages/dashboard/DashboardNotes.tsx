@@ -5,6 +5,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { FileText, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { motion } from "framer-motion";
+import { EmptyState } from "@/components/premium/EmptyState";
+import { fadeUp, stagger } from "@/lib/motion";
 
 type NoteItem = {
   id: string;
@@ -166,7 +169,7 @@ const DashboardNotes = () => {
   if (isLoading || authLoading) {
     return (
       <div className="space-y-6">
-        <h1 className="font-display text-2xl font-bold text-foreground">Notes & Resources</h1>
+        <h1 className="font-display text-2xl md:text-3xl font-bold text-gradient">Notes & Resources</h1>
         <Card>
           <CardContent className="py-12">
             <div className="space-y-3">
@@ -182,35 +185,41 @@ const DashboardNotes = () => {
 
   return (
     <div className="space-y-6">
-      <h1 className="font-display text-2xl font-bold text-foreground">Notes & Resources</h1>
+      <h1 className="font-display text-2xl md:text-3xl font-bold text-gradient">Notes & Resources</h1>
       {items.length === 0 ? (
-        <Card><CardContent className="py-12 text-center text-muted-foreground">
-          <FileText className="w-12 h-12 mx-auto mb-3 opacity-50" />
-          <p>No downloadable resources available yet.</p>
-          <p className="text-sm mt-2">Notes from your enrolled classes and purchased recordings will appear here.</p>
-        </CardContent></Card>
+        <EmptyState
+          icon={FileText}
+          title="No resources yet"
+          description="Notes from your enrolled classes and purchased recordings will appear here."
+        />
       ) : (
-        <div className="space-y-3">
+        <motion.div initial="hidden" animate="show" variants={stagger} className="space-y-3">
           {items.map(r => (
-            <Card key={r.id}>
-              <CardContent className="p-4 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-primary/10 text-primary"><FileText className="w-5 h-5" /></div>
-                  <div>
-                    <p className="font-medium text-foreground text-sm">{r.title}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {r.source_type}: {r.source_title}
-                      {r.file_type ? ` · ${r.file_type.toUpperCase()}` : ""}
-                    </p>
-                  </div>
+            <motion.div
+              key={r.id}
+              variants={fadeUp}
+              className="glass-strong rounded-2xl p-4 flex items-center justify-between gap-3 transition-all hover:ring-glow hover:-translate-y-0.5"
+            >
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="p-2.5 rounded-xl bg-gradient-to-br from-primary/25 to-secondary/15 text-primary ring-1 ring-primary/20 shrink-0">
+                  <FileText className="w-5 h-5" />
                 </div>
-                <a href={r.file_url} target="_blank" rel="noopener noreferrer">
-                  <Button variant="ghost" size="sm"><Download className="w-4 h-4" /></Button>
-                </a>
-              </CardContent>
-            </Card>
+                <div className="min-w-0">
+                  <p className="font-medium text-foreground text-sm truncate">{r.title}</p>
+                  <p className="text-xs text-muted-foreground truncate">
+                    {r.source_type}: {r.source_title}
+                    {r.file_type ? ` · ${r.file_type.toUpperCase()}` : ""}
+                  </p>
+                </div>
+              </div>
+              <a href={r.file_url} target="_blank" rel="noopener noreferrer" className="shrink-0">
+                <Button variant="outline" size="sm" className="gap-1.5">
+                  <Download className="w-4 h-4" /> Download
+                </Button>
+              </a>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       )}
     </div>
   );
