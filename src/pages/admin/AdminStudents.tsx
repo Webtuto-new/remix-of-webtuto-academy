@@ -235,7 +235,7 @@ const AdminStudents = () => {
             <ArrowLeft className="w-4 h-4" />
           </Button>
           <div className="flex-1">
-            <h1 className="font-display text-2xl font-bold text-foreground">{viewStudent.full_name}</h1>
+            <h1 className="font-display text-2xl font-bold text-gradient">{viewStudent.full_name}</h1>
             <p className="text-sm text-muted-foreground">{viewStudent.email} · {viewStudent.admission_number}</p>
           </div>
           <Button variant="outline" size="sm" className="gap-1" onClick={() => openEdit(viewStudent)}>
@@ -257,19 +257,19 @@ const AdminStudents = () => {
         {/* Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <Card><CardContent className="p-4 text-center">
-            <p className="text-2xl font-bold text-foreground">{activeEnrollments.length}</p>
+            <p className="text-2xl font-bold text-gradient">{activeEnrollments.length}</p>
             <p className="text-xs text-muted-foreground">Active Enrollments</p>
           </CardContent></Card>
           <Card><CardContent className="p-4 text-center">
-            <p className="text-2xl font-bold text-foreground">{studentAttendance.length}</p>
+            <p className="text-2xl font-bold text-gradient">{studentAttendance.length}</p>
             <p className="text-xs text-muted-foreground">Sessions Attended</p>
           </CardContent></Card>
           <Card><CardContent className="p-4 text-center">
-            <p className="text-2xl font-bold text-foreground">{studentCertificates.length}</p>
+            <p className="text-2xl font-bold text-gradient">{studentCertificates.length}</p>
             <p className="text-xs text-muted-foreground">Certificates</p>
           </CardContent></Card>
           <Card><CardContent className="p-4 text-center">
-            <p className="text-2xl font-bold text-foreground">LKR {totalPaid.toLocaleString()}</p>
+            <p className="text-2xl font-bold text-gradient">LKR {totalPaid.toLocaleString()}</p>
             <p className="text-xs text-muted-foreground">Total Paid</p>
           </CardContent></Card>
         </div>
@@ -387,7 +387,7 @@ const AdminStudents = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="font-display text-2xl font-bold text-foreground">Students</h1>
+        <h1 className="font-display text-2xl font-bold text-gradient">Students</h1>
         <Dialog open={createOpen} onOpenChange={(v) => { setCreateOpen(v); if (!v) resetCreateForm(); }}>
           <DialogTrigger asChild>
             <Button className="gap-1"><Plus className="w-4 h-4" /> Create Student</Button>

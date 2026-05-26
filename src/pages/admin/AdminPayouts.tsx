@@ -70,7 +70,7 @@ const AdminPayouts = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="font-display text-2xl font-bold text-foreground">Teacher Payouts</h1>
+        <h1 className="font-display text-2xl font-bold text-gradient">Teacher Payouts</h1>
         <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setEditing(null); setForm({ teacher_id: "", amount: "", period_start: "", period_end: "", notes: "" }); } }}>
           <DialogTrigger asChild><Button className="gap-1"><Plus className="w-4 h-4" /> New Payout</Button></DialogTrigger>
           <DialogContent>

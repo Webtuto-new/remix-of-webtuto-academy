@@ -364,7 +364,7 @@ const AdminClasses = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-2">
-        <h1 className="font-display text-2xl font-bold text-foreground">Manage Classes</h1>
+        <h1 className="font-display text-2xl font-bold text-gradient">Manage Classes</h1>
         <div className="flex gap-2">
           {/* Bulk Create Dialog */}
           <Dialog open={bulkOpen} onOpenChange={(v) => { setBulkOpen(v); if (!v) { setBulkCurriculum(""); setBulkSelectedGrades([]); setBulkSubjectName(""); } }}>

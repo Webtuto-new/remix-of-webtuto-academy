@@ -173,7 +173,7 @@ const AdminPayments = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h1 className="font-display text-2xl font-bold text-foreground">All Payments</h1>
+          <h1 className="font-display text-2xl font-bold text-gradient">All Payments</h1>
           {pendingCount > 0 && (
             <p className="text-sm text-amber-600 font-medium mt-1">{pendingCount} payment(s) awaiting review</p>
           )}

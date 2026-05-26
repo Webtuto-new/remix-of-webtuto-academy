@@ -262,7 +262,7 @@ const AdminRecordings = () => {
             <ArrowLeft className="w-4 h-4" />
           </Button>
           <div>
-            <h1 className="font-display text-xl sm:text-2xl font-bold text-foreground">{selectedRecording.title}</h1>
+            <h1 className="font-display text-xl sm:text-2xl font-bold text-gradient">{selectedRecording.title}</h1>
             <p className="text-sm text-muted-foreground">LKR {selectedRecording.price} · {videos.length} lessons</p>
           </div>
         </div>
@@ -408,7 +408,7 @@ const AdminRecordings = () => {
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <h1 className="font-display text-xl sm:text-2xl font-bold text-foreground">Manage Recordings</h1>
+        <h1 className="font-display text-xl sm:text-2xl font-bold text-gradient">Manage Recordings</h1>
         <Dialog open={recOpen} onOpenChange={(v) => { setRecOpen(v); if (!v) setEditingRec(null); }}>
           <DialogTrigger asChild>
             <Button className="gap-1 w-full sm:w-auto"><Plus className="w-4 h-4" /> Add Recording</Button>

@@ -121,7 +121,7 @@ Please change your password after your first login.`;
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="font-display text-2xl font-bold text-foreground">Manage Teachers</h1>
+        <h1 className="font-display text-2xl font-bold text-gradient">Manage Teachers</h1>
         <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) setEditing(null); }}>
           <DialogTrigger asChild><Button className="gap-1"><Plus className="w-4 h-4" /> Add Teacher</Button></DialogTrigger>
           <DialogContent>

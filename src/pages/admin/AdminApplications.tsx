@@ -33,7 +33,7 @@ const AdminApplications = () => {
 
   return (
     <div className="space-y-6">
-      <h1 className="font-display text-2xl font-bold text-foreground">Tutor Applications</h1>
+      <h1 className="font-display text-2xl font-bold text-gradient">Tutor Applications</h1>
 
       {/* Detail Dialog */}
       <Dialog open={!!selected} onOpenChange={(v) => !v && setSelected(null)}>
