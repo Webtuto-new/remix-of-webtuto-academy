@@ -229,7 +229,12 @@ const Index = () => {
 
       <HeroFeature items={featured} />
 
-      <div className="relative -mt-32 sm:-mt-40 z-10 space-y-2 pb-20">
+      <div className="relative -mt-32 sm:-mt-40 z-10 space-y-2 pb-20 bg-mesh">
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div className="absolute top-40 -right-32 w-[420px] h-[420px] rounded-full bg-primary/15 blur-[140px]" />
+          <div className="absolute bottom-40 -left-32 w-[420px] h-[420px] rounded-full bg-accent/10 blur-[140px]" />
+        </div>
+        <div className="relative">
         {liveNow.length > 0 && <Row title="🔴 Live Now" items={liveNow} />}
         <Row title="Trending This Week" items={trending} />
         {recordings.length > 0 && <Row title="On-Demand Recordings" items={recordings} />}
@@ -238,6 +243,7 @@ const Index = () => {
           if (!items.length) return null;
           return <Row key={cur.id} title={cur.name} items={items} />;
         })}
+        </div>
       </div>
     </Layout>
   );
