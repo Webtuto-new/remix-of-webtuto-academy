@@ -44,7 +44,7 @@ const isPlayableLesson = (lesson: Lesson) => {
   return url.startsWith("http://") || url.startsWith("https://") || url.startsWith("blob:");
 };
 
-const VideoPlayer = ({ url, title, onEnded, onError }: { url: string; title: string; onEnded?: () => void; onError?: () => void }) => {
+const VideoPlayer = ({ url, title, onEnded, onError, storageKey, recordingId, lessonId, lessonTitle }: { url: string; title: string; onEnded?: () => void; onError?: () => void; storageKey?: string; recordingId?: string; lessonId?: string; lessonTitle?: string }) => {
   const youtubeId = getYouTubeId(url);
   if (youtubeId) {
     return (
@@ -57,6 +57,7 @@ const VideoPlayer = ({ url, title, onEnded, onError }: { url: string; title: str
       />
     );
   }
+  const lastSavedRef = { current: 0 } as { current: number };
   return (
     <video
       controls
@@ -68,6 +69,30 @@ const VideoPlayer = ({ url, title, onEnded, onError }: { url: string; title: str
       controlsList="nodownload"
       onEnded={onEnded}
       onCanPlay={(e) => { e.currentTarget.muted = false; }}
+      onLoadedMetadata={(e) => {
+        if (!storageKey) return;
+        try {
+          const saved = Number(localStorage.getItem(`${storageKey}_t`) || 0);
+          if (saved > 5 && saved < e.currentTarget.duration - 10) {
+            e.currentTarget.currentTime = saved;
+          }
+        } catch {}
+      }}
+      onTimeUpdate={(e) => {
+        if (!storageKey) return;
+        const now = Date.now();
+        if (now - lastSavedRef.current < 4000) return;
+        lastSavedRef.current = now;
+        const t = e.currentTarget.currentTime;
+        const d = e.currentTarget.duration || 0;
+        try {
+          localStorage.setItem(`${storageKey}_t`, String(Math.floor(t)));
+          if (d > 0 && recordingId) {
+            const pct = Math.min(100, Math.round((t / d) * 100));
+            localStorage.setItem(`webtuto_progress_${recordingId}`, JSON.stringify({ lessonId, lessonTitle, pct, t: Math.floor(t), d: Math.floor(d), at: now }));
+          }
+        } catch {}
+      }}
       onError={onError}
     >
       Your browser does not support the video tag.
