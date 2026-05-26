@@ -261,11 +261,16 @@ const TutorRow = ({ title, tutors }: { title: string; tutors: any[] }) => {
   };
   return (
     <section className="relative group/row py-6">
-      <div className="container mx-auto px-4 sm:px-8 mb-3">
-        <h2 className="font-display text-xl sm:text-2xl font-bold text-foreground">{title}</h2>
+      <div className="container mx-auto px-4 sm:px-8 mb-3 flex items-end justify-between gap-3">
+        <h2 className="font-display text-xl sm:text-2xl font-bold text-foreground">
+          {title} <span className="text-muted-foreground/70 font-normal text-sm">({tutors.length})</span>
+        </h2>
+        <Link to="/tutors" className="text-xs sm:text-sm text-primary hover:underline font-semibold whitespace-nowrap shrink-0">
+          View all →
+        </Link>
       </div>
       <div className="relative">
-        <button onClick={() => scroll(-1)} className="absolute left-0 top-0 bottom-0 z-20 w-12 sm:w-16 flex items-center justify-center bg-gradient-to-r from-background/90 to-transparent opacity-0 group-hover/row:opacity-100 transition-opacity" aria-label="Scroll left">
+        <button onClick={() => scroll(-1)} className="hidden sm:flex absolute left-0 top-0 bottom-0 z-20 w-12 sm:w-16 items-center justify-center bg-gradient-to-r from-background/90 to-transparent opacity-0 group-hover/row:opacity-100 transition-opacity" aria-label="Scroll left">
           <ChevronLeft className="w-8 h-8 text-foreground" />
         </button>
         <div ref={scroller} className="flex gap-4 sm:gap-5 lg:gap-6 overflow-x-auto scroll-smooth px-4 sm:px-8 lg:px-12 pb-6 snap-x snap-mandatory scroll-pl-4 sm:scroll-pl-8 lg:scroll-pl-12 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
@@ -292,9 +297,13 @@ const TutorRow = ({ title, tutors }: { title: string; tutors: any[] }) => {
             </Link>
           ))}
         </div>
-        <button onClick={() => scroll(1)} className="absolute right-0 top-0 bottom-0 z-20 w-12 sm:w-16 flex items-center justify-center bg-gradient-to-l from-background/90 to-transparent opacity-0 group-hover/row:opacity-100 transition-opacity" aria-label="Scroll right">
+        <button onClick={() => scroll(1)} className="hidden sm:flex absolute right-0 top-0 bottom-0 z-20 w-12 sm:w-16 items-center justify-center bg-gradient-to-l from-background/90 to-transparent opacity-0 group-hover/row:opacity-100 transition-opacity" aria-label="Scroll right">
           <ChevronRight className="w-8 h-8 text-foreground" />
         </button>
+        {/* Mobile swipe hint */}
+        <div className="sm:hidden absolute top-2 right-4 z-20 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-background/70 backdrop-blur text-[10px] font-semibold text-muted-foreground pointer-events-none">
+          Swipe <ChevronRight className="w-3 h-3" />
+        </div>
       </div>
     </section>
   );
