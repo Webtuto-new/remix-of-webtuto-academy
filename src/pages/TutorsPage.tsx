@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Search, GraduationCap, Star, BookOpen, ArrowRight, Users } from "lucide-react";
+import { Search, GraduationCap, Star, BookOpen, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { stagger, fadeUp } from "@/lib/motion";
 import { SkeletonCard } from "@/components/ui/skeleton";
@@ -294,7 +294,7 @@ const TutorsPage = () => {
                         </div>
                       )}
 
-                      <div className="mt-auto pt-4 border-t border-border/40 grid grid-cols-3 gap-2 text-center">
+                      <div className="mt-auto pt-4 border-t border-border/40 grid grid-cols-2 gap-2 text-center">
                         <div>
                           <div className="flex items-center justify-center gap-1 text-primary">
                             <BookOpen className="w-3.5 h-3.5" />
@@ -307,13 +307,6 @@ const TutorsPage = () => {
                             <span className="font-bold text-sm">{st.recordingCount || 0}</span>
                           </div>
                           <div className="text-[10px] text-muted-foreground uppercase tracking-wider mt-0.5">Lessons</div>
-                        </div>
-                        <div>
-                          <div className="flex items-center justify-center gap-1">
-                            <Users className="w-3.5 h-3.5" />
-                            <span className="font-bold text-sm">{st.studentCount || 0}</span>
-                          </div>
-                          <div className="text-[10px] text-muted-foreground uppercase tracking-wider mt-0.5">Students</div>
                         </div>
                       </div>
 
