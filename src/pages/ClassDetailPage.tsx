@@ -468,16 +468,29 @@ const ClassDetailPage = () => {
               </div>
 
               <div className="mt-6 space-y-3 text-sm">
-                {[
-                  { icon: Calendar, text: isHourly ? `${totalHours} hours/week` : `${cls.sessionCount} sessions` },
-                  { icon: Clock, text: cls.duration },
-                  { icon: Video, text: "Recordings included" },
-                ].map((item) => (
-                  <div key={item.text} className="flex items-center gap-2 text-muted-foreground">
-                    <item.icon className="w-4 h-4 text-secondary" />
-                    {item.text}
+                <div className="pt-4 border-t border-border/40">
+                  <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">What's included</p>
+                  {[
+                    { icon: Calendar, text: isHourly ? `${totalHours} hours/week` : `${cls.sessionCount} live sessions` },
+                    { icon: Clock, text: `${cls.duration} per session` },
+                    { icon: Video, text: "Full session recordings" },
+                    { icon: FileText, text: "Downloadable notes & materials" },
+                    { icon: Globe, text: "Lifetime access while enrolled" },
+                  ].map((item) => (
+                    <div key={item.text} className="flex items-center gap-2 text-muted-foreground mb-2">
+                      <CheckCircle2 className="w-4 h-4 text-secondary flex-shrink-0" />
+                      <span className="text-sm">{item.text}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="pt-3 border-t border-border/40 grid grid-cols-2 gap-2">
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <Shield className="w-3.5 h-3.5 text-primary" /> Secure payment
                   </div>
-                ))}
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <Zap className="w-3.5 h-3.5 text-accent" /> Instant access
+                  </div>
+                </div>
               </div>
             </div>
           </div>
