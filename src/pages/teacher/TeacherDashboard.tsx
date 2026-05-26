@@ -1,15 +1,38 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { BookOpen, Users, Calendar, DollarSign, Sparkles, ExternalLink } from "lucide-react";
+import { BookOpen, Users, Calendar, DollarSign, Sparkles, ExternalLink, Clock } from "lucide-react";
 import { motion } from "framer-motion";
 import { fadeUp, stagger, viewportOnce } from "@/lib/motion";
+
+const useCountdownTo = (target: Date | null) => {
+  const [now, setNow] = useState(Date.now());
+  useEffect(() => {
+    if (!target) return;
+    const t = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, [target?.getTime()]);
+  if (!target) return null;
+  const diff = target.getTime() - now;
+  if (diff <= 0) return "starting now";
+  const d = Math.floor(diff / 86400000);
+  const h = Math.floor((diff % 86400000) / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  if (d > 0) return `in ${d}d ${h}h`;
+  if (h > 0) return `in ${h}h ${m}m`;
+  return `in ${m}m`;
+};
 
 const TeacherDashboard = () => {
   const { user } = useAuth();
   const [teacher, setTeacher] = useState<any>(null);
   const [stats, setStats] = useState({ classes: 0, students: 0, sessions: 0, earnings: 0 });
   const [upcomingSessions, setUpcomingSessions] = useState<any[]>([]);
+  const nextSession = upcomingSessions[0];
+  const nextTarget = nextSession
+    ? new Date(`${nextSession.session_date}T${nextSession.start_time || "00:00"}`)
+    : null;
+  const countdown = useCountdownTo(nextTarget);
 
   useEffect(() => {
     if (!user) return;
@@ -70,6 +93,11 @@ const TeacherDashboard = () => {
             {teacher?.name ? <>Hi, <span className="text-gradient">{teacher.name.split(" ")[0]}</span></> : "Teacher Dashboard"}
           </h1>
           <p className="text-muted-foreground text-sm mt-1.5">Manage your classes, students, and earnings in one place.</p>
+          {nextSession && countdown && (
+            <div className="mt-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/15 ring-1 ring-primary/30 text-primary text-xs font-semibold">
+              <Clock className="w-3.5 h-3.5" /> Next class {countdown} · {nextSession.title}
+            </div>
+          )}
         </div>
       </motion.div>
 
