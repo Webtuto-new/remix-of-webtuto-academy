@@ -11,6 +11,7 @@ import { format, addDays } from "date-fns";
 import { motion } from "framer-motion";
 import { fadeUp, stagger } from "@/lib/motion";
 import EmptyState from "@/components/premium/EmptyState";
+import AdminPageHeader from "@/components/premium/AdminPageHeader";
 import { Users } from "lucide-react";
 
 const AdminStudents = () => {
@@ -438,8 +439,9 @@ const AdminStudents = () => {
               </div>
             )}
           </DialogContent>
-        </Dialog>
-      </div>
+          </Dialog>
+        }
+      />
 
       {/* Search */}
       <Input placeholder="Search by name, email, phone or admission #..." value={search} onChange={(e) => setSearch(e.target.value)} className="max-w-sm" />
