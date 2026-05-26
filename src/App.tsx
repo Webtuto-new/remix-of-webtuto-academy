@@ -28,6 +28,7 @@ import ContactPage from "./pages/ContactPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import NotFound from "./pages/NotFound";
 import RequestClassPage from "./pages/RequestClassPage";
+import TutorProfilePage from "./pages/TutorProfilePage";
 
 // Dashboard pages
 import DashboardLayout from "./pages/dashboard/DashboardLayout";
@@ -127,6 +128,7 @@ const App = () => (
                 <Route path="/checkout" element={<CheckoutPage />} />
                 <Route path="/contact" element={<ContactPage />} />
                 <Route path="/request-class" element={<RequestClassPage />} />
+                <Route path="/tutor/:id" element={<TutorProfilePage />} />
 
                 {/* Student Dashboard */}
                 <Route
