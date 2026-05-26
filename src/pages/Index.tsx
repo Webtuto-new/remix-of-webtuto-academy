@@ -137,7 +137,7 @@ const Row = ({ title, items }: { title: string; items: ClassRow[] }) => {
         </button>
         <div
           ref={scroller}
-          className="flex gap-4 sm:gap-5 lg:gap-6 overflow-x-auto scroll-smooth px-4 sm:px-8 lg:px-12 pb-6 snap-x snap-mandatory scroll-pl-4 sm:scroll-pl-8 lg:scroll-pl-12 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+          className="flex gap-4 sm:gap-5 lg:gap-6 overflow-x-auto scroll-smooth px-8 sm:px-12 lg:px-16 pt-6 pb-10 snap-x snap-mandatory scroll-pl-8 sm:scroll-pl-12 lg:scroll-pl-16 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
         >
           {items.map((c) => (
             <RowCard key={c.id} c={c} />
