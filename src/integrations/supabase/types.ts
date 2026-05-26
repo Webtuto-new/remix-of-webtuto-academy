@@ -977,43 +977,154 @@ export type Database = {
       }
       quiz_attempts: {
         Row: {
+          attempt_number: number
           completed_at: string | null
           created_at: string
           id: string
+          live_session_id: string | null
           max_score: number
           passed: boolean
           percentage: number
           quiz_id: string
+          rank: number | null
           score: number
           started_at: string
+          status: string
           time_taken_seconds: number | null
           user_id: string
         }
         Insert: {
+          attempt_number?: number
           completed_at?: string | null
           created_at?: string
           id?: string
+          live_session_id?: string | null
           max_score?: number
           passed?: boolean
           percentage?: number
           quiz_id: string
+          rank?: number | null
           score?: number
           started_at?: string
+          status?: string
           time_taken_seconds?: number | null
           user_id: string
         }
         Update: {
+          attempt_number?: number
           completed_at?: string | null
           created_at?: string
           id?: string
+          live_session_id?: string | null
           max_score?: number
           passed?: boolean
           percentage?: number
           quiz_id?: string
+          rank?: number | null
           score?: number
           started_at?: string
+          status?: string
           time_taken_seconds?: number | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      quiz_imports: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          parsed_count: number
+          quiz_id: string
+          raw_text: string | null
+          source: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          id?: string
+          parsed_count?: number
+          quiz_id: string
+          raw_text?: string | null
+          source?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          parsed_count?: number
+          quiz_id?: string
+          raw_text?: string | null
+          source?: string
+        }
+        Relationships: []
+      }
+      quiz_live_participants: {
+        Row: {
+          id: string
+          joined_at: string
+          left_at: string | null
+          live_session_id: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          joined_at?: string
+          left_at?: string | null
+          live_session_id: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          joined_at?: string
+          left_at?: string | null
+          live_session_id?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      quiz_live_sessions: {
+        Row: {
+          created_at: string
+          current_question_id: string | null
+          current_question_started_at: string | null
+          ended_at: string | null
+          host_user_id: string
+          id: string
+          join_code: string
+          password_hash: string | null
+          quiz_id: string
+          started_at: string | null
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          current_question_id?: string | null
+          current_question_started_at?: string | null
+          ended_at?: string | null
+          host_user_id: string
+          id?: string
+          join_code: string
+          password_hash?: string | null
+          quiz_id: string
+          started_at?: string | null
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          current_question_id?: string | null
+          current_question_started_at?: string | null
+          ended_at?: string | null
+          host_user_id?: string
+          id?: string
+          join_code?: string
+          password_hash?: string | null
+          quiz_id?: string
+          started_at?: string | null
+          status?: string
         }
         Relationships: []
       }
@@ -1046,10 +1157,12 @@ export type Database = {
       }
       quiz_questions: {
         Row: {
+          correct_answer_text: string | null
           created_at: string
           explanation: string | null
           id: string
           image_url: string | null
+          negative_marks: number
           points: number
           question_text: string
           question_type: string
@@ -1058,10 +1171,12 @@ export type Database = {
           time_limit_seconds: number | null
         }
         Insert: {
+          correct_answer_text?: string | null
           created_at?: string
           explanation?: string | null
           id?: string
           image_url?: string | null
+          negative_marks?: number
           points?: number
           question_text: string
           question_type?: string
@@ -1070,10 +1185,12 @@ export type Database = {
           time_limit_seconds?: number | null
         }
         Update: {
+          correct_answer_text?: string | null
           created_at?: string
           explanation?: string | null
           id?: string
           image_url?: string | null
+          negative_marks?: number
           points?: number
           question_text?: string
           question_type?: string
@@ -1085,63 +1202,108 @@ export type Database = {
       }
       quizzes: {
         Row: {
+          allow_review: boolean
+          available_from: string | null
+          available_until: string | null
+          chapter: string | null
           class_id: string | null
           created_at: string
           created_by: string | null
           curriculum_id: string | null
           description: string | null
+          difficulty: string
           grade_id: string | null
           id: string
           is_live: boolean
           is_published: boolean
+          join_code: string | null
+          lesson: string | null
           max_attempts: number | null
+          negative_marks_per_question: number
           passing_score: number | null
+          quiz_mode: string
           recording_id: string | null
+          require_password: boolean
           show_correct_answers: boolean
+          show_leaderboard: boolean
+          show_score_immediately: boolean
+          shuffle_options: boolean
           shuffle_questions: boolean
+          status: string
           subject_id: string | null
+          syllabus: string | null
           teacher_id: string | null
           time_limit_seconds: number | null
           title: string
           updated_at: string
         }
         Insert: {
+          allow_review?: boolean
+          available_from?: string | null
+          available_until?: string | null
+          chapter?: string | null
           class_id?: string | null
           created_at?: string
           created_by?: string | null
           curriculum_id?: string | null
           description?: string | null
+          difficulty?: string
           grade_id?: string | null
           id?: string
           is_live?: boolean
           is_published?: boolean
+          join_code?: string | null
+          lesson?: string | null
           max_attempts?: number | null
+          negative_marks_per_question?: number
           passing_score?: number | null
+          quiz_mode?: string
           recording_id?: string | null
+          require_password?: boolean
           show_correct_answers?: boolean
+          show_leaderboard?: boolean
+          show_score_immediately?: boolean
+          shuffle_options?: boolean
           shuffle_questions?: boolean
+          status?: string
           subject_id?: string | null
+          syllabus?: string | null
           teacher_id?: string | null
           time_limit_seconds?: number | null
           title: string
           updated_at?: string
         }
         Update: {
+          allow_review?: boolean
+          available_from?: string | null
+          available_until?: string | null
+          chapter?: string | null
           class_id?: string | null
           created_at?: string
           created_by?: string | null
           curriculum_id?: string | null
           description?: string | null
+          difficulty?: string
           grade_id?: string | null
           id?: string
           is_live?: boolean
           is_published?: boolean
+          join_code?: string | null
+          lesson?: string | null
           max_attempts?: number | null
+          negative_marks_per_question?: number
           passing_score?: number | null
+          quiz_mode?: string
           recording_id?: string | null
+          require_password?: boolean
           show_correct_answers?: boolean
+          show_leaderboard?: boolean
+          show_score_immediately?: boolean
+          shuffle_options?: boolean
           shuffle_questions?: boolean
+          status?: string
           subject_id?: string | null
+          syllabus?: string | null
           teacher_id?: string | null
           time_limit_seconds?: number | null
           title?: string
@@ -1923,6 +2085,7 @@ export type Database = {
     }
     Functions: {
       generate_admission_number: { Args: never; Returns: string }
+      generate_quiz_join_code: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
