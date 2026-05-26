@@ -8,9 +8,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Pencil, Trash2, ChevronRight, Video, ArrowLeft, User, UserPlus, Search, FileText, Users } from "lucide-react";
+import { Plus, Pencil, Trash2, ChevronRight, Video, ArrowLeft, User, UserPlus, Search, FileText, Users, Play } from "lucide-react";
 import EnrolledStudentsDialog from "@/components/EnrolledStudentsDialog";
 import { Badge } from "@/components/ui/badge";
+import AdminPageHeader from "@/components/premium/AdminPageHeader";
 import ThumbnailUpload from "@/components/ThumbnailUpload";
 import FileOrLinkInput from "@/components/FileOrLinkInput";
 import LessonModuleManager from "@/components/lessons/LessonModuleManager";
@@ -407,11 +408,16 @@ const AdminRecordings = () => {
   // List view
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <h1 className="font-display text-xl sm:text-2xl font-bold text-gradient">Manage Recordings</h1>
-        <Dialog open={recOpen} onOpenChange={(v) => { setRecOpen(v); if (!v) setEditingRec(null); }}>
+      <AdminPageHeader
+        icon={Play}
+        eyebrow="Lesson library"
+        title="Manage Recordings"
+        description="Create recording packs, attach lessons, and publish to students."
+        accent="secondary"
+        actions={
+          <Dialog open={recOpen} onOpenChange={(v) => { setRecOpen(v); if (!v) setEditingRec(null); }}>
           <DialogTrigger asChild>
-            <Button className="gap-1 w-full sm:w-auto"><Plus className="w-4 h-4" /> Add Recording</Button>
+            <Button variant="premium" size="sm" className="gap-1.5"><Plus className="w-4 h-4" /> Add Recording</Button>
           </DialogTrigger>
           <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
             <DialogHeader><DialogTitle>{editingRec ? "Edit" : "New"} Recording</DialogTitle></DialogHeader>
@@ -446,11 +452,12 @@ const AdminRecordings = () => {
                 <Input value={recForm.recording_type} onChange={(e) => setRecForm(f => ({ ...f, recording_type: e.target.value }))} placeholder="e.g. Workshop, Course, Masterclass (leave blank for 'Recording')" />
                 <p className="text-xs text-muted-foreground">Custom label shown as a badge — leave empty to show "Recording"</p>
               </div>
-              <Button onClick={handleSaveRecording} className="w-full">{editingRec ? "Update" : "Create"}</Button>
+              <Button onClick={handleSaveRecording} variant="premium" className="w-full">{editingRec ? "Update" : "Create"}</Button>
             </div>
           </DialogContent>
-        </Dialog>
-      </div>
+          </Dialog>
+        }
+      />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {recordings.map(r => (

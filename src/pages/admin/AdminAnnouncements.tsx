@@ -7,7 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import { Plus, Pencil, Trash2, Megaphone } from "lucide-react";
+import AdminPageHeader from "@/components/premium/AdminPageHeader";
 
 const AdminAnnouncements = () => {
   const [items, setItems] = useState<any[]>([]);
@@ -46,20 +47,26 @@ const AdminAnnouncements = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="font-display text-2xl font-bold text-gradient">Announcements</h1>
-        <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setEditing(null); setForm({ title: "", content: "" }); } }}>
-          <DialogTrigger asChild><Button className="gap-1"><Plus className="w-4 h-4" /> New</Button></DialogTrigger>
+      <AdminPageHeader
+        icon={Megaphone}
+        eyebrow="Broadcasts"
+        title="Announcements"
+        description="Publish platform-wide messages to keep students and tutors informed."
+        accent="primary"
+        actions={
+          <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setEditing(null); setForm({ title: "", content: "" }); } }}>
+            <DialogTrigger asChild><Button variant="premium" size="sm" className="gap-1.5"><Plus className="w-4 h-4" /> New Announcement</Button></DialogTrigger>
           <DialogContent>
             <DialogHeader><DialogTitle>{editing ? "Edit" : "New"} Announcement</DialogTitle></DialogHeader>
             <div className="space-y-4">
               <div className="space-y-2"><Label>Title</Label><Input value={form.title} onChange={(e) => setForm(f => ({ ...f, title: e.target.value }))} /></div>
               <div className="space-y-2"><Label>Content</Label><textarea className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm" rows={4} value={form.content} onChange={(e) => setForm(f => ({ ...f, content: e.target.value }))} /></div>
-              <Button onClick={handleSave} className="w-full">{editing ? "Update" : "Publish"}</Button>
+              <Button onClick={handleSave} variant="premium" className="w-full">{editing ? "Update" : "Publish"}</Button>
             </div>
           </DialogContent>
-        </Dialog>
-      </div>
+          </Dialog>
+        }
+      />
       <div className="space-y-3">
         {items.map(a => (
           <Card className="glass-strong border-white/10 hover:ring-glow transition-all" key={a.id}>

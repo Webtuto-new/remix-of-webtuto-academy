@@ -18,6 +18,7 @@ import { motion } from "framer-motion";
 import { fadeUp, stagger } from "@/lib/motion";
 import EmptyState from "@/components/premium/EmptyState";
 import { BookOpen } from "lucide-react";
+import AdminPageHeader from "@/components/premium/AdminPageHeader";
 
 const emptyForm = {
   title: "", description: "", short_description: "", class_type: "monthly",
@@ -367,9 +368,14 @@ const AdminClasses = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between flex-wrap gap-2">
-        <h1 className="font-display text-2xl font-bold text-gradient">Manage Classes</h1>
-        <div className="flex gap-2">
+      <AdminPageHeader
+        icon={BookOpen}
+        eyebrow="Catalog"
+        title="Manage Classes"
+        description="Create, edit, and bulk-publish classes across all curriculums."
+        accent="primary"
+        actions={
+          <div className="flex gap-2">
           {/* Bulk Create Dialog */}
           <Dialog open={bulkOpen} onOpenChange={(v) => { setBulkOpen(v); if (!v) { setBulkCurriculum(""); setBulkSelectedGrades([]); setBulkSubjectName(""); } }}>
             <DialogTrigger asChild>
@@ -588,8 +594,9 @@ const AdminClasses = () => {
               </div>
             </DialogContent>
           </Dialog>
-        </div>
-      </div>
+          </div>
+        }
+      />
 
       {/* Manual Enrollment Dialog */}
       <Dialog open={enrollOpen} onOpenChange={setEnrollOpen}>

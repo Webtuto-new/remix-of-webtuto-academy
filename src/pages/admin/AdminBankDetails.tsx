@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Pencil, Trash2, Building2, CheckCircle, XCircle } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
+import AdminPageHeader from "@/components/premium/AdminPageHeader";
 
 const AdminBankDetails = () => {
   const [bankDetails, setBankDetails] = useState<any[]>([]);
@@ -110,14 +111,14 @@ const AdminBankDetails = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between flex-wrap gap-3">
-        <div>
-          <h1 className="font-display text-2xl font-bold text-gradient">Bank Details</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Manage bank accounts for student payments
-          </p>
-        </div>
-        <Dialog open={open} onOpenChange={(v) => {
+      <AdminPageHeader
+        icon={Building2}
+        eyebrow="Payment infrastructure"
+        title="Bank Details"
+        description="Manage bank accounts displayed to students for manual payments."
+        accent="emerald"
+        actions={
+          <Dialog open={open} onOpenChange={(v) => {
           setOpen(v);
           if (!v) {
             setEditing(null);
@@ -131,7 +132,7 @@ const AdminBankDetails = () => {
           }
         }}>
           <DialogTrigger asChild>
-            <Button className="gap-1">
+            <Button variant="premium" size="sm" className="gap-1.5">
               <Plus className="w-4 h-4" /> Add Bank Account
             </Button>
           </DialogTrigger>
@@ -179,13 +180,14 @@ const AdminBankDetails = () => {
                   onCheckedChange={(checked) => setForm({ ...form, is_active: checked })}
                 />
               </div>
-              <Button onClick={handleSave} className="w-full">
+              <Button onClick={handleSave} variant="premium" className="w-full">
                 {editing ? "Update" : "Add"} Bank Account
               </Button>
             </div>
           </DialogContent>
-        </Dialog>
-      </div>
+          </Dialog>
+        }
+      />
 
       {bankDetails.length === 0 ? (
         <Card className="glass-strong border-white/10">

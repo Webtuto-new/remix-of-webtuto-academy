@@ -9,6 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Pencil, Trash2, Package } from "lucide-react";
 import ThumbnailUpload from "@/components/ThumbnailUpload";
+import AdminPageHeader from "@/components/premium/AdminPageHeader";
 
 const AdminBundles = () => {
   const [bundles, setBundles] = useState<any[]>([]);
@@ -91,10 +92,15 @@ const AdminBundles = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="font-display text-2xl font-bold text-gradient">Manage Bundles</h1>
-        <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setEditing(null); setBundleClasses([]); setForm({ title: "", description: "", price: "", original_price: "", thumbnail_url: null }); } }}>
-          <DialogTrigger asChild><Button className="gap-1"><Plus className="w-4 h-4" /> Add Bundle</Button></DialogTrigger>
+      <AdminPageHeader
+        icon={Package}
+        eyebrow="Multi-class offerings"
+        title="Manage Bundles"
+        description="Group multiple classes into discounted bundles for students."
+        accent="secondary"
+        actions={
+          <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setEditing(null); setBundleClasses([]); setForm({ title: "", description: "", price: "", original_price: "", thumbnail_url: null }); } }}>
+            <DialogTrigger asChild><Button variant="premium" size="sm" className="gap-1.5"><Plus className="w-4 h-4" /> Add Bundle</Button></DialogTrigger>
           <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
             <DialogHeader><DialogTitle>{editing ? "Edit" : "New"} Bundle</DialogTitle></DialogHeader>
             <div className="space-y-4">
@@ -118,11 +124,12 @@ const AdminBundles = () => {
                   {classes.length === 0 && <p className="text-xs text-muted-foreground text-center py-2">No active classes.</p>}
                 </div>
               </div>
-              <Button onClick={handleSave} className="w-full">{editing ? "Update" : "Create"} Bundle</Button>
+              <Button onClick={handleSave} variant="premium" className="w-full">{editing ? "Update" : "Create"} Bundle</Button>
             </div>
           </DialogContent>
-        </Dialog>
-      </div>
+          </Dialog>
+        }
+      />
 
       <Card className="glass-strong border-white/10">
         <CardContent className="p-0">

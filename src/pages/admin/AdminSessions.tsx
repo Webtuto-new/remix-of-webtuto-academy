@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Pencil, Trash2, FileText, Upload, ArrowLeft } from "lucide-react";
+import { Plus, Pencil, Trash2, FileText, Upload, ArrowLeft, Video } from "lucide-react";
+import AdminPageHeader from "@/components/premium/AdminPageHeader";
 import FileOrLinkInput from "@/components/FileOrLinkInput";
 
 const AdminSessions = () => {
@@ -212,11 +213,15 @@ const AdminSessions = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="font-display text-2xl font-bold text-gradient">Class Sessions & Zoom</h1>
-        {selectedClass && (
+      <AdminPageHeader
+        icon={Video}
+        eyebrow="Live operations"
+        title="Class Sessions & Zoom"
+        description="Schedule sessions, attach Zoom links, and share session notes."
+        accent="primary"
+        actions={selectedClass ? (
           <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) setEditing(null); }}>
-            <DialogTrigger asChild><Button className="gap-1"><Plus className="w-4 h-4" /> Add Session</Button></DialogTrigger>
+            <DialogTrigger asChild><Button variant="premium" size="sm" className="gap-1.5"><Plus className="w-4 h-4" /> Add Session</Button></DialogTrigger>
             <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
               <DialogHeader><DialogTitle>{editing ? "Edit" : "New"} Session</DialogTitle></DialogHeader>
               <div className="space-y-4">
@@ -241,12 +246,12 @@ const AdminSessions = () => {
                   uploadHint="Drag & drop notes file"
                 />
                 <div className="space-y-2"><Label>Recording URL (optional)</Label><Input value={form.recording_url} onChange={(e) => setForm(f => ({ ...f, recording_url: e.target.value }))} /></div>
-                <Button onClick={handleSave} className="w-full">{editing ? "Update" : "Create"} Session</Button>
+                <Button onClick={handleSave} variant="premium" className="w-full">{editing ? "Update" : "Create"} Session</Button>
               </div>
             </DialogContent>
           </Dialog>
-        )}
-      </div>
+        ) : null}
+      />
 
       <div className="space-y-2">
         <Label>Select Class</Label>

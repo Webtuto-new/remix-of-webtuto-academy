@@ -11,6 +11,7 @@ import { format, addDays } from "date-fns";
 import { motion } from "framer-motion";
 import { fadeUp, stagger } from "@/lib/motion";
 import EmptyState from "@/components/premium/EmptyState";
+import AdminPageHeader from "@/components/premium/AdminPageHeader";
 import { Users } from "lucide-react";
 
 const AdminStudents = () => {
@@ -390,11 +391,16 @@ const AdminStudents = () => {
   // ======================== LIST VIEW ========================
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="font-display text-2xl font-bold text-gradient">Students</h1>
-        <Dialog open={createOpen} onOpenChange={(v) => { setCreateOpen(v); if (!v) resetCreateForm(); }}>
+      <AdminPageHeader
+        icon={Users}
+        eyebrow="Member directory"
+        title="Students"
+        description="Search, create, and manage student accounts."
+        accent="primary"
+        actions={
+          <Dialog open={createOpen} onOpenChange={(v) => { setCreateOpen(v); if (!v) resetCreateForm(); }}>
           <DialogTrigger asChild>
-            <Button className="gap-1"><Plus className="w-4 h-4" /> Create Student</Button>
+            <Button variant="premium" size="sm" className="gap-1.5"><Plus className="w-4 h-4" /> Create Student</Button>
           </DialogTrigger>
           <DialogContent className="max-w-md">
             <DialogHeader><DialogTitle>Create Student Account</DialogTitle></DialogHeader>
@@ -433,8 +439,9 @@ const AdminStudents = () => {
               </div>
             )}
           </DialogContent>
-        </Dialog>
-      </div>
+          </Dialog>
+        }
+      />
 
       {/* Search */}
       <Input placeholder="Search by name, email, phone or admission #..." value={search} onChange={(e) => setSearch(e.target.value)} className="max-w-sm" />

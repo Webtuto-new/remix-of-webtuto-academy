@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogT
 import { Plus, Pencil, Trash2, Brain, Check, X, GripVertical } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
+import AdminPageHeader from "@/components/premium/AdminPageHeader";
 
 type Quiz = any;
 type Question = { id?: string; question_text: string; points: number; time_limit_seconds: number; explanation?: string; sort_order: number; options: { id?: string; option_text: string; is_correct: boolean; sort_order: number }[] };
@@ -70,25 +71,28 @@ const AdminQuizzes = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="font-display text-3xl font-bold">Quizzes</h1>
-          <p className="text-sm text-muted-foreground">Build quizzes with questions, options & explanations.</p>
-        </div>
-        <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-          <DialogTrigger asChild>
-            <Button className="gap-2"><Plus className="w-4 h-4" /> New Quiz</Button>
-          </DialogTrigger>
+      <AdminPageHeader
+        icon={Brain}
+        eyebrow="Assessments"
+        title="Quizzes"
+        description="Build quizzes with questions, options & explanations."
+        accent="secondary"
+        actions={
+          <Dialog open={createOpen} onOpenChange={setCreateOpen}>
+            <DialogTrigger asChild>
+              <Button variant="premium" size="sm" className="gap-1.5"><Plus className="w-4 h-4" /> New Quiz</Button>
+            </DialogTrigger>
           <DialogContent>
             <DialogHeader><DialogTitle>Create Quiz</DialogTitle></DialogHeader>
             <div className="space-y-4">
               <div><Label>Title</Label><Input value={newTitle} onChange={(e) => setNewTitle(e.target.value)} placeholder="e.g. Photosynthesis Basics" /></div>
               <div><Label>Description</Label><Textarea value={newDesc} onChange={(e) => setNewDesc(e.target.value)} placeholder="Optional" /></div>
             </div>
-            <DialogFooter><Button onClick={createQuiz}>Create</Button></DialogFooter>
+            <DialogFooter><Button onClick={createQuiz} variant="premium">Create</Button></DialogFooter>
           </DialogContent>
-        </Dialog>
-      </div>
+          </Dialog>
+        }
+      />
 
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">{[...Array(3)].map((_, i) => <div key={i} className="h-40 rounded-xl bg-muted/30 animate-pulse" />)}</div>

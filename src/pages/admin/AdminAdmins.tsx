@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { Shield, Plus, Trash2, Search } from "lucide-react";
+import AdminPageHeader from "@/components/premium/AdminPageHeader";
 
 const AdminAdmins = () => {
   const [admins, setAdmins] = useState<any[]>([]);
@@ -79,12 +80,18 @@ const AdminAdmins = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="font-display text-2xl font-bold text-gradient">Admin Management</h1>
-        <Button onClick={() => setAddOpen(true)} className="gap-1">
-          <Plus className="w-4 h-4" /> Add Admin
-        </Button>
-      </div>
+      <AdminPageHeader
+        icon={Shield}
+        eyebrow="Access control"
+        title="Admin Management"
+        description="Grant or revoke admin privileges. There must always be at least one admin."
+        accent="destructive"
+        actions={
+          <Button onClick={() => setAddOpen(true)} variant="premium" size="sm" className="gap-1.5">
+            <Plus className="w-4 h-4" /> Add Admin
+          </Button>
+        }
+      />
 
       <Dialog open={addOpen} onOpenChange={(v) => { setAddOpen(v); if (!v) { setSearch(""); setSelectedUserId(""); } }}>
         <DialogContent>
@@ -122,7 +129,7 @@ const AdminAdmins = () => {
             {search && filteredProfiles.length === 0 && !selectedUserId && (
               <p className="text-sm text-muted-foreground text-center py-2">No matching users found</p>
             )}
-            <Button onClick={handleAdd} disabled={!selectedUserId} className="w-full gap-1">
+            <Button onClick={handleAdd} disabled={!selectedUserId} variant="premium" className="w-full gap-1.5">
               <Shield className="w-4 h-4" /> Make Admin
             </Button>
           </div>

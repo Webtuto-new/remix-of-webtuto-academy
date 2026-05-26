@@ -12,6 +12,7 @@ import { motion } from "framer-motion";
 import { fadeUp, stagger } from "@/lib/motion";
 import EmptyState from "@/components/premium/EmptyState";
 import { CreditCard } from "lucide-react";
+import AdminPageHeader from "@/components/premium/AdminPageHeader";
 
 const AdminPayments = () => {
   const [payments, setPayments] = useState<any[]>([]);
@@ -175,15 +176,15 @@ const AdminPayments = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between flex-wrap gap-3">
-        <div>
-          <h1 className="font-display text-2xl font-bold text-gradient">All Payments</h1>
-          {pendingCount > 0 && (
-            <p className="text-sm text-amber-600 font-medium mt-1">{pendingCount} payment(s) awaiting review</p>
-          )}
-        </div>
-        <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) setEditing(null); }}>
-          <DialogTrigger asChild><Button className="gap-1"><Plus className="w-4 h-4" /> Add Payment</Button></DialogTrigger>
+      <AdminPageHeader
+        icon={CreditCard}
+        eyebrow="Transactions"
+        title="All Payments"
+        description={pendingCount > 0 ? `${pendingCount} payment(s) awaiting review.` : "Review, approve, and manage student payments."}
+        accent={pendingCount > 0 ? "accent" : "emerald"}
+        actions={
+          <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) setEditing(null); }}>
+            <DialogTrigger asChild><Button variant="premium" size="sm" className="gap-1.5"><Plus className="w-4 h-4" /> Add Payment</Button></DialogTrigger>
           <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
             <DialogHeader><DialogTitle>{editing ? "Edit" : "Add"} Payment</DialogTitle></DialogHeader>
             <div className="space-y-4">
@@ -227,11 +228,12 @@ const AdminPayments = () => {
                   ))}
                 </select>
               </div>
-              <Button onClick={handleSave} className="w-full">{editing ? "Update" : "Add"} Payment</Button>
+              <Button onClick={handleSave} variant="premium" className="w-full">{editing ? "Update" : "Add"} Payment</Button>
             </div>
           </DialogContent>
-        </Dialog>
-      </div>
+          </Dialog>
+        }
+      />
 
       <div className="flex flex-wrap gap-3">
         <Input placeholder="Search by student, reference..." value={search} onChange={(e) => setSearch(e.target.value)} className="max-w-sm" />

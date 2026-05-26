@@ -6,8 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import { Plus, Pencil, Trash2, Award } from "lucide-react";
 import FileOrLinkInput from "@/components/FileOrLinkInput";
+import AdminPageHeader from "@/components/premium/AdminPageHeader";
 
 const AdminCertificates = () => {
   const [certs, setCerts] = useState<any[]>([]);
@@ -60,10 +61,15 @@ const AdminCertificates = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="font-display text-2xl font-bold text-gradient">Certificates</h1>
-        <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setEditing(null); setForm({ user_id: "", class_id: "", title: "", pdf_url: "" }); } }}>
-          <DialogTrigger asChild><Button className="gap-1"><Plus className="w-4 h-4" /> Issue Certificate</Button></DialogTrigger>
+      <AdminPageHeader
+        icon={Award}
+        eyebrow="Recognition"
+        title="Certificates"
+        description="Issue and manage course completion certificates for students."
+        accent="emerald"
+        actions={
+          <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setEditing(null); setForm({ user_id: "", class_id: "", title: "", pdf_url: "" }); } }}>
+            <DialogTrigger asChild><Button variant="premium" size="sm" className="gap-1.5"><Plus className="w-4 h-4" /> Issue Certificate</Button></DialogTrigger>
           <DialogContent>
             <DialogHeader><DialogTitle>{editing ? "Edit" : "Issue"} Certificate</DialogTitle></DialogHeader>
             <div className="space-y-4">
@@ -92,11 +98,12 @@ const AdminCertificates = () => {
                 linkPlaceholder="https://drive.google.com/... or direct PDF URL"
                 uploadHint="Drag & drop certificate PDF"
               />
-              <Button onClick={handleSave} className="w-full">{editing ? "Update" : "Issue"}</Button>
+              <Button onClick={handleSave} variant="premium" className="w-full">{editing ? "Update" : "Issue"}</Button>
             </div>
           </DialogContent>
-        </Dialog>
-      </div>
+          </Dialog>
+        }
+      />
       <Card className="glass-strong border-white/10">
         <CardContent className="p-0">
           <div className="overflow-x-auto">
