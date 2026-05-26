@@ -8,29 +8,31 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import logo from "@/assets/logo.png";
+import HelpTip from "@/components/admin/HelpTip";
+import { getAdminTip, getAdminTitle } from "@/lib/adminTips";
 
-const adminMenu = [
-  { label: "Dashboard", path: "/admin", icon: LayoutDashboard },
-  { label: "Classes", path: "/admin/classes", icon: BookOpen },
-  { label: "Sessions & Zoom", path: "/admin/sessions", icon: Play },
-  { label: "Students", path: "/admin/students", icon: Users },
-  { label: "Teachers", path: "/admin/teachers", icon: GraduationCap },
-  { label: "Tutor Applications", path: "/admin/applications", icon: FileText },
-  { label: "Class Requests", path: "/admin/class-requests", icon: MessageSquare },
-  { label: "WhatsApp Messages", path: "/admin/whatsapp", icon: MessageSquare },
-  { label: "WhatsApp Automation", path: "/admin/whatsapp-automation", icon: Bell },
-  { label: "Recordings", path: "/admin/recordings", icon: Play },
-  { label: "Quizzes", path: "/admin/quizzes", icon: Brain },
-  { label: "Curriculum", path: "/admin/curriculum", icon: BookOpen },
-  { label: "Bundles", path: "/admin/bundles", icon: Package },
-  { label: "Payments", path: "/admin/payments", icon: CreditCard },
-  { label: "Bank Details", path: "/admin/bank-details", icon: Building2 },
-  { label: "Teacher Payouts", path: "/admin/payouts", icon: DollarSign },
-  { label: "Certificates", path: "/admin/certificates", icon: Award },
-  { label: "Coupons", path: "/admin/coupons", icon: Tag },
-  { label: "Announcements", path: "/admin/announcements", icon: Megaphone },
-  { label: "Analytics", path: "/admin/analytics", icon: BarChart3 },
-  { label: "Admin Management", path: "/admin/admins", icon: Shield },
+const adminMenu: { label: string; path: string; icon: any; tip?: string }[] = [
+  { label: "Dashboard", path: "/admin", icon: LayoutDashboard, tip: "Overview & KPIs" },
+  { label: "Classes", path: "/admin/classes", icon: BookOpen, tip: "Create / edit classes" },
+  { label: "Sessions & Zoom", path: "/admin/sessions", icon: Play, tip: "Zoom links per session" },
+  { label: "Students", path: "/admin/students", icon: Users, tip: "Search & enroll students" },
+  { label: "Teachers", path: "/admin/teachers", icon: GraduationCap, tip: "Manage tutor profiles" },
+  { label: "Tutor Applications", path: "/admin/applications", icon: FileText, tip: "Approve new tutors" },
+  { label: "Class Requests", path: "/admin/class-requests", icon: MessageSquare, tip: "Student class requests" },
+  { label: "WhatsApp Messages", path: "/admin/whatsapp", icon: MessageSquare, tip: "Broadcast WhatsApp" },
+  { label: "WhatsApp Automation", path: "/admin/whatsapp-automation", icon: Bell, tip: "Auto reminders" },
+  { label: "Recordings", path: "/admin/recordings", icon: Play, tip: "Upload lesson videos" },
+  { label: "Quizzes", path: "/admin/quizzes", icon: Brain, tip: "Quizzes & live games" },
+  { label: "Curriculum", path: "/admin/curriculum", icon: BookOpen, tip: "Curriculum → Grade → Subject" },
+  { label: "Bundles", path: "/admin/bundles", icon: Package, tip: "Group classes into packages" },
+  { label: "Payments", path: "/admin/payments", icon: CreditCard, tip: "Approve bank transfers" },
+  { label: "Bank Details", path: "/admin/bank-details", icon: Building2, tip: "Checkout bank info" },
+  { label: "Teacher Payouts", path: "/admin/payouts", icon: DollarSign, tip: "Settle tutor earnings" },
+  { label: "Certificates", path: "/admin/certificates", icon: Award, tip: "Issue PDF certificates" },
+  { label: "Coupons", path: "/admin/coupons", icon: Tag, tip: "Discount codes" },
+  { label: "Announcements", path: "/admin/announcements", icon: Megaphone, tip: "Site-wide banners" },
+  { label: "Analytics", path: "/admin/analytics", icon: BarChart3, tip: "Revenue & engagement" },
+  { label: "Admin Management", path: "/admin/admins", icon: Shield, tip: "Grant admin roles" },
 ];
 
 interface Props { children: ReactNode }
@@ -56,13 +58,15 @@ const AdminLayout = ({ children }: Props) => {
     const active = location.pathname === item.path;
     return (
       <Link to={item.path} onClick={() => setSidebarOpen(false)}
+        title={item.tip}
         className={`group relative flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all ${
           active
             ? "bg-gradient-to-r from-destructive/20 to-primary/10 text-foreground ring-1 ring-destructive/30 shadow-[0_4px_20px_-6px_hsl(var(--destructive)/0.4)]"
             : "text-muted-foreground hover:text-foreground hover:bg-card/60"
         }`}>
         {active && <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r-full bg-gradient-to-b from-destructive to-primary" />}
-        <item.icon className={`w-4 h-4 ${active ? "text-destructive" : "group-hover:text-destructive"}`} /> {item.label}
+        <item.icon className={`w-4 h-4 shrink-0 ${active ? "text-destructive" : "group-hover:text-destructive"}`} />
+        <span className="flex-1 truncate">{item.label}</span>
       </Link>
     );
   };
@@ -103,13 +107,26 @@ const AdminLayout = ({ children }: Props) => {
         </div>
       )}
       <div className="flex-1 lg:ml-64">
-        <header className="sticky top-0 z-20 glass-strong border-b border-border/60 px-4 lg:px-6 h-16 flex items-center">
-          <button onClick={() => setSidebarOpen(true)} className="lg:hidden p-2 rounded-lg text-muted-foreground hover:bg-card/60 mr-3">
+        <header className="sticky top-0 z-20 glass-strong border-b border-border/60 px-3 sm:px-4 lg:px-6 h-16 flex items-center gap-2">
+          <button onClick={() => setSidebarOpen(true)} className="lg:hidden p-2 rounded-lg text-muted-foreground hover:bg-card/60 shrink-0">
             <Menu className="w-5 h-5" />
           </button>
-          <p className="text-sm font-semibold text-foreground flex items-center gap-2">
-            <Shield className="w-4 h-4 text-destructive" /> Admin Control Center
-          </p>
+          <div className="flex items-center gap-2 min-w-0 flex-1">
+            <Shield className="w-4 h-4 text-destructive shrink-0" />
+            <p className="text-sm font-semibold text-foreground truncate">{getAdminTitle(location.pathname)}</p>
+            {getAdminTip(location.pathname) && (
+              <HelpTip title={getAdminTip(location.pathname)!.title}>
+                {getAdminTip(location.pathname)!.body}
+              </HelpTip>
+            )}
+          </div>
+          <button
+            onClick={handleSignOut}
+            className="lg:hidden inline-flex items-center gap-1.5 px-3 h-9 rounded-full text-xs font-semibold text-destructive bg-destructive/10 hover:bg-destructive/20 active:scale-95 transition shrink-0"
+            aria-label="Sign out"
+          >
+            <LogOut className="w-3.5 h-3.5" /> Sign out
+          </button>
         </header>
         <motion.main
           key={location.pathname}
