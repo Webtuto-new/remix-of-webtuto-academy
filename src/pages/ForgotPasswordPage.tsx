@@ -1,11 +1,12 @@
 import { useState } from "react";
-import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import AuthShell from "@/components/premium/AuthShell";
+import SEOHead from "@/components/SEOHead";
 
 const ForgotPasswordPage = () => {
   const [email, setEmail] = useState("");
@@ -27,32 +28,32 @@ const ForgotPasswordPage = () => {
   };
 
   return (
-    <Layout>
-      <div className="pt-28 pb-20 flex items-center justify-center">
-        <div className="w-full max-w-md bg-card rounded-xl p-8 card-elevated">
-          <h1 className="font-display text-2xl font-bold text-foreground text-center mb-6">Reset Password</h1>
+    <>
+      <SEOHead title="Reset Password" description="Reset your Webtuto account password." path="/forgot-password" />
+      <AuthShell
+        title="Reset your password"
+        subtitle="We'll email you a secure reset link"
+        footer={<><Link to="/login" className="text-primary hover:underline font-semibold">Back to login</Link></>}
+      >
           {sent ? (
-            <div className="text-center space-y-4">
-              <p className="text-muted-foreground">Check your email for a password reset link.</p>
-              <Link to="/login"><Button variant="outline">Back to Login</Button></Link>
+            <div className="text-center space-y-4 py-4">
+              <div className="mx-auto w-14 h-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center ring-1 ring-primary/20 text-xl">✓</div>
+              <p className="text-muted-foreground">Check your email for the reset link.</p>
+              <Link to="/login"><Button variant="outline" className="rounded-xl">Back to Login</Button></Link>
             </div>
           ) : (
             <form className="space-y-4" onSubmit={handleSubmit}>
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                <Input id="email" type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required className="h-11 rounded-xl bg-background/40" />
               </div>
-              <Button type="submit" className="w-full" size="lg" disabled={loading}>
+              <Button type="submit" className="w-full h-11 rounded-xl font-semibold shadow-lg shadow-primary/20" size="lg" disabled={loading}>
                 {loading ? "Sending..." : "Send Reset Link"}
               </Button>
-              <p className="text-center text-sm text-muted-foreground">
-                <Link to="/login" className="text-primary hover:underline">Back to login</Link>
-              </p>
             </form>
           )}
-        </div>
-      </div>
-    </Layout>
+      </AuthShell>
+    </>
   );
 };
 
