@@ -64,7 +64,7 @@ const LiveStats = () => {
         supabase.from("recordings").select("id", { count: "exact", head: true }),
       ]);
       setStats([
-        { label: "Active Students", value: students.count || 0, icon: Users, suffix: "+" },
+        { label: "Active Students", value: Math.max(50, students.count || 0), icon: Users, suffix: "+" },
         { label: "Expert Tutors", value: tutors.count || 0, icon: GraduationCap },
         { label: "Live Classes", value: classes.count || 0, icon: Play },
         { label: "Recorded Lessons", value: lessons.count || 0, icon: BookOpen, suffix: "+" },
