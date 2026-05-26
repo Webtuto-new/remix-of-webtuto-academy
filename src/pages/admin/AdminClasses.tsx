@@ -18,6 +18,7 @@ import { motion } from "framer-motion";
 import { fadeUp, stagger } from "@/lib/motion";
 import EmptyState from "@/components/premium/EmptyState";
 import { BookOpen } from "lucide-react";
+import AdminPageHeader from "@/components/premium/AdminPageHeader";
 
 const emptyForm = {
   title: "", description: "", short_description: "", class_type: "monthly",
