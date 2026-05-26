@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
-import { Plus, Pencil, Trash2, Brain, Copy, Search, Radio, BookOpen, GraduationCap, Sparkles, PlayCircle } from "lucide-react";
+import { Plus, Pencil, Trash2, Brain, Copy, Search, Radio, BookOpen, GraduationCap, Sparkles, PlayCircle, BarChart3 } from "lucide-react";
 import { toast } from "sonner";
 import QuizBuilderDialog from "@/components/quiz/QuizBuilderDialog";
 import { QuizModeBadge, DifficultyChip, QuizStatusBadge } from "@/components/quiz/QuizModeBadge";
@@ -226,6 +226,7 @@ export default function TeacherQuizCenter() {
                   </Button>
                 )}
                 <Button size="sm" variant="ghost" onClick={() => setEditing(q)} title="Edit"><Pencil className="w-3.5 h-3.5" /></Button>
+                <Link to={`/teacher/quiz-center/${q.id}/analytics`}><Button size="sm" variant="ghost" title="Analytics"><BarChart3 className="w-3.5 h-3.5" /></Button></Link>
                 <Button size="sm" variant="ghost" onClick={() => deleteQuiz(q)} title="Delete"><Trash2 className="w-3.5 h-3.5 text-destructive" /></Button>
               </div>
             </div>
