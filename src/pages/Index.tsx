@@ -300,6 +300,63 @@ const TutorRow = ({ title, tutors }: { title: string; tutors: any[] }) => {
   );
 };
 
+const GradeRail = ({ title, grades }: { title: string; grades: any[] }) => {
+  const scroller = useRef<HTMLDivElement>(null);
+  const scroll = (dir: 1 | -1) => {
+    const el = scroller.current;
+    if (!el) return;
+    el.scrollBy({ left: dir * el.clientWidth * 0.85, behavior: "smooth" });
+  };
+  if (!grades.length) return null;
+  return (
+    <section className="relative group/row py-6">
+      <div className="container mx-auto px-4 sm:px-8 mb-3 flex items-end justify-between">
+        <h2 className="font-display text-xl sm:text-2xl font-bold text-foreground">{title}</h2>
+        <Link to="/curriculum" className="text-xs sm:text-sm text-primary hover:underline font-semibold">
+          View all →
+        </Link>
+      </div>
+      <div className="relative">
+        <button onClick={() => scroll(-1)} className="absolute left-0 top-0 bottom-0 z-20 w-12 sm:w-16 flex items-center justify-center bg-gradient-to-r from-background/90 to-transparent opacity-0 group-hover/row:opacity-100 transition-opacity" aria-label="Scroll left">
+          <ChevronLeft className="w-8 h-8 text-foreground" />
+        </button>
+        <div ref={scroller} className="flex gap-3 sm:gap-4 overflow-x-auto scroll-smooth px-4 sm:px-8 lg:px-12 pb-6 snap-x snap-mandatory scroll-pl-4 sm:scroll-pl-8 lg:scroll-pl-12 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+          {grades.map((g) => (
+            <Link
+              key={g.id}
+              to={`/curriculum?grade=${g.slug}`}
+              className="snap-start shrink-0 w-[160px] sm:w-[200px] lg:w-[220px] group/grade"
+            >
+              <motion.div
+                whileHover={{ y: -6, scale: 1.03 }}
+                transition={{ type: "spring", stiffness: 300, damping: 22 }}
+                className="relative h-[140px] sm:h-[170px] rounded-2xl overflow-hidden p-5 flex flex-col justify-between ring-1 ring-foreground/10 hover:ring-2 hover:ring-primary shadow-lg bg-gradient-to-br from-primary/25 via-card to-accent/20"
+              >
+                <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-primary/30 blur-2xl opacity-60 group-hover/grade:opacity-100 transition" />
+                <div className="absolute -bottom-10 -left-10 w-32 h-32 rounded-full bg-accent/25 blur-2xl opacity-50" />
+                <div className="relative">
+                  <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-background/40 backdrop-blur text-[10px] font-bold tracking-wider uppercase text-foreground/80">
+                    <GraduationCap className="w-3 h-3" /> Grade
+                  </span>
+                </div>
+                <div className="relative">
+                  <h3 className="font-display font-bold text-lg sm:text-xl text-foreground leading-tight line-clamp-2">{g.name}</h3>
+                  {g.curriculums?.name && (
+                    <p className="text-[11px] sm:text-xs text-foreground/70 mt-1 line-clamp-1">{g.curriculums.name}</p>
+                  )}
+                </div>
+              </motion.div>
+            </Link>
+          ))}
+        </div>
+        <button onClick={() => scroll(1)} className="absolute right-0 top-0 bottom-0 z-20 w-12 sm:w-16 flex items-center justify-center bg-gradient-to-l from-background/90 to-transparent opacity-0 group-hover/row:opacity-100 transition-opacity" aria-label="Scroll right">
+          <ChevronRight className="w-8 h-8 text-foreground" />
+        </button>
+      </div>
+    </section>
+  );
+};
+
 const IndexInner = () => {
   const [classes, setClasses] = useState<ClassRow[]>([]);
   const [curriculums, setCurriculums] = useState<any[]>([]);
@@ -382,6 +439,7 @@ const IndexInner = () => {
         <div className="relative">
         {liveNow.length > 0 && <Row title="🔴 Live Now" items={liveNow} />}
         <Row title="New Releases" items={newReleases} />
+        {grades.length > 0 && <GradeRail title="Browse by Grade" grades={grades} />}
         {teachers.length > 0 && <TutorRow title="Meet the Tutors" tutors={teachers} />}
         <Row title="Trending This Week" items={trending} />
         {recordings.length > 0 && <Row title="On-Demand Recordings" items={recordings} />}
