@@ -51,27 +51,27 @@ const AdminAnalytics = () => {
 
   return (
     <div className="space-y-6">
-      <h1 className="font-display text-2xl font-bold text-foreground">Analytics</h1>
+      <h1 className="font-display text-2xl font-bold text-gradient">Analytics</h1>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <Card><CardContent className="p-4 text-center">
           <CreditCard className="w-8 h-8 mx-auto mb-2 text-secondary" />
-          <p className="text-2xl font-bold text-foreground">LKR {data.totalRevenue.toLocaleString()}</p>
+          <p className="text-2xl font-bold text-gradient">LKR {data.totalRevenue.toLocaleString()}</p>
           <p className="text-xs text-muted-foreground">Total Revenue</p>
         </CardContent></Card>
         <Card><CardContent className="p-4 text-center">
           <TrendingUp className="w-8 h-8 mx-auto mb-2 text-accent" />
-          <p className="text-2xl font-bold text-foreground">LKR {data.monthlyRevenue.toLocaleString()}</p>
+          <p className="text-2xl font-bold text-gradient">LKR {data.monthlyRevenue.toLocaleString()}</p>
           <p className="text-xs text-muted-foreground">This Month</p>
         </CardContent></Card>
         <Card><CardContent className="p-4 text-center">
           <Users className="w-8 h-8 mx-auto mb-2 text-primary" />
-          <p className="text-2xl font-bold text-foreground">{data.totalStudents}</p>
+          <p className="text-2xl font-bold text-gradient">{data.totalStudents}</p>
           <p className="text-xs text-muted-foreground">Total Students</p>
         </CardContent></Card>
         <Card><CardContent className="p-4 text-center">
           <BookOpen className="w-8 h-8 mx-auto mb-2 text-secondary" />
-          <p className="text-2xl font-bold text-foreground">{data.totalEnrollments}</p>
+          <p className="text-2xl font-bold text-gradient">{data.totalEnrollments}</p>
           <p className="text-xs text-muted-foreground">Total Enrollments</p>
         </CardContent></Card>
       </div>
@@ -83,7 +83,7 @@ const AdminAnalytics = () => {
             <Video className="w-6 h-6 text-primary" />
           </div>
           <div>
-            <p className="text-2xl font-bold text-foreground">{activityStats.recordings}</p>
+            <p className="text-2xl font-bold text-gradient">{activityStats.recordings}</p>
             <p className="text-xs text-muted-foreground">Recording Views</p>
           </div>
         </CardContent></Card>
@@ -92,7 +92,7 @@ const AdminAnalytics = () => {
             <FileText className="w-6 h-6 text-accent" />
           </div>
           <div>
-            <p className="text-2xl font-bold text-foreground">{activityStats.notes}</p>
+            <p className="text-2xl font-bold text-gradient">{activityStats.notes}</p>
             <p className="text-xs text-muted-foreground">Note Downloads</p>
           </div>
         </CardContent></Card>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
@@ -7,9 +8,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Pencil, Trash2, Eye, UserPlus, Loader2, Copy, RefreshCw } from "lucide-react";
+import { Plus, Pencil, Trash2, Eye, UserPlus, Loader2, Copy, RefreshCw, GraduationCap } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import ThumbnailUpload from "@/components/ThumbnailUpload";
+import EmptyState from "@/components/premium/EmptyState";
+import { fadeUp, stagger } from "@/lib/motion";
 
 const generatePassword = () => {
   const chars = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
@@ -100,17 +103,7 @@ const AdminTeachers = () => {
 
   const getCopyMessage = () => {
     if (!createdCredentials) return "";
-    return `Hi ${createdCredentials.name}! 👋
-
-Your teacher account has been created on WebTuto Academy.
-
-🔗 Login here: ${siteUrl}/login
-📧 Email: ${createdCredentials.email}
-🔑 Password: ${createdCredentials.password}
-
-After logging in, click "Teacher Panel" in your dashboard sidebar to access your teacher dashboard where you can manage your classes, sessions, and students.
-
-Please change your password after your first login.`;
+    return `Hi ${createdCredentials.name}! 👋\n\nYour teacher account has been created on WebTuto Academy.\n\n🔗 Login here: ${siteUrl}/login\n📧 Email: ${createdCredentials.email}\n🔑 Password: ${createdCredentials.password}\n\nAfter logging in, click "Teacher Panel" in your dashboard sidebar to access your teacher dashboard where you can manage your classes, sessions, and students.\n\nPlease change your password after your first login.`;
   };
 
   const copyMessage = () => {
@@ -121,25 +114,24 @@ Please change your password after your first login.`;
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="font-display text-2xl font-bold text-foreground">Manage Teachers</h1>
+        <h1 className="font-display text-2xl font-bold text-gradient">Manage Teachers</h1>
         <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) setEditing(null); }}>
-          <DialogTrigger asChild><Button className="gap-1"><Plus className="w-4 h-4" /> Add Teacher</Button></DialogTrigger>
-          <DialogContent>
+          <DialogTrigger asChild><Button variant="premium" className="gap-1"><Plus className="w-4 h-4" /> Add Teacher</Button></DialogTrigger>
+          <DialogContent className="glass-strong border-border/50">
             <DialogHeader><DialogTitle>{editing ? "Edit" : "Add"} Teacher</DialogTitle></DialogHeader>
             <div className="space-y-4">
               <div className="space-y-2"><Label>Name</Label><Input value={form.name} onChange={(e) => setForm(f => ({ ...f, name: e.target.value }))} /></div>
               <div className="space-y-2"><Label>Bio</Label><textarea className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm" rows={3} value={form.bio} onChange={(e) => setForm(f => ({ ...f, bio: e.target.value }))} /></div>
               <div className="space-y-2"><Label>Qualifications</Label><Input value={form.qualifications} onChange={(e) => setForm(f => ({ ...f, qualifications: e.target.value }))} /></div>
               <ThumbnailUpload value={form.avatar_url || null} onChange={(url) => setForm(f => ({ ...f, avatar_url: url || "" }))} title={form.name} folder="teachers" />
-              <Button onClick={handleSave} className="w-full">{editing ? "Update" : "Create"}</Button>
+              <Button onClick={handleSave} className="w-full" variant="premium">{editing ? "Update" : "Create"}</Button>
             </div>
           </DialogContent>
         </Dialog>
       </div>
 
-      {/* Create Login Dialog */}
       <Dialog open={loginOpen} onOpenChange={setLoginOpen}>
-        <DialogContent>
+        <DialogContent className="glass-strong border-border/50">
           <DialogHeader><DialogTitle>Create Login for {loginTeacher?.name}</DialogTitle></DialogHeader>
           <div className="space-y-4">
             <p className="text-sm text-muted-foreground">This will create a user account with tutor permissions. Share the credentials with the teacher.</p>
@@ -153,70 +145,74 @@ Please change your password after your first login.`;
                 </Button>
               </div>
             </div>
-            <Button onClick={handleCreateLogin} className="w-full" disabled={loginLoading || !loginForm.email || !loginForm.password}>
+            <Button onClick={handleCreateLogin} className="w-full" variant="premium" disabled={loginLoading || !loginForm.email || !loginForm.password}>
               {loginLoading ? <><Loader2 className="w-4 h-4 animate-spin mr-2" /> Creating...</> : "Create Login"}
             </Button>
           </div>
         </DialogContent>
       </Dialog>
 
-      {/* Credentials Share Dialog */}
       <Dialog open={!!createdCredentials} onOpenChange={(v) => { if (!v) setCreatedCredentials(null); }}>
-        <DialogContent>
+        <DialogContent className="glass-strong border-border/50">
           <DialogHeader><DialogTitle>Login Created Successfully ✅</DialogTitle></DialogHeader>
           <div className="space-y-4">
             <p className="text-sm text-muted-foreground">Copy the message below and share it with the teacher via WhatsApp, email, or any messenger.</p>
-            <div className="bg-muted rounded-lg p-4 text-sm whitespace-pre-wrap font-mono text-foreground border border-border">
+            <div className="bg-muted rounded-lg p-4 text-sm whitespace-pre-wrap font-mono text-foreground border border-border/60">
               {getCopyMessage()}
             </div>
-            <Button onClick={copyMessage} className="w-full gap-2">
+            <Button onClick={copyMessage} className="w-full gap-2" variant="premium">
               <Copy className="w-4 h-4" /> Copy Message
             </Button>
           </div>
         </DialogContent>
       </Dialog>
 
-      <Card>
-        <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead><tr className="border-b border-border">
-                <th className="text-left p-4 font-medium text-muted-foreground">Name</th>
-                <th className="text-left p-4 font-medium text-muted-foreground">Qualifications</th>
-                <th className="text-left p-4 font-medium text-muted-foreground">Login</th>
-                <th className="text-left p-4 font-medium text-muted-foreground">Status</th>
-                <th className="text-left p-4 font-medium text-muted-foreground">Actions</th>
-              </tr></thead>
-              <tbody>
-                {teachers.map((t) => (
-                  <tr key={t.id} className="border-b border-border last:border-0">
-                    <td className="p-4 font-medium text-foreground cursor-pointer hover:text-primary" onClick={() => navigate(`/admin/teachers/${t.id}`)}>{t.name}</td>
-                    <td className="p-4 text-muted-foreground">{t.qualifications || "—"}</td>
-                    <td className="p-4">
-                      {t.user_id ? (
-                        <Badge variant="default" className="text-xs">Has Login</Badge>
-                      ) : (
-                        <Button variant="outline" size="sm" className="gap-1 text-xs" onClick={() => openLoginDialog(t)}>
-                          <UserPlus className="w-3 h-3" /> Create Login
-                        </Button>
-                      )}
-                    </td>
-                    <td className="p-4"><span className={`text-xs px-2 py-1 rounded-full ${t.is_active ? "bg-secondary/20 text-secondary" : "bg-muted text-muted-foreground"}`}>{t.is_active ? "Active" : "Inactive"}</span></td>
-                    <td className="p-4">
-                      <div className="flex gap-1">
-                        <Button variant="ghost" size="sm" onClick={() => navigate(`/admin/teachers/${t.id}`)}><Eye className="w-4 h-4" /></Button>
-                        <Button variant="ghost" size="sm" onClick={() => handleEdit(t)}><Pencil className="w-4 h-4" /></Button>
-                        <Button variant="ghost" size="sm" onClick={() => handleDelete(t.id)} className="text-destructive"><Trash2 className="w-4 h-4" /></Button>
-                      </div>
-                    </td>
+      {teachers.length === 0 ? (
+        <EmptyState icon={GraduationCap} title="No teachers yet" description="Add your first teacher to start assigning classes." />
+      ) : (
+        <Card className="glass-strong border-border/50 overflow-hidden">
+          <CardContent className="p-0">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border bg-muted/30">
+                    <th className="text-left p-4 font-medium text-muted-foreground">Name</th>
+                    <th className="text-left p-4 font-medium text-muted-foreground">Qualifications</th>
+                    <th className="text-left p-4 font-medium text-muted-foreground">Login</th>
+                    <th className="text-left p-4 font-medium text-muted-foreground">Status</th>
+                    <th className="text-left p-4 font-medium text-muted-foreground">Actions</th>
                   </tr>
-                ))}
-                {teachers.length === 0 && <tr><td colSpan={5} className="p-8 text-center text-muted-foreground">No teachers yet.</td></tr>}
-              </tbody>
-            </table>
-          </div>
-        </CardContent>
-      </Card>
+                </thead>
+                <motion.tbody variants={stagger} initial="hidden" animate="show">
+                  {teachers.map((t) => (
+                    <motion.tr key={t.id} variants={fadeUp} className="border-b border-border last:border-0 hover:bg-primary/5 transition-colors group">
+                      <td className="p-4 font-medium text-foreground cursor-pointer hover:text-primary" onClick={() => navigate(`/admin/teachers/${t.id}`)}>{t.name}</td>
+                      <td className="p-4 text-muted-foreground">{t.qualifications || "—"}</td>
+                      <td className="p-4">
+                        {t.user_id ? (
+                          <Badge variant="outline" className="text-xs border-emerald-500/40 text-emerald-400 bg-emerald-500/10">Has Login</Badge>
+                        ) : (
+                          <Button variant="outline" size="sm" className="gap-1 text-xs hover:bg-primary/10 hover:text-primary hover:border-primary/30" onClick={() => openLoginDialog(t)}>
+                            <UserPlus className="w-3 h-3" /> Create Login
+                          </Button>
+                        )}
+                      </td>
+                      <td className="p-4"><span className={`text-xs px-2 py-1 rounded-full border ${t.is_active ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/30" : "bg-muted text-muted-foreground border-border"}`}>{t.is_active ? "Active" : "Inactive"}</span></td>
+                      <td className="p-4">
+                        <div className="flex gap-1">
+                          <Button variant="ghost" size="sm" className="hover:bg-primary/10 hover:text-primary" onClick={() => navigate(`/admin/teachers/${t.id}`)}><Eye className="w-4 h-4" /></Button>
+                          <Button variant="ghost" size="sm" className="hover:bg-primary/10 hover:text-primary" onClick={() => handleEdit(t)}><Pencil className="w-4 h-4" /></Button>
+                          <Button variant="ghost" size="sm" className="hover:bg-destructive/10 hover:text-destructive" onClick={() => handleDelete(t.id)}><Trash2 className="w-4 h-4 text-destructive" /></Button>
+                        </div>
+                      </td>
+                    </motion.tr>
+                  ))}
+                </motion.tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };

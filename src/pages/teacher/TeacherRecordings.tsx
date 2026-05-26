@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent } from "@/components/ui/card";
@@ -9,12 +10,14 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
-import { Users, UserPlus, Plus, Pencil, ArrowLeft, Trash2, FileText, Video } from "lucide-react";
+import { Users, UserPlus, Plus, Pencil, ArrowLeft, Trash2, FileText, Video, Disc3 } from "lucide-react";
 import ThumbnailUpload from "@/components/ThumbnailUpload";
 import FileOrLinkInput from "@/components/FileOrLinkInput";
 import LessonModuleManager from "@/components/lessons/LessonModuleManager";
 import EnrolledStudentsDialog from "@/components/EnrolledStudentsDialog";
 import CreateStudentDialog from "@/components/CreateStudentDialog";
+import EmptyState from "@/components/premium/EmptyState";
+import { fadeUp, stagger } from "@/lib/motion";
 
 const TeacherRecordings = () => {
   const { user } = useAuth();
@@ -181,18 +184,23 @@ const TeacherRecordings = () => {
     fetchNotes(selectedRecording.id);
   };
 
-  if (!teacher) return <div className="py-20 text-center text-muted-foreground">Loading...</div>;
+  if (!teacher) return (
+    <div className="space-y-6">
+      <div className="h-8 w-48 bg-muted/60 rounded-lg animate-pulse" />
+      <div className="h-64 bg-muted/40 rounded-2xl animate-pulse" />
+    </div>
+  );
 
   // Detail view
   if (selectedRecording) {
     return (
       <div className="space-y-6">
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="sm" onClick={() => setSelectedRecording(null)}>
+          <Button variant="ghost" size="sm" className="hover:bg-primary/10 hover:text-primary" onClick={() => setSelectedRecording(null)}>
             <ArrowLeft className="w-4 h-4" />
           </Button>
           <div>
-            <h1 className="font-display text-xl sm:text-2xl font-bold text-foreground">{selectedRecording.title}</h1>
+            <h1 className="font-display text-xl sm:text-2xl font-bold text-gradient">{selectedRecording.title}</h1>
             <p className="text-sm text-muted-foreground">LKR {selectedRecording.price} · {videos.length} lessons · {notes.length} notes</p>
           </div>
         </div>
@@ -201,8 +209,8 @@ const TeacherRecordings = () => {
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-foreground">Lessons</h2>
           <Dialog open={vidOpen} onOpenChange={(v) => { setVidOpen(v); if (!v) setEditingVid(null); }}>
-            <DialogTrigger asChild><Button size="sm" className="gap-1"><Plus className="w-3 h-3" /> Add Lesson</Button></DialogTrigger>
-            <DialogContent>
+            <DialogTrigger asChild><Button size="sm" variant="premium" className="gap-1"><Plus className="w-3 h-3" /> Add Lesson</Button></DialogTrigger>
+            <DialogContent className="glass-strong border-border/50">
               <DialogHeader><DialogTitle>{editingVid ? "Edit" : "Add"} Lesson</DialogTitle></DialogHeader>
               <div className="space-y-4">
                 <div className="space-y-2"><Label>Title</Label><Input value={vidForm.title} onChange={(e) => setVidForm(f => ({ ...f, title: e.target.value }))} placeholder="e.g. Lesson 1 - Introduction" /></div>
@@ -215,38 +223,40 @@ const TeacherRecordings = () => {
                   <div className="space-y-2"><Label>Chapter (optional)</Label><Input value={vidForm.chapter_name} onChange={(e) => setVidForm(f => ({ ...f, chapter_name: e.target.value }))} placeholder="e.g. Algebra Basics" /></div>
                   <div className="space-y-2"><Label>Session Date (optional)</Label><Input type="date" value={vidForm.session_date} onChange={(e) => setVidForm(f => ({ ...f, session_date: e.target.value }))} /></div>
                 </div>
-                <Button onClick={handleSaveVideo} className="w-full">{editingVid ? "Update" : "Add"} Lesson</Button>
+                <Button onClick={handleSaveVideo} className="w-full" variant="premium">{editingVid ? "Update" : "Add"} Lesson</Button>
               </div>
             </DialogContent>
           </Dialog>
         </div>
 
-        <Card>
+        <Card className="glass-strong border-border/50 overflow-hidden">
           <CardContent className="p-0">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead><tr className="border-b border-border">
-                  <th className="text-left p-3 font-medium text-muted-foreground w-12">#</th>
-                  <th className="text-left p-3 font-medium text-muted-foreground">Title</th>
-                  <th className="text-left p-3 font-medium text-muted-foreground hidden sm:table-cell">Duration</th>
-                  <th className="text-left p-3 font-medium text-muted-foreground">Active</th>
-                  <th className="text-left p-3 font-medium text-muted-foreground">Actions</th>
-                </tr></thead>
-                <tbody>
+                <thead>
+                  <tr className="border-b border-border bg-muted/30">
+                    <th className="text-left p-3 font-medium text-muted-foreground w-12">#</th>
+                    <th className="text-left p-3 font-medium text-muted-foreground">Title</th>
+                    <th className="text-left p-3 font-medium text-muted-foreground hidden sm:table-cell">Duration</th>
+                    <th className="text-left p-3 font-medium text-muted-foreground">Active</th>
+                    <th className="text-left p-3 font-medium text-muted-foreground">Actions</th>
+                  </tr>
+                </thead>
+                <motion.tbody variants={stagger} initial="hidden" animate="show">
                   {videos.map((v: any) => (
-                    <tr key={v.id} className="border-b border-border last:border-0">
+                    <motion.tr key={v.id} variants={fadeUp} className="border-b border-border last:border-0 hover:bg-primary/5 transition-colors group">
                       <td className="p-3 text-muted-foreground">{v.episode_number || "—"}</td>
                       <td className="p-3 font-medium text-foreground">{v.title}</td>
                       <td className="p-3 text-muted-foreground hidden sm:table-cell">{v.duration_minutes ? `${v.duration_minutes} min` : "—"}</td>
                       <td className="p-3"><Switch checked={v.is_active} onCheckedChange={() => toggleVideoActive(v)} /></td>
                       <td className="p-3 flex gap-1">
-                        <Button variant="ghost" size="sm" onClick={() => { setEditingVid(v); setVidForm({ title: v.title, video_url: v.video_url, episode_number: v.episode_number?.toString() || "", duration_minutes: v.duration_minutes?.toString() || "", chapter_name: v.chapter_name || "", session_date: v.session_date || "" }); setVidOpen(true); }}><Pencil className="w-3 h-3" /></Button>
-                        <Button variant="ghost" size="sm" onClick={() => deleteVideo(v.id)}><Trash2 className="w-3 h-3 text-destructive" /></Button>
+                        <Button variant="ghost" size="sm" className="hover:bg-primary/10 hover:text-primary" onClick={() => { setEditingVid(v); setVidForm({ title: v.title, video_url: v.video_url, episode_number: v.episode_number?.toString() || "", duration_minutes: v.duration_minutes?.toString() || "", chapter_name: v.chapter_name || "", session_date: v.session_date || "" }); setVidOpen(true); }}><Pencil className="w-3 h-3" /></Button>
+                        <Button variant="ghost" size="sm" className="hover:bg-destructive/10 hover:text-destructive" onClick={() => deleteVideo(v.id)}><Trash2 className="w-3 h-3 text-destructive" /></Button>
                       </td>
-                    </tr>
+                    </motion.tr>
                   ))}
                   {videos.length === 0 && <tr><td colSpan={5} className="p-6 text-center text-muted-foreground">No lessons yet.</td></tr>}
-                </tbody>
+                </motion.tbody>
               </table>
             </div>
           </CardContent>
@@ -254,10 +264,10 @@ const TeacherRecordings = () => {
 
         {/* Notes */}
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-foreground flex items-center gap-2"><FileText className="w-4 h-4" /> Notes & Materials</h2>
+          <h2 className="text-lg font-semibold text-foreground flex items-center gap-2"><FileText className="w-4 h-4 text-primary" /> Notes & Materials</h2>
           <Dialog open={noteOpen} onOpenChange={setNoteOpen}>
-            <DialogTrigger asChild><Button size="sm" className="gap-1"><Plus className="w-3 h-3" /> Add Note</Button></DialogTrigger>
-            <DialogContent>
+            <DialogTrigger asChild><Button size="sm" variant="premium" className="gap-1"><Plus className="w-3 h-3" /> Add Note</Button></DialogTrigger>
+            <DialogContent className="glass-strong border-border/50">
               <DialogHeader><DialogTitle>Add Note / Material</DialogTitle></DialogHeader>
               <div className="space-y-4">
                 <div className="space-y-2"><Label>Title</Label><Input value={noteForm.title} onChange={(e) => setNoteForm(f => ({ ...f, title: e.target.value }))} placeholder="e.g. Lecture Notes Week 1" /></div>
@@ -266,24 +276,24 @@ const TeacherRecordings = () => {
                   <Label>Type</Label>
                   <Input value={noteForm.file_type} onChange={(e) => setNoteForm(f => ({ ...f, file_type: e.target.value }))} placeholder="pdf, doc, link" />
                 </div>
-                <Button onClick={handleAddNote} className="w-full">Add Note</Button>
+                <Button onClick={handleAddNote} className="w-full" variant="premium">Add Note</Button>
               </div>
             </DialogContent>
           </Dialog>
         </div>
 
-        <Card>
+        <Card className="glass-strong border-border/50 overflow-hidden">
           <CardContent className="p-0">
             <div className="divide-y divide-border">
               {notes.map((n: any) => (
-                <div key={n.id} className="flex items-center justify-between p-3">
+                <div key={n.id} className="flex items-center justify-between p-3 hover:bg-primary/5 transition-colors group">
                   <div>
                     <p className="text-sm font-medium text-foreground">{n.title}</p>
                     <p className="text-xs text-muted-foreground">{n.file_type}</p>
                   </div>
                   <div className="flex gap-1">
-                    <Button variant="ghost" size="sm" asChild><a href={n.file_url} target="_blank" rel="noreferrer">View</a></Button>
-                    <Button variant="ghost" size="sm" onClick={() => deleteNote(n.id)}><Trash2 className="w-3 h-3 text-destructive" /></Button>
+                    <Button variant="ghost" size="sm" className="hover:bg-primary/10 hover:text-primary" asChild><a href={n.file_url} target="_blank" rel="noreferrer">View</a></Button>
+                    <Button variant="ghost" size="sm" className="hover:bg-destructive/10 hover:text-destructive" onClick={() => deleteNote(n.id)}><Trash2 className="w-3 h-3 text-destructive" /></Button>
                   </div>
                 </div>
               ))}
@@ -292,7 +302,7 @@ const TeacherRecordings = () => {
           </CardContent>
         </Card>
 
-        {/* Upgraded Lesson / Module system */}
+        {/* Lesson Module system */}
         <div className="pt-2">
           <LessonModuleManager parent={{ kind: "recording", id: selectedRecording.id }} />
         </div>
@@ -304,10 +314,10 @@ const TeacherRecordings = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="font-display text-2xl font-bold text-foreground">My Recordings</h1>
+        <h1 className="font-display text-2xl font-bold text-gradient">My Recordings</h1>
         <Dialog open={recOpen} onOpenChange={(v) => { setRecOpen(v); if (!v) { setEditingRec(null); resetRecForm(); } }}>
-          <DialogTrigger asChild><Button className="gap-1"><Plus className="w-4 h-4" /> Create Recording</Button></DialogTrigger>
-          <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
+          <DialogTrigger asChild><Button variant="premium" className="gap-1"><Plus className="w-4 h-4" /> Create Recording</Button></DialogTrigger>
+          <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto glass-strong border-border/50">
             <DialogHeader><DialogTitle>{editingRec ? "Edit" : "Create"} Recording</DialogTitle></DialogHeader>
             <div className="space-y-4">
               <div className="space-y-2"><Label>Title</Label><Input value={recForm.title} onChange={(e) => setRecForm(f => ({ ...f, title: e.target.value }))} /></div>
@@ -323,47 +333,57 @@ const TeacherRecordings = () => {
               </div>
               <FileOrLinkInput value={recForm.free_preview_url || null} onChange={(url) => setRecForm(f => ({ ...f, free_preview_url: url || "" }))} bucket="videos" folder="previews" accept="video/*" label="Free Preview Video" linkPlaceholder="https://youtube.com/watch?v=..." previewType="video" />
               <ThumbnailUpload value={recForm.thumbnail_url || null} onChange={(url) => setRecForm(f => ({ ...f, thumbnail_url: url || "" }))} title={recForm.title} />
-              <Button onClick={handleSaveRecording} className="w-full">{editingRec ? "Update" : "Create"} Recording</Button>
+              <Button onClick={handleSaveRecording} className="w-full" variant="premium">{editingRec ? "Update" : "Create"} Recording</Button>
             </div>
           </DialogContent>
         </Dialog>
       </div>
 
       {recordings.length === 0 ? (
-        <Card>
-          <CardContent className="p-8 text-center text-muted-foreground">
-            No recordings yet. Create your first recording!
-          </CardContent>
-        </Card>
+        <EmptyState
+          icon={Disc3}
+          title="No recordings yet"
+          description="Create your first recording to start sharing lessons with students."
+          action={
+            <Dialog open={recOpen} onOpenChange={setRecOpen}>
+              <DialogTrigger asChild><Button variant="premium" className="gap-1"><Plus className="w-4 h-4" /> Create Recording</Button></DialogTrigger>
+              <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto glass-strong border-border/50">
+                <DialogHeader><DialogTitle>Create Recording</DialogTitle></DialogHeader>
+              </DialogContent>
+            </Dialog>
+          }
+        />
       ) : (
-        <Card>
+        <Card className="glass-strong border-border/50 overflow-hidden">
           <CardContent className="p-0">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead><tr className="border-b border-border">
-                  <th className="text-left p-4 font-medium text-muted-foreground">Title</th>
-                  <th className="text-left p-4 font-medium text-muted-foreground">Price</th>
-                  <th className="text-left p-4 font-medium text-muted-foreground">Type</th>
-                  <th className="text-left p-4 font-medium text-muted-foreground">Status</th>
-                  <th className="text-left p-4 font-medium text-muted-foreground">Actions</th>
-                </tr></thead>
-                <tbody>
-                  {recordings.map(r => (
-                    <tr key={r.id} className="border-b border-border last:border-0 cursor-pointer hover:bg-muted/50" onClick={() => setSelectedRecording(r)}>
+                <thead>
+                  <tr className="border-b border-border bg-muted/30">
+                    <th className="text-left p-4 font-medium text-muted-foreground">Title</th>
+                    <th className="text-left p-4 font-medium text-muted-foreground">Price</th>
+                    <th className="text-left p-4 font-medium text-muted-foreground">Type</th>
+                    <th className="text-left p-4 font-medium text-muted-foreground">Status</th>
+                    <th className="text-left p-4 font-medium text-muted-foreground">Actions</th>
+                  </tr>
+                </thead>
+                <motion.tbody variants={stagger} initial="hidden" animate="show">
+                  {recordings.map((r) => (
+                    <motion.tr key={r.id} variants={fadeUp} className="border-b border-border last:border-0 cursor-pointer hover:bg-primary/5 transition-colors group" onClick={() => setSelectedRecording(r)}>
                       <td className="p-4 font-medium text-foreground">{r.title}</td>
                       <td className="p-4 text-muted-foreground">LKR {r.price}</td>
-                      <td className="p-4">{r.recording_type ? <Badge variant="outline">{r.recording_type}</Badge> : <span className="text-muted-foreground">Recording</span>}</td>
-                      <td className="p-4"><Badge variant={r.is_active ? "default" : "secondary"}>{r.is_active ? "Active" : "Inactive"}</Badge></td>
+                      <td className="p-4">{r.recording_type ? <Badge variant="outline" className="border-primary/40 text-primary bg-primary/10">{r.recording_type}</Badge> : <span className="text-muted-foreground">Recording</span>}</td>
+                      <td className="p-4"><Badge variant={r.is_active ? "default" : "secondary"} className={r.is_active ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/30" : ""}>{r.is_active ? "Active" : "Inactive"}</Badge></td>
                       <td className="p-4" onClick={(e) => e.stopPropagation()}>
                         <div className="flex gap-1">
-                          <Button variant="ghost" size="sm" onClick={() => setStudentsDialog({ open: true, id: r.id, title: r.title })} title="View Students"><Users className="w-4 h-4" /></Button>
-                          <Button variant="ghost" size="sm" onClick={() => setEnrollDialog({ open: true, id: r.id, title: r.title })} title="Add Student"><UserPlus className="w-4 h-4" /></Button>
-                          <Button variant="ghost" size="sm" onClick={() => openEditRecording(r)}><Pencil className="w-4 h-4" /></Button>
+                          <Button variant="ghost" size="sm" className="hover:bg-primary/10 hover:text-primary" onClick={() => setStudentsDialog({ open: true, id: r.id, title: r.title })} title="View Students"><Users className="w-4 h-4" /></Button>
+                          <Button variant="ghost" size="sm" className="hover:bg-primary/10 hover:text-primary" onClick={() => setEnrollDialog({ open: true, id: r.id, title: r.title })} title="Add Student"><UserPlus className="w-4 h-4" /></Button>
+                          <Button variant="ghost" size="sm" className="hover:bg-primary/10 hover:text-primary" onClick={() => openEditRecording(r)}><Pencil className="w-4 h-4" /></Button>
                         </div>
                       </td>
-                    </tr>
+                    </motion.tr>
                   ))}
-                </tbody>
+                </motion.tbody>
               </table>
             </div>
           </CardContent>

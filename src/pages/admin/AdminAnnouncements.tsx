@@ -47,7 +47,7 @@ const AdminAnnouncements = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="font-display text-2xl font-bold text-foreground">Announcements</h1>
+        <h1 className="font-display text-2xl font-bold text-gradient">Announcements</h1>
         <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setEditing(null); setForm({ title: "", content: "" }); } }}>
           <DialogTrigger asChild><Button className="gap-1"><Plus className="w-4 h-4" /> New</Button></DialogTrigger>
           <DialogContent>

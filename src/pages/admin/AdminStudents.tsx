@@ -8,6 +8,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Copy, UserPlus, BookOpen, Clock, Pencil, Eye, ArrowLeft, CheckCircle2, XCircle, Ban, ShieldCheck } from "lucide-react";
 import { format, addDays } from "date-fns";
+import { motion } from "framer-motion";
+import { fadeUp, stagger } from "@/lib/motion";
+import EmptyState from "@/components/premium/EmptyState";
+import { Users } from "lucide-react";
 
 const AdminStudents = () => {
   const [students, setStudents] = useState<any[]>([]);
@@ -235,7 +239,7 @@ const AdminStudents = () => {
             <ArrowLeft className="w-4 h-4" />
           </Button>
           <div className="flex-1">
-            <h1 className="font-display text-2xl font-bold text-foreground">{viewStudent.full_name}</h1>
+            <h1 className="font-display text-2xl font-bold text-gradient">{viewStudent.full_name}</h1>
             <p className="text-sm text-muted-foreground">{viewStudent.email} · {viewStudent.admission_number}</p>
           </div>
           <Button variant="outline" size="sm" className="gap-1" onClick={() => openEdit(viewStudent)}>
@@ -257,19 +261,19 @@ const AdminStudents = () => {
         {/* Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <Card><CardContent className="p-4 text-center">
-            <p className="text-2xl font-bold text-foreground">{activeEnrollments.length}</p>
+            <p className="text-2xl font-bold text-gradient">{activeEnrollments.length}</p>
             <p className="text-xs text-muted-foreground">Active Enrollments</p>
           </CardContent></Card>
           <Card><CardContent className="p-4 text-center">
-            <p className="text-2xl font-bold text-foreground">{studentAttendance.length}</p>
+            <p className="text-2xl font-bold text-gradient">{studentAttendance.length}</p>
             <p className="text-xs text-muted-foreground">Sessions Attended</p>
           </CardContent></Card>
           <Card><CardContent className="p-4 text-center">
-            <p className="text-2xl font-bold text-foreground">{studentCertificates.length}</p>
+            <p className="text-2xl font-bold text-gradient">{studentCertificates.length}</p>
             <p className="text-xs text-muted-foreground">Certificates</p>
           </CardContent></Card>
           <Card><CardContent className="p-4 text-center">
-            <p className="text-2xl font-bold text-foreground">LKR {totalPaid.toLocaleString()}</p>
+            <p className="text-2xl font-bold text-gradient">LKR {totalPaid.toLocaleString()}</p>
             <p className="text-xs text-muted-foreground">Total Paid</p>
           </CardContent></Card>
         </div>
@@ -387,7 +391,7 @@ const AdminStudents = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="font-display text-2xl font-bold text-foreground">Students</h1>
+        <h1 className="font-display text-2xl font-bold text-gradient">Students</h1>
         <Dialog open={createOpen} onOpenChange={(v) => { setCreateOpen(v); if (!v) resetCreateForm(); }}>
           <DialogTrigger asChild>
             <Button className="gap-1"><Plus className="w-4 h-4" /> Create Student</Button>
@@ -476,11 +480,11 @@ const AdminStudents = () => {
       </Dialog>
 
       {/* Students Table */}
-      <Card>
+      <Card className="glass-strong border-border/50 overflow-hidden">
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead><tr className="border-b border-border">
+              <thead><tr className="border-b border-border bg-muted/30">
                 <th className="text-left p-4 font-medium text-muted-foreground">Admission #</th>
                 <th className="text-left p-4 font-medium text-muted-foreground">Name</th>
                 <th className="text-left p-4 font-medium text-muted-foreground">Email</th>
@@ -488,9 +492,9 @@ const AdminStudents = () => {
                 <th className="text-left p-4 font-medium text-muted-foreground">Joined</th>
                 <th className="text-left p-4 font-medium text-muted-foreground">Actions</th>
               </tr></thead>
-              <tbody>
+              <motion.tbody variants={stagger} initial="hidden" animate="show">
                 {filtered.map((s) => (
-                  <tr key={s.id} className="border-b border-border last:border-0 hover:bg-muted/30 cursor-pointer" onClick={() => openStudentView(s)}>
+                  <motion.tr key={s.id} variants={fadeUp} className="border-b border-border last:border-0 hover:bg-primary/5 transition-colors group cursor-pointer" onClick={() => openStudentView(s)}>
                     <td className="p-4 font-medium text-foreground font-mono text-xs">{s.admission_number || "—"}</td>
                     <td className="p-4 text-foreground">
                       {s.full_name}
@@ -515,10 +519,10 @@ const AdminStudents = () => {
                         </Button>
                       </div>
                     </td>
-                  </tr>
+                  </motion.tr>
                 ))}
-                {filtered.length === 0 && <tr><td colSpan={6} className="p-8 text-center text-muted-foreground">{search ? "No students match your search." : "No students yet."}</td></tr>}
-              </tbody>
+                {filtered.length === 0 && <tr><td colSpan={6} className="p-8"><EmptyState icon={Users} title={search ? "No matches" : "No students yet"} description={search ? "Try a different search term." : "Student accounts will appear here once created."} /></td></tr>}
+              </motion.tbody>
             </table>
           </div>
         </CardContent>

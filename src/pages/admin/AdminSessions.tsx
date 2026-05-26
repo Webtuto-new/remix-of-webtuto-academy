@@ -126,7 +126,7 @@ const AdminSessions = () => {
             <ArrowLeft className="w-4 h-4" />
           </Button>
           <div>
-            <h1 className="font-display text-2xl font-bold text-foreground">{selectedSession.title}</h1>
+            <h1 className="font-display text-2xl font-bold text-gradient">{selectedSession.title}</h1>
             <p className="text-sm text-muted-foreground">
               {new Date(selectedSession.session_date).toLocaleDateString()} · {selectedSession.start_time} - {selectedSession.end_time}
             </p>
@@ -213,7 +213,7 @@ const AdminSessions = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="font-display text-2xl font-bold text-foreground">Class Sessions & Zoom</h1>
+        <h1 className="font-display text-2xl font-bold text-gradient">Class Sessions & Zoom</h1>
         {selectedClass && (
           <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) setEditing(null); }}>
             <DialogTrigger asChild><Button className="gap-1"><Plus className="w-4 h-4" /> Add Session</Button></DialogTrigger>

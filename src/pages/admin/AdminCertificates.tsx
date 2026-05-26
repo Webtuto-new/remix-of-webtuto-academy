@@ -61,7 +61,7 @@ const AdminCertificates = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="font-display text-2xl font-bold text-foreground">Certificates</h1>
+        <h1 className="font-display text-2xl font-bold text-gradient">Certificates</h1>
         <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setEditing(null); setForm({ user_id: "", class_id: "", title: "", pdf_url: "" }); } }}>
           <DialogTrigger asChild><Button className="gap-1"><Plus className="w-4 h-4" /> Issue Certificate</Button></DialogTrigger>
           <DialogContent>

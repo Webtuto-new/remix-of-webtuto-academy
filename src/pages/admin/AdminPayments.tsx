@@ -8,6 +8,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Pencil, Trash2, Eye, CheckCircle, XCircle, Image, ExternalLink } from "lucide-react";
 import { format } from "date-fns";
+import { motion } from "framer-motion";
+import { fadeUp, stagger } from "@/lib/motion";
+import EmptyState from "@/components/premium/EmptyState";
+import { CreditCard } from "lucide-react";
 
 const AdminPayments = () => {
   const [payments, setPayments] = useState<any[]>([]);
@@ -173,7 +177,7 @@ const AdminPayments = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h1 className="font-display text-2xl font-bold text-foreground">All Payments</h1>
+          <h1 className="font-display text-2xl font-bold text-gradient">All Payments</h1>
           {pendingCount > 0 && (
             <p className="text-sm text-amber-600 font-medium mt-1">{pendingCount} payment(s) awaiting review</p>
           )}
@@ -240,11 +244,11 @@ const AdminPayments = () => {
         </div>
       </div>
 
-      <Card>
+      <Card className="glass-strong border-border/50 overflow-hidden">
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead><tr className="border-b border-border">
+              <thead><tr className="border-b border-border bg-muted/30">
                 <th className="text-left p-4 font-medium text-muted-foreground">Date</th>
                 <th className="text-left p-4 font-medium text-muted-foreground">Student</th>
                 <th className="text-left p-4 font-medium text-muted-foreground">Items</th>
@@ -253,11 +257,11 @@ const AdminPayments = () => {
                 <th className="text-left p-4 font-medium text-muted-foreground">Status</th>
                 <th className="text-left p-4 font-medium text-muted-foreground">Actions</th>
               </tr></thead>
-              <tbody>
+              <motion.tbody variants={stagger} initial="hidden" animate="show">
                 {filtered.map(p => {
                   const items = (p.items as any[]) || [];
                   return (
-                    <tr key={p.id} className={`border-b border-border last:border-0 ${p.payment_status === "pending" ? "bg-amber-50 dark:bg-amber-950/20" : ""}`}>
+                    <motion.tr key={p.id} variants={fadeUp} className={`border-b border-border last:border-0 hover:bg-primary/5 transition-colors group ${p.payment_status === "pending" ? "bg-amber-500/5" : ""}`}>
                       <td className="p-4 text-foreground">{format(new Date(p.created_at), "PP")}</td>
                       <td className="p-4 text-foreground">{p.profiles?.full_name || "—"} <span className="text-xs text-muted-foreground block">{p.profiles?.admission_number}</span></td>
                       <td className="p-4 text-muted-foreground text-xs">
@@ -290,11 +294,11 @@ const AdminPayments = () => {
                           <Button variant="ghost" size="sm" onClick={() => handleDelete(p.id)} className="text-destructive"><Trash2 className="w-4 h-4" /></Button>
                         </div>
                       </td>
-                    </tr>
+                    </motion.tr>
                   );
                 })}
-                {filtered.length === 0 && <tr><td colSpan={7} className="p-8 text-center text-muted-foreground">No payments found.</td></tr>}
-              </tbody>
+                {filtered.length === 0 && <tr><td colSpan={7} className="p-8"><EmptyState icon={CreditCard} title="No payments found" description="Payments will appear here once students make transactions." /></td></tr>}
+              </motion.tbody>
             </table>
           </div>
         </CardContent>

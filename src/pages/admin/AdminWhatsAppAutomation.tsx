@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "@/hooks/use-toast";
 import { Bell, Play, RefreshCw, Send } from "lucide-react";
+import { fadeUp, stagger } from "@/lib/motion";
 
 interface AutoSettings {
   id: string;
@@ -36,9 +36,9 @@ interface AutoLog {
 }
 
 const STATUS_COLOR: Record<string, string> = {
-  pending: "bg-yellow-500/10 text-yellow-600",
-  sent: "bg-green-500/10 text-green-600",
-  failed: "bg-red-500/10 text-red-600",
+  pending: "bg-amber-500/15 text-amber-400 border-amber-500/30",
+  sent: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
+  failed: "bg-destructive/15 text-destructive border-destructive/30",
 };
 
 const AdminWhatsAppAutomation = () => {
@@ -123,7 +123,12 @@ const AdminWhatsAppAutomation = () => {
     load();
   };
 
-  if (!s) return <p className="text-muted-foreground">Loading…</p>;
+  if (!s) return (
+    <div className="space-y-6">
+      <div className="h-8 w-48 bg-muted/60 rounded-lg animate-pulse" />
+      <div className="h-64 bg-muted/40 rounded-2xl animate-pulse" />
+    </div>
+  );
 
   const setExp = (k: string, v: boolean) => setS({ ...s, expiry_stages: { ...s.expiry_stages, [k]: v } });
   const setCls = (k: string, v: boolean) => setS({ ...s, class_stages: { ...s.class_stages, [k]: v } });
@@ -133,48 +138,64 @@ const AdminWhatsAppAutomation = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-display font-semibold flex items-center gap-2">
-          <Bell className="w-6 h-6" />WhatsApp Automation
+        <h1 className="font-display text-2xl font-bold text-gradient flex items-center gap-2">
+          <Bell className="w-6 h-6 text-primary" />WhatsApp Automation
         </h1>
         <p className="text-muted-foreground text-sm">
           Automatic login alerts, expiry reminders and class reminders via HostGrap API.
         </p>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <Card><CardContent className="p-4">
-          <p className="text-xs text-muted-foreground">Sent today</p>
-          <p className="text-2xl font-display font-semibold">{stats.today}</p>
-        </CardContent></Card>
-        <Card><CardContent className="p-4">
-          <p className="text-xs text-muted-foreground">Failed today</p>
-          <p className="text-2xl font-display font-semibold text-red-600">{stats.failed}</p>
-        </CardContent></Card>
-        <Card><CardContent className="p-4">
-          <p className="text-xs text-muted-foreground">Last expiry job</p>
-          <p className="text-sm font-medium">{s.last_expiry_run_at ? new Date(s.last_expiry_run_at).toLocaleString() : "—"}</p>
-        </CardContent></Card>
-        <Card><CardContent className="p-4">
-          <p className="text-xs text-muted-foreground">Last class job</p>
-          <p className="text-sm font-medium">{s.last_class_run_at ? new Date(s.last_class_run_at).toLocaleString() : "—"}</p>
-        </CardContent></Card>
-      </div>
+      <motion.div variants={stagger} initial="hidden" animate="show" className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <motion.div variants={fadeUp}>
+          <Card className="glass-strong border-border/50 hover:ring-glow transition-all">
+            <CardContent className="p-4">
+              <p className="text-xs text-muted-foreground">Sent today</p>
+              <p className="text-2xl font-display font-semibold text-foreground">{stats.today}</p>
+            </CardContent>
+          </Card>
+        </motion.div>
+        <motion.div variants={fadeUp}>
+          <Card className="glass-strong border-border/50 hover:ring-glow transition-all">
+            <CardContent className="p-4">
+              <p className="text-xs text-muted-foreground">Failed today</p>
+              <p className="text-2xl font-display font-semibold text-destructive">{stats.failed}</p>
+            </CardContent>
+          </Card>
+        </motion.div>
+        <motion.div variants={fadeUp}>
+          <Card className="glass-strong border-border/50 hover:ring-glow transition-all">
+            <CardContent className="p-4">
+              <p className="text-xs text-muted-foreground">Last expiry job</p>
+              <p className="text-sm font-medium text-foreground">{s.last_expiry_run_at ? new Date(s.last_expiry_run_at).toLocaleString() : "—"}</p>
+            </CardContent>
+          </Card>
+        </motion.div>
+        <motion.div variants={fadeUp}>
+          <Card className="glass-strong border-border/50 hover:ring-glow transition-all">
+            <CardContent className="p-4">
+              <p className="text-xs text-muted-foreground">Last class job</p>
+              <p className="text-sm font-medium text-foreground">{s.last_class_run_at ? new Date(s.last_class_run_at).toLocaleString() : "—"}</p>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </motion.div>
 
-      <Card>
-        <CardHeader><CardTitle>Automation Settings</CardTitle></CardHeader>
+      <Card className="glass-strong border-border/50">
+        <CardHeader><CardTitle className="font-display">Automation Settings</CardTitle></CardHeader>
         <CardContent className="space-y-6 max-w-3xl">
-          <div className="flex items-center justify-between p-3 border border-border rounded-lg">
+          <div className="flex items-center justify-between p-3 border border-border/60 rounded-xl hover:border-primary/20 transition-colors">
             <div>
-              <p className="font-medium">Login alerts</p>
+              <p className="font-medium text-foreground">Login alerts</p>
               <p className="text-xs text-muted-foreground">Send WhatsApp login details when account is created or password changes.</p>
             </div>
             <Switch checked={s.login_alerts_enabled} onCheckedChange={(c) => setS({ ...s, login_alerts_enabled: c })} />
           </div>
 
-          <div className="p-3 border border-border rounded-lg space-y-3">
+          <div className="p-3 border border-border/60 rounded-xl space-y-3 hover:border-primary/20 transition-colors">
             <div className="flex items-center justify-between">
               <div>
-                <p className="font-medium">Expiry reminders</p>
+                <p className="font-medium text-foreground">Expiry reminders</p>
                 <p className="text-xs text-muted-foreground">Daily check of student course access expiry dates.</p>
               </div>
               <Switch checked={s.expiry_reminders_enabled} onCheckedChange={(c) => setS({ ...s, expiry_reminders_enabled: c })} />
@@ -187,18 +208,18 @@ const AdminWhatsAppAutomation = () => {
                 { k: "d0", l: "On expiry day" },
                 { k: "expired", l: "Already expired" },
               ].map((x) => (
-                <label key={x.k} className="flex items-center justify-between gap-2 p-2 border border-border rounded">
-                  <span className="text-xs">{x.l}</span>
+                <label key={x.k} className="flex items-center justify-between gap-2 p-2 border border-border/60 rounded-lg hover:border-primary/20 transition-colors">
+                  <span className="text-xs text-foreground">{x.l}</span>
                   <Switch checked={!!s.expiry_stages?.[x.k]} onCheckedChange={(c) => setExp(x.k, c)} />
                 </label>
               ))}
             </div>
           </div>
 
-          <div className="p-3 border border-border rounded-lg space-y-3">
+          <div className="p-3 border border-border/60 rounded-xl space-y-3 hover:border-primary/20 transition-colors">
             <div className="flex items-center justify-between">
               <div>
-                <p className="font-medium">Class reminders</p>
+                <p className="font-medium text-foreground">Class reminders</p>
                 <p className="text-xs text-muted-foreground">Reminders before scheduled live class sessions.</p>
               </div>
               <Switch checked={s.class_reminders_enabled} onCheckedChange={(c) => setS({ ...s, class_reminders_enabled: c })} />
@@ -209,8 +230,8 @@ const AdminWhatsAppAutomation = () => {
                 { k: "h1", l: "1 hour before" },
                 { k: "m10", l: "10 minutes before" },
               ].map((x) => (
-                <label key={x.k} className="flex items-center justify-between gap-2 p-2 border border-border rounded">
-                  <span className="text-xs">{x.l}</span>
+                <label key={x.k} className="flex items-center justify-between gap-2 p-2 border border-border/60 rounded-lg hover:border-primary/20 transition-colors">
+                  <span className="text-xs text-foreground">{x.l}</span>
                   <Switch checked={!!s.class_stages?.[x.k]} onCheckedChange={(c) => setCls(x.k, c)} />
                 </label>
               ))}
@@ -219,37 +240,37 @@ const AdminWhatsAppAutomation = () => {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <Label>Default reminder time (for daily jobs)</Label>
+              <Label className="text-muted-foreground">Default reminder time (for daily jobs)</Label>
               <Input type="time" value={s.default_reminder_time ?? "09:00"}
-                onChange={(e) => setS({ ...s, default_reminder_time: e.target.value })} />
+                onChange={(e) => setS({ ...s, default_reminder_time: e.target.value })} className="mt-1" />
             </div>
           </div>
 
-          <Button onClick={save}>Save settings</Button>
+          <Button onClick={save} variant="premium">Save settings</Button>
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader><CardTitle>Run jobs manually</CardTitle></CardHeader>
+      <Card className="glass-strong border-border/50">
+        <CardHeader><CardTitle className="font-display">Run jobs manually</CardTitle></CardHeader>
         <CardContent className="space-y-4 max-w-3xl">
           <div className="flex flex-wrap gap-2">
-            <Button onClick={() => runJob("expiry")} disabled={busy === "expiry"}>
+            <Button onClick={() => runJob("expiry")} disabled={busy === "expiry"} variant="premium">
               <Play className="w-4 h-4 mr-2" />{busy === "expiry" ? "Running…" : "Run expiry reminders now"}
             </Button>
-            <Button onClick={() => runJob("class")} disabled={busy === "class"}>
+            <Button onClick={() => runJob("class")} disabled={busy === "class"} variant="premium">
               <Play className="w-4 h-4 mr-2" />{busy === "class" ? "Running…" : "Run class reminders now"}
             </Button>
           </div>
 
-          <div className="border border-border rounded-lg p-3 space-y-3">
-            <p className="font-medium text-sm">Send test login alert</p>
+          <div className="border border-border/60 rounded-xl p-3 space-y-3">
+            <p className="font-medium text-sm text-foreground">Send test login alert</p>
             <Input placeholder="Student user ID (UUID from profiles)" value={testStudentId} onChange={(e) => setTestStudentId(e.target.value)} />
-            <Button size="sm" onClick={sendTestLogin} disabled={busy === "login"}>
+            <Button size="sm" onClick={sendTestLogin} disabled={busy === "login"} variant="premium">
               <Send className="w-4 h-4 mr-2" />{busy === "login" ? "Sending…" : "Send test"}
             </Button>
           </div>
 
-          <p className="text-xs text-muted-foreground border border-border rounded-lg p-3">
+          <p className="text-xs text-muted-foreground border border-border/60 rounded-xl p-3">
             <b>Cron:</b> Trigger this URL daily/hourly to run jobs automatically:<br />
             <code className="break-all">POST {`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/whatsapp-automation`}</code><br />
             with header <code>x-cron-secret: &lt;your service role key&gt;</code> and body <code>{`{"job":"all"}`}</code>.
@@ -257,29 +278,34 @@ const AdminWhatsAppAutomation = () => {
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Recent automation logs</CardTitle>
-          <Button size="sm" variant="ghost" onClick={load}><RefreshCw className="w-4 h-4" /></Button>
+      <Card className="glass-strong border-border/50 overflow-hidden">
+        <CardHeader className="flex flex-row items-center justify-between border-b border-border bg-muted/30">
+          <CardTitle className="font-display">Recent automation logs</CardTitle>
+          <Button size="sm" variant="ghost" onClick={load} className="hover:bg-primary/10 hover:text-primary"><RefreshCw className="w-4 h-4" /></Button>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0">
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>When</TableHead><TableHead>Type</TableHead><TableHead>Stage</TableHead>
-                <TableHead>Phone</TableHead><TableHead>Status</TableHead><TableHead /></TableRow>
+              <TableRow className="bg-muted/30 hover:bg-transparent">
+                <TableHead className="text-muted-foreground">When</TableHead>
+                <TableHead className="text-muted-foreground">Type</TableHead>
+                <TableHead className="text-muted-foreground">Stage</TableHead>
+                <TableHead className="text-muted-foreground">Phone</TableHead>
+                <TableHead className="text-muted-foreground">Status</TableHead>
+                <TableHead />
+              </TableRow>
             </TableHeader>
             <TableBody>
               {logs.map((l) => (
-                <TableRow key={l.id}>
-                  <TableCell className="text-xs whitespace-nowrap">{new Date(l.created_at).toLocaleString()}</TableCell>
-                  <TableCell><Badge variant="secondary">{l.message_type}</Badge></TableCell>
-                  <TableCell className="text-xs">{l.reminder_stage ?? "—"}</TableCell>
-                  <TableCell className="text-xs">{l.phone}</TableCell>
-                  <TableCell><Badge className={STATUS_COLOR[l.status]}>{l.status}</Badge></TableCell>
+                <TableRow key={l.id} className="hover:bg-primary/5 transition-colors border-b border-border last:border-0">
+                  <TableCell className="text-xs whitespace-nowrap text-foreground">{new Date(l.created_at).toLocaleString()}</TableCell>
+                  <TableCell><span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">{l.message_type}</span></TableCell>
+                  <TableCell className="text-xs text-muted-foreground">{l.reminder_stage ?? "—"}</TableCell>
+                  <TableCell className="text-xs text-muted-foreground">{l.phone}</TableCell>
+                  <TableCell><span className={`text-xs px-2 py-0.5 rounded-full border ${STATUS_COLOR[l.status]}`}>{l.status}</span></TableCell>
                   <TableCell className="text-right">
                     {l.status === "failed" && (
-                      <Button size="sm" variant="outline" onClick={() => retryFailed(l.id)}>Retry</Button>
+                      <Button size="sm" variant="outline" onClick={() => retryFailed(l.id)} className="text-xs">Retry</Button>
                     )}
                   </TableCell>
                 </TableRow>
@@ -288,7 +314,7 @@ const AdminWhatsAppAutomation = () => {
             </TableBody>
           </Table>
           {failedLogs.length > 0 && (
-            <p className="text-xs text-muted-foreground mt-2">{failedLogs.length} failed message(s) — retry manually as needed (no automatic retry loop).</p>
+            <p className="text-xs text-muted-foreground p-4">{failedLogs.length} failed message(s) — retry manually as needed (no automatic retry loop).</p>
           )}
         </CardContent>
       </Card>

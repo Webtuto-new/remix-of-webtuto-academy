@@ -105,7 +105,7 @@ const AdminClassRequests = () => {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="font-display text-2xl font-bold text-foreground">Class Requests</h1>
+        <h1 className="font-display text-2xl font-bold text-gradient">Class Requests</h1>
         <p className="text-sm text-muted-foreground">Review student class requests, assign tutors, and reply.</p>
       </div>
 

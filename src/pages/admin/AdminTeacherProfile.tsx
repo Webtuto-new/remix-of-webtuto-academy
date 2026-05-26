@@ -73,7 +73,7 @@ const AdminTeacherProfile = () => {
     <div className="space-y-6">
       <div className="flex items-center gap-3">
         <Button variant="ghost" size="sm" onClick={() => navigate("/admin/teachers")}><ArrowLeft className="w-4 h-4 mr-1" /> Back</Button>
-        <h1 className="font-display text-2xl font-bold text-foreground">{teacher.name}</h1>
+        <h1 className="font-display text-2xl font-bold text-gradient">{teacher.name}</h1>
         {teacher.user_id && <Badge variant="outline" className="text-xs">Has Login</Badge>}
       </div>
 
@@ -107,7 +107,7 @@ const AdminTeacherProfile = () => {
           <Card key={s.label}>
             <CardContent className="p-4 text-center">
               <s.icon className={`w-5 h-5 mx-auto mb-1 ${s.color}`} />
-              <p className="text-2xl font-bold text-foreground">{s.value}</p>
+              <p className="text-2xl font-bold text-gradient">{s.value}</p>
               <p className="text-xs text-muted-foreground">{s.label}</p>
             </CardContent>
           </Card>

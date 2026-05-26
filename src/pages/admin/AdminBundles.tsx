@@ -92,7 +92,7 @@ const AdminBundles = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="font-display text-2xl font-bold text-foreground">Manage Bundles</h1>
+        <h1 className="font-display text-2xl font-bold text-gradient">Manage Bundles</h1>
         <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setEditing(null); setBundleClasses([]); setForm({ title: "", description: "", price: "", original_price: "", thumbnail_url: null }); } }}>
           <DialogTrigger asChild><Button className="gap-1"><Plus className="w-4 h-4" /> Add Bundle</Button></DialogTrigger>
           <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">

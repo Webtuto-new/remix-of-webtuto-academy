@@ -57,7 +57,7 @@ const AdminCoupons = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="font-display text-2xl font-bold text-foreground">Coupons</h1>
+        <h1 className="font-display text-2xl font-bold text-gradient">Coupons</h1>
         <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setEditing(null); setForm({ code: "", discount_percent: "", discount_amount: "", max_uses: "", expires_at: "" }); } }}>
           <DialogTrigger asChild><Button className="gap-1"><Plus className="w-4 h-4" /> Add Coupon</Button></DialogTrigger>
           <DialogContent>

@@ -57,7 +57,7 @@ const AdminDashboard = () => {
               <div className={`w-11 h-11 rounded-xl bg-card/80 flex items-center justify-center ring-1 ring-border/60 ${c.color} mb-3`}>
                 <c.icon className="w-5 h-5" />
               </div>
-              <p className="text-2xl font-bold text-foreground tracking-tight">{c.value}</p>
+              <p className="text-2xl font-bold text-gradient tracking-tight">{c.value}</p>
               <p className="text-xs text-muted-foreground mt-0.5">{c.label}</p>
             </div>
           </motion.div>
