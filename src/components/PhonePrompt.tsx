@@ -34,17 +34,18 @@ const PhonePrompt = () => {
 
   return (
     <Dialog open={show}>
-      <DialogContent className="sm:max-w-md" onInteractOutside={(e) => e.preventDefault()}>
-        <DialogHeader>
-          <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-2">
+      <DialogContent className="sm:max-w-md glass-strong border-border/60 ring-glow overflow-hidden" onInteractOutside={(e) => e.preventDefault()}>
+        <div className="absolute -top-16 -right-16 w-48 h-48 rounded-full bg-primary/20 blur-3xl pointer-events-none" />
+        <DialogHeader className="relative">
+          <div className="mx-auto w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/30 to-secondary/20 flex items-center justify-center mb-2 ring-1 ring-primary/30">
             <Phone className="w-6 h-6 text-primary" />
           </div>
-          <DialogTitle className="text-center">Add Your Phone Number</DialogTitle>
+          <DialogTitle className="text-center font-display text-xl">One last step</DialogTitle>
           <DialogDescription className="text-center">
             We need your phone number to keep you updated about your classes and important announcements.
           </DialogDescription>
         </DialogHeader>
-        <div className="space-y-4 pt-2">
+        <div className="space-y-4 pt-2 relative">
           <div className="space-y-2">
             <Label>Phone Number</Label>
             <Input
@@ -55,7 +56,7 @@ const PhonePrompt = () => {
               onKeyDown={(e) => e.key === "Enter" && handleSave()}
             />
           </div>
-          <Button onClick={handleSave} disabled={saving} className="w-full">
+          <Button onClick={handleSave} disabled={saving} variant="premium" className="w-full">
             {saving ? "Saving..." : "Save Phone Number"}
           </Button>
         </div>

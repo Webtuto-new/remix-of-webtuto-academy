@@ -1,11 +1,12 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BookOpen, Play, CreditCard, Calendar, Clock, ExternalLink, Mail } from "lucide-react";
+import { BookOpen, Play, CreditCard, Calendar, ExternalLink, Mail, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { motion } from "framer-motion";
+import { fadeUp, stagger, viewportOnce } from "@/lib/motion";
 
 const DashboardOverview = () => {
   const { user, profile, isAdmin } = useAuth();
@@ -46,112 +47,141 @@ const DashboardOverview = () => {
   }, [user]);
 
   const stats = [
-    { icon: BookOpen, label: "Active Classes", value: enrollments.filter(e => e.class_id).length, color: "text-secondary" },
-    { icon: Play, label: "Recordings", value: enrollments.filter(e => e.recording_id).length, color: "text-accent" },
-    { icon: CreditCard, label: "Total Payments", value: payments.length, color: "text-primary" },
-    { icon: Calendar, label: "Upcoming", value: upcomingSessions.length, color: "text-secondary" },
+    { icon: BookOpen, label: "Active Classes", value: enrollments.filter(e => e.class_id).length, tint: "from-primary/25 to-primary/5", iconColor: "text-primary" },
+    { icon: Play, label: "Recordings", value: enrollments.filter(e => e.recording_id).length, tint: "from-secondary/25 to-secondary/5", iconColor: "text-secondary" },
+    { icon: CreditCard, label: "Total Payments", value: payments.length, tint: "from-accent/25 to-accent/5", iconColor: "text-accent" },
+    { icon: Calendar, label: "Upcoming", value: upcomingSessions.length, tint: "from-primary/25 to-secondary/5", iconColor: "text-primary" },
   ];
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="font-display text-2xl font-bold text-foreground">Dashboard</h1>
-          <p className="text-muted-foreground text-sm">Welcome back, {profile?.full_name}</p>
+      {/* Greeting hero */}
+      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
+        className="relative overflow-hidden rounded-2xl glass-strong p-6 md:p-8 ring-glow">
+        <div className="absolute -top-20 -right-20 w-72 h-72 rounded-full bg-primary/20 blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-20 -left-20 w-72 h-72 rounded-full bg-secondary/20 blur-3xl pointer-events-none" />
+        <div className="relative flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+          <div>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/15 text-primary text-xs font-semibold tracking-wide">
+              <Sparkles className="w-3.5 h-3.5" /> Your learning dashboard
+            </span>
+            <h1 className="font-display text-2xl md:text-4xl font-bold text-foreground mt-3 tracking-tight">
+              Welcome back, <span className="text-gradient">{profile?.full_name?.split(" ")[0] || "Student"}</span>
+            </h1>
+            <p className="text-muted-foreground text-sm mt-1.5">Pick up where you left off or explore something new today.</p>
+          </div>
+          <div className="flex gap-2">
+            <Link to="/classes"><Button variant="premium" size="sm">Browse classes</Button></Link>
+            {isAdmin && (
+              <Button onClick={handleSendTestEmail} disabled={sendingEmail} variant="glass" size="sm" className="gap-2">
+                <Mail className="w-4 h-4" />
+                {sendingEmail ? "Sending..." : "Test email"}
+              </Button>
+            )}
+          </div>
         </div>
-        {isAdmin && (
-          <Button onClick={handleSendTestEmail} disabled={sendingEmail} variant="outline" size="sm" className="gap-2">
-            <Mail className="w-4 h-4" />
-            {sendingEmail ? "Sending..." : "Send Test Email"}
-          </Button>
-        )}
-      </div>
+      </motion.div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <motion.div variants={stagger} initial="hidden" whileInView="show" viewport={viewportOnce} className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat) => (
-          <Card key={stat.label}>
-            <CardContent className="p-4 flex items-center gap-3">
-              <div className={`p-2 rounded-lg bg-muted ${stat.color}`}>
+          <motion.div key={stat.label} variants={fadeUp}
+            className="group relative overflow-hidden rounded-2xl glass-strong p-5 transition-all hover:-translate-y-1 hover:ring-glow">
+            <div className={`absolute inset-0 bg-gradient-to-br ${stat.tint} opacity-60 pointer-events-none`} />
+            <div className="relative flex items-center gap-3">
+              <div className={`w-11 h-11 rounded-xl bg-card/80 flex items-center justify-center ring-1 ring-border/60 ${stat.iconColor}`}>
                 <stat.icon className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-foreground">{stat.value}</p>
+                <p className="text-2xl font-bold text-foreground tracking-tight">{stat.value}</p>
                 <p className="text-xs text-muted-foreground">{stat.label}</p>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
 
-      {/* Quick Actions */}
-      <div className="grid md:grid-cols-2 gap-4">
-        <Card>
-          <CardHeader><CardTitle className="text-lg">My Classes</CardTitle></CardHeader>
-          <CardContent>
-            {enrollments.filter(e => e.class_id).length === 0 ? (
-              <div className="text-center py-6 text-muted-foreground">
-                <p className="mb-3">No classes enrolled yet.</p>
-                <Link to="/classes"><Button size="sm">Browse Classes</Button></Link>
-              </div>
-            ) : (
-              <div className="space-y-2">
-                {enrollments.filter(e => e.class_id).slice(0, 5).map((e) => (
-                  <div key={e.id} className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                    <div>
-                      <p className="text-sm font-medium text-foreground">{e.classes?.title || "Class"}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {e.expires_at ? `Expires: ${new Date(e.expires_at).toLocaleDateString()}` : "Active"}
-                      </p>
-                    </div>
-                    <Link to={`/class/${e.class_id}`}>
-                      <Button variant="ghost" size="sm"><ExternalLink className="w-4 h-4" /></Button>
-                    </Link>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader><CardTitle className="text-lg">Recent Payments</CardTitle></CardHeader>
-          <CardContent>
-            {payments.length === 0 ? (
-              <p className="text-center py-6 text-muted-foreground">No payments yet.</p>
-            ) : (
-              <div className="space-y-2">
-                {payments.map((p) => (
-                  <div key={p.id} className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                    <div>
-                      <p className="text-sm font-medium text-foreground">LKR {p.amount}</p>
-                      <p className="text-xs text-muted-foreground">{new Date(p.created_at).toLocaleDateString()}</p>
-                    </div>
-                    <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-                      p.payment_status === "completed" ? "bg-secondary/20 text-secondary" : "bg-muted-foreground/20 text-muted-foreground"
-                    }`}>
-                      {p.payment_status}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Profile Info */}
-      <Card>
-        <CardHeader><CardTitle className="text-lg">Profile Information</CardTitle></CardHeader>
-        <CardContent>
-          <div className="grid sm:grid-cols-2 gap-4 text-sm">
-            <div><span className="text-muted-foreground">Admission No:</span> <span className="font-medium text-foreground ml-2">{profile?.admission_number || "—"}</span></div>
-            <div><span className="text-muted-foreground">Email:</span> <span className="font-medium text-foreground ml-2">{profile?.email || "—"}</span></div>
-            <div><span className="text-muted-foreground">Phone:</span> <span className="font-medium text-foreground ml-2">{profile?.phone || "—"}</span></div>
-            <div><span className="text-muted-foreground">Address:</span> <span className="font-medium text-foreground ml-2">{profile?.address || "—"}</span></div>
+      {/* Quick panels */}
+      <div className="grid md:grid-cols-2 gap-5">
+        <motion.section initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={viewportOnce} transition={{ duration: 0.45 }}
+          className="glass-strong rounded-2xl p-5 space-y-3">
+          <div className="flex items-center justify-between">
+            <h2 className="font-display text-lg font-semibold text-foreground">My Classes</h2>
+            <Link to="/dashboard/classes" className="text-xs text-primary font-semibold hover:gap-2 transition-all inline-flex items-center gap-1">View all <ExternalLink className="w-3 h-3" /></Link>
           </div>
-        </CardContent>
-      </Card>
+          {enrollments.filter(e => e.class_id).length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              <BookOpen className="w-8 h-8 mx-auto mb-2 opacity-50" />
+              <p className="mb-3 text-sm">No classes enrolled yet.</p>
+              <Link to="/classes"><Button size="sm" variant="premium">Browse Classes</Button></Link>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {enrollments.filter(e => e.class_id).slice(0, 5).map((e) => (
+                <Link key={e.id} to={`/class/${e.class_id}`}
+                  className="flex items-center justify-between p-3 bg-card/60 hover:bg-card border border-border/60 hover:border-primary/40 rounded-xl transition-all group">
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-foreground truncate group-hover:text-primary transition-colors">{e.classes?.title || "Class"}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {e.expires_at ? `Expires ${new Date(e.expires_at).toLocaleDateString()}` : "Active"}
+                    </p>
+                  </div>
+                  <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                </Link>
+              ))}
+            </div>
+          )}
+        </motion.section>
+
+        <motion.section initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={viewportOnce} transition={{ duration: 0.45, delay: 0.05 }}
+          className="glass-strong rounded-2xl p-5 space-y-3">
+          <div className="flex items-center justify-between">
+            <h2 className="font-display text-lg font-semibold text-foreground">Recent Payments</h2>
+            <Link to="/dashboard/payments" className="text-xs text-primary font-semibold hover:gap-2 transition-all inline-flex items-center gap-1">View all <ExternalLink className="w-3 h-3" /></Link>
+          </div>
+          {payments.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              <CreditCard className="w-8 h-8 mx-auto mb-2 opacity-50" />
+              <p className="text-sm">No payments yet.</p>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {payments.map((p) => (
+                <div key={p.id} className="flex items-center justify-between p-3 bg-card/60 border border-border/60 rounded-xl">
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">LKR {Number(p.amount).toLocaleString()}</p>
+                    <p className="text-xs text-muted-foreground">{new Date(p.created_at).toLocaleDateString()}</p>
+                  </div>
+                  <span className={`text-[10px] uppercase tracking-wider px-2.5 py-1 rounded-full font-bold ${
+                    p.payment_status === "completed" ? "bg-emerald-500/15 text-emerald-400 ring-1 ring-emerald-500/30" : "bg-muted text-muted-foreground"
+                  }`}>
+                    {p.payment_status}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </motion.section>
+      </div>
+
+      {/* Profile card */}
+      <motion.section initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={viewportOnce} transition={{ duration: 0.45 }}
+        className="glass-strong rounded-2xl p-5 space-y-3">
+        <h2 className="font-display text-lg font-semibold text-foreground">Profile Information</h2>
+        <div className="grid sm:grid-cols-2 gap-3 text-sm">
+          {[
+            ["Admission No", profile?.admission_number],
+            ["Email", profile?.email],
+            ["Phone", profile?.phone],
+            ["Address", profile?.address],
+          ].map(([label, value]) => (
+            <div key={label as string} className="p-3 rounded-xl bg-card/60 border border-border/60">
+              <p className="text-[11px] uppercase tracking-wider text-muted-foreground mb-0.5">{label}</p>
+              <p className="font-medium text-foreground truncate">{value || "—"}</p>
+            </div>
+          ))}
+        </div>
+      </motion.section>
     </div>
   );
 };
