@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/contexts/CartContext";
 import logo from "@/assets/logo.png";
+import NotificationBell from "@/components/NotificationBell";
 
 const navItems = [
   { label: "Home", path: "/", hint: "Start here" },
@@ -81,6 +82,7 @@ const Navbar = () => {
             >
               <Search className="w-[18px] h-[18px]" />
             </Link>
+            <NotificationBell />
             <Link
               to="/checkout"
               className="p-2 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-all duration-200 relative"
