@@ -4,6 +4,7 @@ import SEOHead from "@/components/SEOHead";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { BookOpen, GraduationCap, Play, Users, ArrowRight, Star, Zap } from "lucide-react";
+import { motion } from "framer-motion";
 import ClassCard from "@/components/ClassCard";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -39,13 +40,18 @@ const Index = () => {
     <Layout>
       <SEOHead title="Webtuto" description="Sri Lanka's #1 online learning platform. Live classes, expert tutors, and comprehensive courses for National, Cambridge & Edexcel syllabuses." path="/" />
       {/* Hero */}
-      <section className="hero-gradient relative overflow-hidden pt-24 pb-14 sm:pt-32 sm:pb-20 lg:pt-40 lg:pb-28">
+      <section className="hero-gradient bg-mesh relative overflow-hidden pt-24 pb-14 sm:pt-32 sm:pb-20 lg:pt-40 lg:pb-28">
         <div className="absolute inset-0">
-          <div className="absolute top-20 left-10 w-48 sm:w-72 h-48 sm:h-72 rounded-full bg-secondary/10 blur-[80px] sm:blur-[100px]" />
-          <div className="absolute bottom-10 right-10 sm:right-20 w-64 sm:w-96 h-64 sm:h-96 rounded-full bg-accent/8 blur-[100px] sm:blur-[120px]" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] sm:w-[600px] h-[400px] sm:h-[600px] rounded-full bg-primary/5 blur-[120px] sm:blur-[150px]" />
+          <div className="absolute top-20 left-10 w-48 sm:w-72 h-48 sm:h-72 rounded-full bg-secondary/20 blur-[80px] sm:blur-[100px] animate-float-blob" />
+          <div className="absolute bottom-10 right-10 sm:right-20 w-64 sm:w-96 h-64 sm:h-96 rounded-full bg-accent/15 blur-[100px] sm:blur-[120px] animate-float-blob" style={{animationDelay:'-4s'}} />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] sm:w-[600px] h-[400px] sm:h-[600px] rounded-full bg-primary/10 blur-[120px] sm:blur-[150px]" />
         </div>
-        <div className="container mx-auto px-4 relative">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          className="container mx-auto px-4 relative"
+        >
           <div className="max-w-3xl mx-auto text-center space-y-4 sm:space-y-6">
             <div className="inline-flex items-center gap-2 bg-primary-foreground/10 backdrop-blur-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm text-primary-foreground/80 border border-primary-foreground/10">
               <Zap className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-accent" />
@@ -71,7 +77,7 @@ const Index = () => {
               </Link>
             </div>
           </div>
-        </div>
+        </motion.div>
       </section>
 
       {/* Stats */}
