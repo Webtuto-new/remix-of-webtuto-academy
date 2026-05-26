@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   LayoutDashboard, BookOpen, Play, Users, Calendar, FileText,
-  LogOut, Menu, Sun, Moon, CreditCard
+  LogOut, Menu, Sun, Moon, CreditCard, Brain
 } from "lucide-react";
 import logo from "@/assets/logo.png";
 
@@ -14,6 +14,7 @@ const teacherMenu = [
   { label: "Sessions & Zoom", path: "/teacher/sessions", icon: Calendar },
   { label: "My Students", path: "/teacher/students", icon: Users },
   { label: "Recordings", path: "/teacher/recordings", icon: Play },
+  { label: "Quiz Center", path: "/teacher/quiz-center", icon: Brain },
   { label: "Earnings", path: "/teacher/earnings", icon: CreditCard },
 ];
 
