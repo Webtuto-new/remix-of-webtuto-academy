@@ -3,12 +3,48 @@ import Layout from "@/components/Layout";
 import SEOHead from "@/components/SEOHead";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Play, Info, ChevronLeft, ChevronRight, Radio, GraduationCap } from "lucide-react";
+import { Play, Info, ChevronLeft, ChevronRight, Radio, GraduationCap, Clock } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import heroBg from "@/assets/hero-bg.jpg";
 
 type ClassRow = any;
+
+const DAYS = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
+const getNextOccurrence = (day?: string | null, time?: string | null): Date | null => {
+  if (!day || !time) return null;
+  const targetDow = DAYS.indexOf(day.toLowerCase());
+  if (targetDow < 0) return null;
+  const [h, m] = time.split(":").map(Number);
+  if (Number.isNaN(h)) return null;
+  const now = new Date();
+  const target = new Date(now);
+  target.setHours(h, m || 0, 0, 0);
+  let diff = targetDow - now.getDay();
+  if (diff < 0 || (diff === 0 && target.getTime() < now.getTime())) diff += 7;
+  target.setDate(now.getDate() + diff);
+  return target;
+};
+
+const useCountdown = (target: Date | null) => {
+  const [now, setNow] = useState(Date.now());
+  useEffect(() => {
+    if (!target) return;
+    const t = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, [target?.getTime()]);
+  if (!target) return null;
+  const diff = target.getTime() - now;
+  if (diff <= 0) return "LIVE NOW";
+  const d = Math.floor(diff / 86400000);
+  const h = Math.floor((diff % 86400000) / 3600000);
+  const min = Math.floor((diff % 3600000) / 60000);
+  const s = Math.floor((diff % 60000) / 1000);
+  if (d > 0) return `${d}d ${h}h`;
+  if (h > 0) return `${h}h ${min}m`;
+  if (min > 0) return `${min}m ${s}s`;
+  return `${s}s`;
+};
 
 const HeroFeature = ({ items }: { items: ClassRow[] }) => {
   const [idx, setIdx] = useState(0);
