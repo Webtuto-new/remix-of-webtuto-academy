@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { getTutorAvatar } from "@/lib/tutorAvatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -98,14 +99,8 @@ const AdminTeacherProfile = () => {
         <div className="absolute -top-24 -right-24 w-72 h-72 rounded-full bg-primary/15 blur-3xl pointer-events-none" />
         <div className="absolute -bottom-24 -left-24 w-72 h-72 rounded-full bg-secondary/10 blur-3xl pointer-events-none" />
         <div className="relative flex flex-col sm:flex-row items-start gap-5">
-          {teacher.avatar_url ? (
-            <img src={teacher.avatar_url} alt={teacher.name}
-              className="w-20 h-20 rounded-2xl object-cover ring-2 ring-primary/30 shadow-xl" />
-          ) : (
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/30 to-secondary/30 flex items-center justify-center text-foreground font-bold text-2xl ring-2 ring-primary/30">
-              {teacher.name.charAt(0)}
-            </div>
-          )}
+          <img src={getTutorAvatar(teacher)} alt={teacher.name}
+            className="w-20 h-20 rounded-2xl object-cover ring-2 ring-primary/30 shadow-xl" />
           <div className="flex-1 min-w-0">
             <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-primary/90">
               <Sparkles className="w-3 h-3" /> Teacher profile
