@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import logo from "@/assets/logo.png";
 
 const SESSION_KEY = "webtuto_preloader_shown";
+const MIN_DURATION = 1200; // keep logo visible at least this long
+const MAX_DURATION = 6000; // hard cap so we never get stuck
 
 const HomePreloader = () => {
   const [show, setShow] = useState(() => {
@@ -12,18 +14,42 @@ const HomePreloader = () => {
 
   useEffect(() => {
     if (!show) return;
-    // Lock scroll & force top while preloader is visible
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     window.scrollTo(0, 0);
 
-    const t = setTimeout(() => {
+    const start = Date.now();
+    let done = false;
+
+    const finish = () => {
+      if (done) return;
+      done = true;
+      // Make sure we're at the top before revealing the page
+      window.scrollTo(0, 0);
+      requestAnimationFrame(() => window.scrollTo(0, 0));
       sessionStorage.setItem(SESSION_KEY, "1");
       setShow(false);
-    }, 1800);
+    };
+
+    const tryFinish = () => {
+      const elapsed = Date.now() - start;
+      const wait = Math.max(0, MIN_DURATION - elapsed);
+      setTimeout(finish, wait);
+    };
+
+    // Wait for the page to actually be loaded (assets, images, fonts)
+    if (document.readyState === "complete") {
+      tryFinish();
+    } else {
+      window.addEventListener("load", tryFinish, { once: true });
+    }
+
+    // Safety cap
+    const cap = setTimeout(finish, MAX_DURATION);
 
     return () => {
-      clearTimeout(t);
+      clearTimeout(cap);
+      window.removeEventListener("load", tryFinish);
       document.body.style.overflow = prevOverflow;
     };
   }, [show]);
