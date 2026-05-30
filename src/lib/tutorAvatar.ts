@@ -36,26 +36,9 @@ export const getTutorAvatar = (t: TutorLike): string => {
   if (t?.avatar_url) return t.avatar_url;
   const isFemale = (t?.gender || "male").toLowerCase() === "female";
   const seedStr = (t?.name || t?.id || "tutor").trim();
-  const h = hashString(seedStr);
-
-  const top = isFemale ? pick(FEMALE_TOPS, h, 1) : pick(MALE_TOPS, h, 1);
-  const facialHair = isFemale ? "blank" : pick(FACIAL_HAIR_MALE, h, 2);
-  const hairColor = pick(HAIR_COLORS, h, 3);
-  const clothing = pick(CLOTHING, h, 4);
-  const eyes = pick(EYE_TYPES, h, 5);
-  const mouth = pick(MOUTH_TYPES, h, 6);
-
-  const params = new URLSearchParams({
-    seed: seedStr,
-    backgroundColor: "b6e3f4,c0aede,ffd5dc,ffdfbf,d1f4d1",
-    skinColor: FIXED_SKIN,
-    top,
-    facialHair,
-    hairColor,
-    clothing,
-    eyes,
-    mouth,
-    radius: "50",
-  });
-  return `https://api.dicebear.com/7.x/avataaars/svg?${params.toString()}`;
+  // Gender-specific seed namespace so male/female names yield distinct characters
+  const seed = encodeURIComponent(`${isFemale ? "f" : "m"}-${seedStr}`);
+  // "adventurer" renders unique illustrated faces reliably with just a seed.
+  const params = `seed=${seed}&backgroundColor=b6e3f4,c0aede,ffd5dc,ffdfbf,d1f4d1&radius=50`;
+  return `https://api.dicebear.com/7.x/adventurer/svg?${params}`;
 };
