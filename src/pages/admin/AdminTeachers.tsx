@@ -30,7 +30,7 @@ const AdminTeachers = () => {
   const [loginForm, setLoginForm] = useState({ email: "", password: "" });
   const [loginLoading, setLoginLoading] = useState(false);
   const [createdCredentials, setCreatedCredentials] = useState<{ email: string; password: string; name: string } | null>(null);
-  const [form, setForm] = useState({ name: "", bio: "", qualifications: "", avatar_url: "" });
+  const [form, setForm] = useState({ name: "", bio: "", qualifications: "", avatar_url: "", gender: "male" });
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -41,7 +41,7 @@ const AdminTeachers = () => {
   useEffect(() => { fetchTeachers(); }, []);
 
   const handleSave = async () => {
-    const payload = { name: form.name, bio: form.bio, qualifications: form.qualifications, avatar_url: form.avatar_url || null };
+    const payload = { name: form.name, bio: form.bio, qualifications: form.qualifications, avatar_url: form.avatar_url || null, gender: form.gender };
     let error;
     if (editing) {
       ({ error } = await supabase.from("teachers").update(payload).eq("id", editing.id));
@@ -49,12 +49,12 @@ const AdminTeachers = () => {
       ({ error } = await supabase.from("teachers").insert(payload));
     }
     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
-    else { toast({ title: editing ? "Updated!" : "Created!" }); setOpen(false); setEditing(null); setForm({ name: "", bio: "", qualifications: "", avatar_url: "" }); fetchTeachers(); }
+    else { toast({ title: editing ? "Updated!" : "Created!" }); setOpen(false); setEditing(null); setForm({ name: "", bio: "", qualifications: "", avatar_url: "", gender: "male" }); fetchTeachers(); }
   };
 
   const handleEdit = (t: any) => {
     setEditing(t);
-    setForm({ name: t.name, bio: t.bio || "", qualifications: t.qualifications || "", avatar_url: t.avatar_url || "" });
+    setForm({ name: t.name, bio: t.bio || "", qualifications: t.qualifications || "", avatar_url: t.avatar_url || "", gender: t.gender || "male" });
     setOpen(true);
   };
 
@@ -123,6 +123,13 @@ const AdminTeachers = () => {
               <div className="space-y-2"><Label>Name</Label><Input value={form.name} onChange={(e) => setForm(f => ({ ...f, name: e.target.value }))} /></div>
               <div className="space-y-2"><Label>Bio</Label><textarea className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm" rows={3} value={form.bio} onChange={(e) => setForm(f => ({ ...f, bio: e.target.value }))} /></div>
               <div className="space-y-2"><Label>Qualifications</Label><Input value={form.qualifications} onChange={(e) => setForm(f => ({ ...f, qualifications: e.target.value }))} /></div>
+              <div className="space-y-2">
+                <Label>Gender (used for placeholder profile photo)</Label>
+                <div className="flex gap-2">
+                  <button type="button" onClick={() => setForm(f => ({ ...f, gender: "male" }))} className={`flex-1 rounded-md border px-3 py-2 text-sm font-medium transition ${form.gender === "male" ? "border-primary bg-primary/10 text-primary" : "border-input hover:bg-muted"}`}>Male</button>
+                  <button type="button" onClick={() => setForm(f => ({ ...f, gender: "female" }))} className={`flex-1 rounded-md border px-3 py-2 text-sm font-medium transition ${form.gender === "female" ? "border-primary bg-primary/10 text-primary" : "border-input hover:bg-muted"}`}>Female</button>
+                </div>
+              </div>
               <ThumbnailUpload value={form.avatar_url || null} onChange={(url) => setForm(f => ({ ...f, avatar_url: url || "" }))} title={form.name} folder="teachers" />
               <Button onClick={handleSave} className="w-full" variant="premium">{editing ? "Update" : "Create"}</Button>
             </div>

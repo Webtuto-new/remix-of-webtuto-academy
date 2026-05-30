@@ -11,6 +11,7 @@ import { motion } from "framer-motion";
 import { stagger, fadeUp } from "@/lib/motion";
 import { SkeletonCard } from "@/components/ui/skeleton";
 import EmptyState from "@/components/premium/EmptyState";
+import { getTutorAvatar } from "@/lib/tutorAvatar";
 
 interface TutorRow {
   id: string;
@@ -256,11 +257,7 @@ const TutorsPage = () => {
                     <div className="relative p-6 flex flex-col h-full">
                       <div className="flex items-start gap-4 mb-4">
                         <div className="w-20 h-20 rounded-2xl overflow-hidden ring-2 ring-background bg-gradient-to-br from-primary/30 to-accent/30 flex items-center justify-center flex-shrink-0">
-                          {t.avatar_url ? (
-                            <img src={t.avatar_url} alt={t.name} className="w-full h-full object-cover" loading="lazy" />
-                          ) : (
-                            <GraduationCap className="w-8 h-8 text-primary" />
-                          )}
+                          <img src={getTutorAvatar(t)} alt={t.name} className="w-full h-full object-cover" loading="lazy" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <h3 className="font-display text-lg font-bold leading-tight group-hover:text-primary transition-colors truncate">

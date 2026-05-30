@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import Layout from "@/components/Layout";
 import SEOHead from "@/components/SEOHead";
 import { supabase } from "@/integrations/supabase/client";
+import { getTutorAvatar } from "@/lib/tutorAvatar";
 import { motion } from "framer-motion";
 import { GraduationCap, BookOpen, Calendar, ArrowLeft, Play, Star, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -119,13 +120,7 @@ const TutorProfilePage = () => {
             <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="flex flex-col md:flex-row gap-8 items-start">
               <div className="relative shrink-0">
                 <div className="w-32 h-32 md:w-40 md:h-40 rounded-2xl overflow-hidden ring-2 ring-accent/40 ring-offset-4 ring-offset-background bg-gradient-to-br from-primary/30 to-secondary/30 shadow-2xl">
-                  {tutor.avatar_url ? (
-                    <img src={tutor.avatar_url} alt={tutor.name} className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center font-display font-bold text-5xl text-foreground/80">
-                      {tutor.name?.charAt(0)}
-                    </div>
-                  )}
+                  <img src={getTutorAvatar(tutor)} alt={tutor.name} className="w-full h-full object-cover" />
                 </div>
               </div>
               <div className="flex-1 space-y-3">

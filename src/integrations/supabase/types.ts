@@ -1719,6 +1719,7 @@ export type Database = {
           avatar_url: string | null
           bio: string | null
           created_at: string
+          gender: string
           id: string
           is_active: boolean
           name: string
@@ -1729,6 +1730,7 @@ export type Database = {
           avatar_url?: string | null
           bio?: string | null
           created_at?: string
+          gender?: string
           id?: string
           is_active?: boolean
           name: string
@@ -1739,6 +1741,7 @@ export type Database = {
           avatar_url?: string | null
           bio?: string | null
           created_at?: string
+          gender?: string
           id?: string
           is_active?: boolean
           name?: string

@@ -10,6 +10,7 @@ import heroBg from "@/assets/hero-bg.jpg";
 import LiveStats from "@/components/home/LiveStats";
 import TestimonialsCarousel from "@/components/home/TestimonialsCarousel";
 import HomePreloader from "@/components/home/HomePreloader";
+import { getTutorAvatar } from "@/lib/tutorAvatar";
 
 type ClassRow = any;
 
@@ -284,13 +285,7 @@ const TutorRow = ({ title, tutors }: { title: string; tutors: any[] }) => {
             <Link key={t.id} to={`/tutor/${t.id}`} className="snap-start shrink-0 w-[170px] sm:w-[200px] lg:w-[220px] group/tutor">
               <motion.div whileHover={{ y: -6 }} transition={{ type: "spring", stiffness: 300, damping: 22 }} className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-card to-muted/40 ring-1 ring-foreground/10 hover:ring-2 hover:ring-accent shadow-lg p-5 text-center h-full">
                 <div className="relative w-20 h-20 mx-auto mb-3 rounded-full overflow-hidden ring-2 ring-accent/40 ring-offset-2 ring-offset-background bg-gradient-to-br from-primary/30 to-secondary/30">
-                  {t.avatar_url ? (
-                    <img src={t.avatar_url} alt={t.name} className="w-full h-full object-cover" loading="lazy" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center font-display font-bold text-2xl text-foreground/80">
-                      {t.name?.charAt(0) || "T"}
-                    </div>
-                  )}
+                  <img src={getTutorAvatar(t)} alt={t.name} className="w-full h-full object-cover" loading="lazy" />
                 </div>
                 <h3 className="font-display font-bold text-sm text-foreground line-clamp-1">{t.name}</h3>
                 {t.qualifications && (
