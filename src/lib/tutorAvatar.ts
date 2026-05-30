@@ -36,9 +36,10 @@ export const getTutorAvatar = (t: TutorLike): string => {
   if (t?.avatar_url) return t.avatar_url;
   const isFemale = (t?.gender || "male").toLowerCase() === "female";
   const seedStr = (t?.name || t?.id || "tutor").trim();
-  // Gender-specific seed namespace so male/female names yield distinct characters
   const seed = encodeURIComponent(`${isFemale ? "f" : "m"}-${seedStr}`);
-  // "personas" renders modern, professional illustrated avatars (no weird/cartoonish faces).
-  const params = `seed=${seed}&backgroundColor=b6e3f4,c0aede,ffd5dc,ffdfbf,d1f4d1,e0e7ff&radius=50`;
-  return `https://api.dicebear.com/7.x/personas/svg?${params}`;
+  // "lorelei" = clean, elegant illustrated portraits (close to the reference).
+  // Gender split: female -> lorelei, male -> notionists-neutral (short hair, refined).
+  const style = isFemale ? "lorelei" : "notionists";
+  const params = `seed=${seed}&backgroundColor=b6e3f4,c0aede,ffd5dc,ffdfbf,d1f4d1,e0e7ff,fde68a&radius=50`;
+  return `https://api.dicebear.com/7.x/${style}/svg?${params}`;
 };
