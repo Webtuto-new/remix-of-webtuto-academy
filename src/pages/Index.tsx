@@ -60,9 +60,12 @@ const HeroFeature = ({ items }: { items: ClassRow[] }) => {
   const bg = c.thumbnail_url;
   return (
     <section className="relative h-[88vh] min-h-[560px] w-full overflow-hidden">
-      {/* Ambient base — dark cinematic only in dark mode; clean gradient in light mode */}
-      <img src={heroBg} alt="" aria-hidden className="absolute inset-0 w-full h-full object-cover hidden dark:block" />
-      <div className="absolute inset-0 dark:hidden bg-gradient-to-br from-background via-muted to-background" />
+      {/* Education-themed hero background image */}
+      <img src={heroBg} alt="" aria-hidden className="absolute inset-0 w-full h-full object-cover" />
+      {/* Light mode overlay — darken for text readability */}
+      <div className="absolute inset-0 bg-black/40 dark:hidden" />
+      {/* Dark mode overlay — subtle tint */}
+      <div className="absolute inset-0 bg-black/20 hidden dark:block" />
       <div className="absolute inset-0 bg-mesh opacity-30 dark:opacity-40 mix-blend-overlay" />
       <div className="absolute inset-0">
         <div className="absolute top-1/4 -left-20 w-[480px] h-[480px] rounded-full bg-primary/30 blur-[140px] animate-float-blob" />
