@@ -38,7 +38,7 @@ export const getTutorAvatar = (t: TutorLike): string => {
   const seedStr = (t?.name || t?.id || "tutor").trim();
   // Gender-specific seed namespace so male/female names yield distinct characters
   const seed = encodeURIComponent(`${isFemale ? "f" : "m"}-${seedStr}`);
-  // "adventurer" renders unique illustrated faces reliably with just a seed.
-  const params = `seed=${seed}&backgroundColor=b6e3f4,c0aede,ffd5dc,ffdfbf,d1f4d1&radius=50`;
-  return `https://api.dicebear.com/7.x/adventurer/svg?${params}`;
+  // "personas" renders modern, professional illustrated avatars (no weird/cartoonish faces).
+  const params = `seed=${seed}&backgroundColor=b6e3f4,c0aede,ffd5dc,ffdfbf,d1f4d1,e0e7ff&radius=50`;
+  return `https://api.dicebear.com/7.x/personas/svg?${params}`;
 };
