@@ -67,7 +67,7 @@ const HomePreloader = () => {
             <motion.img
               src={logo}
               alt="Webtuto"
-              className="h-24 w-24 sm:h-28 sm:w-28 object-contain drop-shadow-[0_10px_30px_rgba(30,64,175,0.25)]"
+              className="h-20 sm:h-24 w-auto max-w-[70vw] object-contain drop-shadow-[0_10px_30px_rgba(30,64,175,0.25)]"
               animate={{ y: [0, -6, 0] }}
               transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
             />
