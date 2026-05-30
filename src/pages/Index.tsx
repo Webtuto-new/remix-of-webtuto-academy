@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import heroBg from "@/assets/hero-bg.jpg";
 import LiveStats from "@/components/home/LiveStats";
 import TestimonialsCarousel from "@/components/home/TestimonialsCarousel";
+import HomePreloader from "@/components/home/HomePreloader";
 
 type ClassRow = any;
 
@@ -441,6 +442,7 @@ const IndexInner = () => {
         path="/"
       />
 
+      <HomePreloader />
       <HeroFeature items={featured} />
 
       <div className="relative -mt-32 sm:-mt-40 z-10 space-y-2 pb-20">
